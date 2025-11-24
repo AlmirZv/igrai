@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">lootai</string>
+    <string name="title_activity_main">lootai</string>
+    <string name="package_name">com.lootai.app</string>
+    <string name="custom_url_scheme">com.lootai.app</string>
+</resources>
