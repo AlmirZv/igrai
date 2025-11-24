@@ -1,10 +1,7 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { initializeFirebase } from "./config/firebase";
 import { socketServer } from "./server";
-
-dotenv.config();
 
 export const app = express();
 
