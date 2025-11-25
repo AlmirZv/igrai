@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { initializeFirebase } from "./config/firebase";
 import { socketServer } from "./server";
 
 export const app = express();
@@ -13,9 +12,6 @@ app.use(
   })
 );
 app.use(express.json());
-
-// Initialize Firebase
-initializeFirebase();
 
 // Routes
 app.get("/health", (req, res) => {

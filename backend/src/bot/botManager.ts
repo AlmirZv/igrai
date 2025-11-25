@@ -1,4 +1,4 @@
-import { Server } from "socket.io";
+import { socketServer } from "../server";
 
 interface BotUser {
   id: string;
@@ -15,14 +15,12 @@ interface BotUser {
   moveInterval: NodeJS.Timeout | null;
 }
 
-class BotManager {
+class BotManagerClass {
   private bots: Map<string, BotUser> = new Map();
   private userLocations: Map<string, { latitude: number; longitude: number }> =
     new Map();
-  private io: Server;
 
-  constructor(io: Server) {
-    this.io = io;
+  constructor() {
   }
 
   // Create a bot that follows a user within specified radius
@@ -101,7 +99,7 @@ class BotManager {
     };
 
     // Broadcast bot location update
-    this.io.emit("locationUpdate", {
+    socketServer.emit("locationUpdate", {
       userId: botId,
       location: bot.location,
       isBot: true,
@@ -198,4 +196,4 @@ class BotManager {
   }
 }
 
-export default BotManager;
+export const BotManager = new BotManagerClass();

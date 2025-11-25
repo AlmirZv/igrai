@@ -18,13 +18,9 @@ export async function startServer() {
   return new Promise((resolve) => {
     server.listen(State.PORT, () => {
       console.log('[server]: started on port ' + State.PORT)
-
-
-      console.log(`🚀 Server running on port ${State.PORT}`);
       console.log(
         `📱 Frontend URL: ${process.env.FRONTEND_URL || "http://localhost:5173"}`
       );
-      console.log(`🔥 Firebase initialized`);
 
       resolve(null)
     });
