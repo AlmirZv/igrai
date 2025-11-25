@@ -2,7 +2,7 @@ import { Server, Socket } from "socket.io";
 
 interface SocketEventDescription {
   event: string;
-  handler: (io: Server, socket: Socket, ...payload: any[]) => {}
+  handler: (io: Server, socket: Socket, ...payload: any[]) => any
 }
 
 interface SocketResult {
@@ -26,7 +26,7 @@ export class SocketWrapper {
    * @param {String} event 
    * @param {function} handler
    * */
-  add(event: string, handler = async (io: Server, socket: Socket, payload: any) => { }) {
+  add(event: string, handler = async (io: Server, socket: Socket, payload: any): Promise<any> => { }) {
     this._handlers.push({ event, handler })
   }
 

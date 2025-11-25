@@ -5,11 +5,8 @@
     <div class="map-controls">
       <button @click="centerOnMe" class="control-btn" title="Мое местоположение">🧭</button>
       <button @click="createBot" class="control-btn bot-btn" title="Создать бота">🤖</button>
-      <button
-        @click="createTask"
-        :class="['control-btn', 'create-task-btn', { active: isCreatingTask }]"
-        title="Создать задачу"
-      >
+      <button @click="createTask" :class="['control-btn', 'create-task-btn', { active: isCreatingTask }]"
+        title="Создать задачу">
         +
       </button>
     </div>
@@ -22,9 +19,9 @@ import { auth } from '@/config/firebase'
 import { useMap } from '../../composables/map/useMap'
 import { useGeolocation } from '../../composables/useGeolocation'
 import { loadTasks } from '../../composables/useTasks'
-import { useWebsocket } from '@/composables/useWebsocket'
 import { loadQuests } from '@/composables/useQuests'
 import { loadPublicTasks } from '@/composables/usePublicTasks'
+import { socket } from '@/socket'
 
 const mapContainer = ref<HTMLElement>()
 
@@ -38,7 +35,6 @@ const {
   toggleCreateMode,
 } = useMap()
 const { getLocation } = useGeolocation()
-const { sendLocationUpdate, sendCreateBot, onLocationUpdate } = useWebsocket()
 
 const init = async () => {
   if (!mapContainer.value) return
@@ -59,7 +55,7 @@ const init = async () => {
     }
     addUserMarker('me', [lat, lng], userData, '#4CAF50')
     center([lat, lng])
-    sendLocationUpdate({ userId: 'me', latitude: lat, longitude: lng })
+    socket.emit("UserEvent:locationUpdate", { userId: 'me', latitude: lat, longitude: lng })
   } catch (err) {
     console.warn('Geolocation failed', err)
   }
@@ -75,17 +71,19 @@ const init = async () => {
   publicTasks.forEach(addTaskMarker)
 
   // 4. Подписка на обновления пользователей
-  onLocationUpdate((data) => {
-    // console.log('Location update received:', data)
-    const userData = {
-      id: data.userId,
-      name: data.name,
-      avatar: 'string',
-      status: 'string',
+  socket.on("locationUpdate",
+    (data) => {
+      // console.log('Location update received:', data)
+      const userData = {
+        id: data.userId,
+        name: data.name,
+        avatar: 'string',
+        status: 'string',
+      }
+      const coords: [number, number] = [data.location.latitude, data.location.longitude]
+      addUserMarker(data.userId, coords, userData, data.isBot ? 'grey' : '#2196F3')
     }
-    const coords: [number, number] = [data.location.latitude, data.location.longitude]
-    addUserMarker(data.userId, coords, userData, data.isBot ? 'grey' : '#2196F3')
-  })
+  )
 }
 
 const centerOnMe = async () => {
@@ -100,9 +98,13 @@ const centerOnMe = async () => {
 const createBot = async () => {
   try {
     const { lat, lng } = await getLocation()
-    sendCreateBot({ userId: 'me', radius: 1000, userLocation: { lat, lng } })
+    socket.emit("BotEvent:create", { userId: 'me', radius: 1000, userLocation: { lat, lng } }, (result: any) => {
+      console.log('bot created', result)
+    })
   } catch {
-    sendCreateBot({ userId: 'me', radius: 1000 })
+    socket.emit("BotEvent:create", { userId: 'me', radius: 1000 }, (result: any) => {
+      console.log('bot created', result)
+    })
   }
 }
 
@@ -117,7 +119,10 @@ const createTask = async () => {
 }
 
 onMounted(init)
-onUnmounted(() => mapInstance.value?.remove())
+onUnmounted(() => {
+  mapInstance.value?.remove()
+  //socket.off('locationUpdate')
+})
 </script>
 
 <style scoped>
@@ -125,6 +130,7 @@ onUnmounted(() => mapInstance.value?.remove())
   z-index: 0;
   height: 100vh;
 }
+
 .map-controls {
   z-index: 1000;
   top: 20px;
@@ -132,7 +138,8 @@ onUnmounted(() => mapInstance.value?.remove())
   position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* расстояние между кнопками */
+  gap: 10px;
+  /* расстояние между кнопками */
   /* background: rgba(255, 255, 255, 0.9); легкий фон */
   padding: 8px;
   border-radius: 12px;

@@ -1,7 +1,7 @@
 export const State = {
   PORT: parseInt(process.env.PORT as string) || 8000,
   isShuttingDown: false,
-  shutdownTimeout: 30000,
+  shutdownTimeout: 1000,
   APP_URL:
     process.env.NODE_ENV === "production"
       ? `http://tut_prod_ip:${process.env.PORT}`
