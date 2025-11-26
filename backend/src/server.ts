@@ -8,7 +8,7 @@ export const server = http.createServer(app);
 
 export const socketServer = new Server(server, {
   cors: {
-    origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
+    origin: State.CORS_ORIGIN,
   },
 })
 console.log("[socket]: Socket initialised.");
@@ -18,10 +18,6 @@ export async function startServer() {
   return new Promise((resolve) => {
     server.listen(State.PORT, () => {
       console.log('[server]: started on port ' + State.PORT)
-      console.log(
-        `📱 Frontend URL: ${process.env.FRONTEND_URL || "http://localhost:5173"}`
-      );
-
       resolve(null)
     });
   })

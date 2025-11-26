@@ -1,10 +1,8 @@
 import { startServer } from "./server";
 import { State } from "./State";
 import { gracefulShutdown } from "./gracefulShutdown";
-import { initializeFirebase } from "./config/firebase";
 
 async function start() {
-  initializeFirebase()
   await startServer();
 }
 

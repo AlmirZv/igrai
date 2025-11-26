@@ -1,5 +1,5 @@
 import { BotManager } from "../bot/botManager";
-import { getFirestoreInstance } from "../config/firebase";
+import { db } from "../config/firebase";
 import { LocationData } from "../types/default";
 import { SocketWrapper } from "./SocketWrapper";
 
@@ -13,14 +13,6 @@ interface UserData {
   lastSeen: number;
 }
 
-let db;
-try {
-  db = getFirestoreInstance();
-} catch (error) {
-  console.warn("⚠️  Firebase not available, running in mock mode");
-  db = null;
-}
-
 UserSocketHandler.add("register", async (io, socket, userData: { id: string; name?: string }) => {
   try {
     const user: UserData = {
@@ -30,15 +22,11 @@ UserSocketHandler.add("register", async (io, socket, userData: { id: string; nam
       lastSeen: Date.now(),
     };
 
-    if (db) {
-      // Save user to Firestore
-      await db
-        .collection("users")
-        .doc(userData.id)
-        .set(user, { merge: true });
-    } else {
-      console.log("📝 Mock mode: User data not saved to database");
-    }
+    // Save user to Firestore
+    await db
+      .collection("users")
+      .doc(userData.id)
+      .set(user, { merge: true });
 
     socket.join(`user:${userData.id}`);
     socket.emit("registered", { success: true, userId: userData.id });
@@ -55,15 +43,11 @@ UserSocketHandler.add("locationUpdate", async (io, socket, locationData: Locatio
   try {
     const userId = locationData.userId || socket.id;
 
-    if (db) {
-      // Update user location in Firestore
-      await db.collection("users").doc(userId).update({
-        location: locationData,
-        lastSeen: Date.now(),
-      });
-    } else {
-      console.log("📝 Mock mode: Location data not saved to database");
-    }
+    // Update user location in Firestore
+    await db.collection("users").doc(userId).update({
+      location: locationData,
+      lastSeen: Date.now(),
+    });
 
     // Update bot manager with user location
     BotManager.updateUserLocation(userId, {
@@ -100,12 +84,8 @@ UserSocketHandler.add(
         timestamp: Date.now(),
       };
 
-      if (db) {
-        // Save message to Firestore
-        await db.collection("messages").add(message);
-      } else {
-        console.log("📝 Mock mode: Message not saved to database");
-      }
+      // Save message to Firestore
+      await db.collection("messages").add(message);
 
       // Broadcast message to all clients
       io.emit("message", message);
@@ -125,18 +105,14 @@ UserSocketHandler.add(
     try {
       const trackingId = `tracking_${Date.now()}`;
 
-      if (db) {
-        // Create tracking session
-        await db.collection("tracking").doc(trackingId).set({
-          id: trackingId,
-          trackerId: trackingData.userId,
-          targetId: trackingData.targetUserId,
-          startTime: Date.now(),
-          active: true,
-        });
-      } else {
-        console.log("📝 Mock mode: Tracking session not saved to database");
-      }
+      // Create tracking session
+      await db.collection("tracking").doc(trackingId).set({
+        id: trackingId,
+        trackerId: trackingData.userId,
+        targetId: trackingData.targetUserId,
+        startTime: Date.now(),
+        active: true,
+      });
 
       socket.emit("trackingStarted", { trackingId });
       console.log(`Tracking started: ${trackingId}`);
@@ -150,14 +126,10 @@ UserSocketHandler.add(
 // Handle stop tracking
 UserSocketHandler.add("stopTracking", async (io, socket, data: { trackingId: string }) => {
   try {
-    if (db) {
-      await db.collection("tracking").doc(data.trackingId).update({
-        active: false,
-        endTime: Date.now(),
-      });
-    } else {
-      console.log("📝 Mock mode: Tracking stop not saved to database");
-    }
+    await db.collection("tracking").doc(data.trackingId).update({
+      active: false,
+      endTime: Date.now(),
+    });
 
     socket.emit("trackingStopped", { trackingId: data.trackingId });
     console.log(`Tracking stopped: ${data.trackingId}`);
@@ -178,48 +150,32 @@ UserSocketHandler.add(
     try {
       let nearbyUsers: any[] = [];
 
-      if (db) {
-        // This is a simplified implementation
-        // In production, you'd use GeoFirestore or similar for geospatial queries
-        const usersSnapshot = await db
-          .collection("users")
-          .where("connected", "==", true)
-          .get();
+      // This is a simplified implementation
+      // In production, you'd use GeoFirestore or similar for geospatial queries
+      const usersSnapshot = await db
+        .collection("users")
+        .where("connected", "==", true)
+        .get();
 
-        usersSnapshot.forEach((doc) => {
-          const userData = doc.data();
-          if (userData.location) {
-            const distance = calculateDistance(
-              data.latitude,
-              data.longitude,
-              userData.location.latitude,
-              userData.location.longitude
-            );
+      usersSnapshot.forEach((doc: any) => {
+        const userData = doc.data();
+        if (userData.location) {
+          const distance = calculateDistance(
+            data.latitude,
+            data.longitude,
+            userData.location.latitude,
+            userData.location.longitude
+          );
 
-            if (distance <= data.radius) {
-              nearbyUsers.push({
-                id: doc.id,
-                ...userData,
-                distance,
-              });
-            }
+          if (distance <= data.radius) {
+            nearbyUsers.push({
+              id: doc.id,
+              ...userData,
+              distance,
+            });
           }
-        });
-      } else {
-        console.log("📝 Mock mode: Returning empty nearby users list");
-        // Return mock data for development
-        nearbyUsers = [
-          {
-            id: "mock_user_1",
-            name: "Mock User 1",
-            distance: 100,
-            location: {
-              latitude: data.latitude + 0.001,
-              longitude: data.longitude + 0.001,
-            },
-          },
-        ];
-      }
+        }
+      });
 
       socket.emit("nearbyUsers", nearbyUsers);
     } catch (error) {

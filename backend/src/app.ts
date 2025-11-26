@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 import { socketServer } from "./server";
+import { State } from "./State";
 
 export const app = express();
 
 // Middleware
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: State.CORS_ORIGIN,
     credentials: true,
   })
 );
