@@ -2,15 +2,7 @@ import { Server, Socket } from "socket.io"
 import { UserSocketHandler } from "./user.socket";
 import { BotSocketHandler } from "./bot.socket";
 import { BotManager } from "../bot/botManager";
-import { getFirestoreInstance } from "../config/firebase";
-
-let db;
-try {
-  db = getFirestoreInstance();
-} catch (error) {
-  console.warn("⚠️  Firebase not available, running in mock mode");
-  db = null;
-}
+import { db } from "../config/firebase";
 
 
 export const socketConnectionHandler = (io: Server) => (socket: Socket) => {
@@ -23,15 +15,11 @@ export const socketConnectionHandler = (io: Server) => (socket: Socket) => {
     try {
       const userId = socket.id; // You might want to store userId in socket data
 
-      if (db) {
-        // Mark user as disconnected
-        await db.collection("users").doc(userId).update({
-          connected: false,
-          lastSeen: Date.now(),
-        });
-      } else {
-        console.log("📝 Mock mode: User disconnect not saved to database");
-      }
+      // Mark user as disconnected
+      await db.collection("users").doc(userId).update({
+        connected: false,
+        lastSeen: Date.now(),
+      });
 
       // Remove bots for this user
       BotManager.removeBotsForUser(userId);

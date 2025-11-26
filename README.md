@@ -144,7 +144,6 @@ VITE_FIREBASE_APP_ID=your-app-id
 ```env
 PORT=3000
 NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
 FIREBASE_PROJECT_ID=your-project-id
 FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 FIREBASE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}

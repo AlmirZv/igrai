@@ -1,16 +1,7 @@
 import { BotManager } from "../bot/botManager";
-import { getFirestoreInstance } from "../config/firebase";
 import { SocketWrapper } from "./SocketWrapper";
 
 export const BotSocketHandler = new SocketWrapper('BotEvent');
-
-let db;
-try {
-  db = getFirestoreInstance();
-} catch (error) {
-  console.warn("⚠️  Firebase not available, running in mock mode");
-  db = null;
-}
 
 BotSocketHandler.add(
   "create",
