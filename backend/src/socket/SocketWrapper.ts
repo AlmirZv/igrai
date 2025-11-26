@@ -60,7 +60,7 @@ export class SocketWrapper {
         } finally {
           if (cb) {
             cb(result);
-          } else socket.emit('error', result);
+          }
         }
       })
     })

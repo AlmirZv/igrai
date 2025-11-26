@@ -21,3 +21,21 @@ socket.on("disconnect", () => {
   state.connected = false;
 });
 
+export async function emitPromise(event: string, data: any) {
+  return new Promise((resolve, reject) => {
+    if (!socket) {
+      reject('No socket connection.');
+    } else {
+      socket.emit(event, data, (response: any) => {
+        if (response.error) {
+          console.error(response);
+          reject(response.error);
+        } else {
+          resolve(response);
+        }
+      });
+    }
+  });
+}
+
+
