@@ -1,37 +1,29 @@
 import admin from "firebase-admin";
-import { getFirestore } from "firebase-admin/firestore";
 
-let firebaseApp: admin.app.App | null = null;
+function getCreds() {
+  let credential = admin.credential.applicationDefault();
 
-export const initializeFirebase = (): admin.app.App => {
-  if (firebaseApp) {
-    return firebaseApp;
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    try {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+      credential = admin.credential.cert(serviceAccount);
+    } catch (parseError) {
+      console.warn("⚠️  Invalid FIREBASE_SERVICE_ACCOUNT_KEY JSON. Using default credentials.");
+    }
+  } else {
+    console.warn("⚠️  Firebase service account key not found. Using default credentials.");
   }
 
+  return credential;
+}
+
+const initializeFirebase = () => {
+  if (admin.apps.length) return admin;
+
   try {
-    // Initialize Firebase Admin SDK
-    let credential;
+    const credential = getCreds();
 
-    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-      try {
-        const serviceAccount = JSON.parse(
-          process.env.FIREBASE_SERVICE_ACCOUNT_KEY
-        );
-        credential = admin.credential.cert(serviceAccount);
-      } catch (parseError) {
-        console.warn(
-          "⚠️  Invalid FIREBASE_SERVICE_ACCOUNT_KEY JSON. Using default credentials."
-        );
-        credential = admin.credential.applicationDefault();
-      }
-    } else {
-      console.warn(
-        "⚠️  Firebase service account key not found. Using default credentials."
-      );
-      credential = admin.credential.applicationDefault();
-    }
-
-    firebaseApp = admin.initializeApp({
+    admin.initializeApp({
       credential,
       projectId: process.env.FIREBASE_PROJECT_ID || "your-project-id",
       storageBucket:
@@ -39,7 +31,7 @@ export const initializeFirebase = (): admin.app.App => {
     });
 
     console.log("🔥 Firebase Admin SDK initialized successfully");
-    return firebaseApp;
+    return admin;
   } catch (error) {
     console.error("❌ Failed to initialize Firebase:", error);
     // Don't throw error in development, just log it
@@ -52,18 +44,10 @@ export const initializeFirebase = (): admin.app.App => {
   }
 };
 
-export const getFirebaseApp = (): admin.app.App => {
-  if (!firebaseApp) {
-    throw new Error(
-      "Firebase not initialized. Call initializeFirebase() first."
-    );
-  }
-  return firebaseApp;
-};
+const firebaseAdmin = initializeFirebase();
 
-export const getFirestoreInstance = () => {
-  const app = getFirebaseApp();
-  return getFirestore(app);
-};
-
-export default firebaseApp;
+export const db = firebaseAdmin.firestore();
+export const auth = firebaseAdmin.auth();
+export const storage = firebaseAdmin.storage();
+export const messaging = firebaseAdmin.messaging();
+export default firebaseAdmin;
