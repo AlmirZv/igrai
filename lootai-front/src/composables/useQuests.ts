@@ -10,7 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db } from '@/config/firebase'
-import type { QuestTask, QuestParticipant } from '@/types/quest'
+import type { QuestTask, QuestParticipant, QuestStep } from '@/types/quest'
 import { auth } from '@/config/firebase'
 import userComposable from './userInfo'
 import { updateUserXp } from './userInfo'
@@ -123,7 +123,6 @@ export async function applyForQuest(taskId: string) {
         {
           stepId: '',
           completedAt: '',
-          userMessage: '',
         },
       ],
     },
@@ -133,4 +132,59 @@ export async function applyForQuest(taskId: string) {
     participants: [...(task.participants || []), newParticipant],
   })
   console.log(`Заявка подана: ${newParticipant}`)
+}
+
+// заявка на участие в задаче
+export async function updateQuestStep(taskId: string, step: QuestStep) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const uid = auth.currentUser.uid
+  const taskRef = doc(db, 'quests', taskId)
+  const snap = await getDoc(taskRef)
+
+  if (!snap.exists()) {
+    throw new Error('Задача не найдена')
+  }
+
+  const task = snap.data() as QuestTask
+
+  const now = new Date().toISOString()
+  console.log(task.participants)
+
+  if (task.participants.find((participant) => participant.id !== uid)) {
+    const newParticipant: QuestParticipant = {
+      id: uid,
+      name: auth.currentUser.displayName || 'NoName',
+      status: 'accepted',
+      joinedAt: now,
+      acceptedAt: now,
+      age: usercomp.state.age.value,
+      gender: usercomp.state.user.value.gender,
+      progress: {
+        currentStepId: step.nextStepId,
+        history: [
+          {
+            stepId: step.id,
+            completedAt: now,
+          },
+        ],
+      },
+    }
+    await updateDoc(taskRef, {
+      participants: [...(task.participants || []), newParticipant],
+    })
+  } else {
+    const participant = task.participants.find((participant) => participant.id == uid)
+    var newParticipant: QuestParticipant = participant as QuestParticipant
+    newParticipant.progress.currentStepId = step.nextStepId
+    newParticipant.progress.history?.push({
+      stepId: step.id,
+      completedAt: now,
+    })
+    var participants = task.participants.filter((p) => p !== participant)
+    participants.push(newParticipant)
+    await updateDoc(taskRef, {
+      participants: participants,
+    })
+  }
 }

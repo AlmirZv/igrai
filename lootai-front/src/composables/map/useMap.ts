@@ -13,10 +13,10 @@ import publicTaskPopup from '@/components/Map/popups/tpopups/publicTaskPopup.vue
 
 import UserPopup from '@/components/Map/popups/UserPopup.vue'
 import { applyForTask, createTask } from '../useTasks'
-import { createQuest, applyForQuest } from '../useQuests'
+import { createQuest, applyForQuest, updateQuestStep } from '../useQuests'
 import { createPublicTask } from '../usePublicTasks'
 import type { Task } from '@/types/task'
-import type { QuestTask, QuestParticipant } from '@/types/quest'
+import type { QuestTask, QuestParticipant, QuestStep } from '@/types/quest'
 import type { EventTask } from '@/types/event'
 import type { PublicTask } from '@/types/publicTask'
 const { map, init, addMarker, removeMarker, center } = useMapCore()
@@ -182,27 +182,35 @@ export function useMap() {
     const popup = questPopup
 
     let marker: any = ''
-    quest.participants.forEach((participant) => {
-      if (participant.id == auth.currentUser?.uid) {
-        // console.log(participant)
+    if (quest.participants.length == 0) {
+      marker = addMarker(
+        quest.id,
+        [quest.steps[0].location?.lat || 0, quest.steps[0].location?.lng || 0],
+        createTaskMarker(color, icon),
+      )
+    } else {
+      quest.participants.forEach((participant) => {
+        if (participant.id == auth.currentUser?.uid) {
+          const currentStep = quest.steps.find(
+            (step) => step.id == participant.progress.currentStepId,
+          )
 
-        const currentStep = quest.steps.find(
-          (step) => step.id == participant.progress.currentStepId,
-        )
+          marker = addMarker(
+            quest.id,
+            [currentStep?.location?.lat || 0, currentStep?.location?.lng || 0],
+            createTaskMarker(color, icon),
+          )
+        } else {
+          console.log(quest)
 
-        marker = addMarker(
-          quest.id,
-          [currentStep?.location?.lat || 0, currentStep?.location?.lng || 0],
-          createTaskMarker(color, icon),
-        )
-      } else {
-        marker = addMarker(
-          quest.id,
-          [quest.steps[0].location?.lat || 0, quest.steps[0].location?.lng || 0],
-          createTaskMarker(color, icon),
-        )
-      }
-    })
+          marker = addMarker(
+            quest.id,
+            [quest.steps[0].location?.lat || 0, quest.steps[0].location?.lng || 0],
+            createTaskMarker(color, icon),
+          )
+        }
+      })
+    }
 
     if (!marker) return
 
@@ -214,6 +222,11 @@ export function useMap() {
         data: quest,
         onAction: async (payload: { type: string; id: string }) => {
           await applyForQuest(payload.id)
+          return true
+        },
+        onUpdateStep: async (payload: { id: string; step: QuestStep }) => {
+          console.log(payload)
+          await updateQuestStep(payload.id, payload.step)
           return true
         },
       })

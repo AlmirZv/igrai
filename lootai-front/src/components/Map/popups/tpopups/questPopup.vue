@@ -21,17 +21,24 @@ const isFullscreen = ref(false)
 
 const uicomposable = uInfoComposable()
 
+const solved = ref(false)
+const riddleAnswer = ref('')
+
 const currentStep = computed(() => {
-  return props.data.steps.find(
+  console.log(props.data)
+  const step = props.data.steps.find(
     (step) =>
       step.id ==
       props.data.participants.find((participant) => participant.id == auth.currentUser?.uid)
         ?.progress.currentStepId,
   )
+  if (step) return step
+  else return props.data.steps[0]
 })
 
 const stepContent = computed(() => {
   const step = currentStep.value
+  console.log(step)
   if (!step) return ''
 
   switch (step.type) {
@@ -51,6 +58,18 @@ function doAction() {
 
   emit('action', { type: props.type, id: props.data.id })
   // setTimeout(() => (isLoading.value = false), 1000)
+}
+
+function checkRiddleAnswer() {
+  isLoading.value = true
+  // console.log(riddleAnswer.value)
+  if (currentStep.value.type == 'riddle' && riddleAnswer.value == currentStep.value.answer) {
+    emit('updateStep', { id: props.data.id, step: currentStep.value })
+    solved.value = true
+  } else {
+    console.log('Неправильный ответ')
+  }
+  isLoading.value = false
 }
 
 const actionDone = computed(() => {
@@ -142,33 +161,46 @@ watch(() => props.data, checkHeight, { deep: true })
 
     <!-- Quest -->
     <div v-if="type === 'quest'" class="quest">
+      <div>{{ currentStep?.description }}</div>
       <div class="step">
         <b>{{ currentStep?.title }}</b>
-        <div>{{ currentStep?.description }}</div>
         <div>{{ stepContent }}</div>
       </div>
 
-      <!-- <div class="requirements">
-        ⏰ {{ (data as QuestTask).requirements.startDate }} |
-        {{ (data as QuestTask).requirements.endDate }}
-        <br />
-        🎂 Возраст: {{ (data as QuestTask).requirements.minAge }}+ <br />
-        ⚧ Пол: {{ (data as QuestTask).requirements.gender }} <br />
-      </div> -->
-      <!-- <div class="participants">
-        <b>Всего участников: {{ (data as QuestTask).participants.length }}</b>
-      </div> -->
+      <div class="field" v-if="currentStep?.type === 'riddle'">
+        Ответ: <input type="text" v-model="riddleAnswer" />
+        <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
+      </div>
     </div>
 
     <!-- Кнопка действия -->
-    <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
+    <!-- <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
       {{ isLoading ? 'Вы уже участник!' : 'Начать квест' }}
     </button>
-    <button v-if="actionDone && actionDone != true" class="action-btn">Ответ</button>
+    <button v-if="actionDone && actionDone != true" class="action-btn">Ответ</button> -->
   </div>
 </template>
 
 <style scoped>
+.field {
+  display: grid;
+  grid-template-columns: 100px 1fr; /* подпись фикс, поле тянется */
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-top: 6px;
+}
+input,
+select,
+textarea {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  flex: 1; /* поле растягивается по колонке */
+  min-width: 0; /* предотвращает переполнение */
+}
+
 .popup {
   font-family: sans-serif;
   width: 260px;

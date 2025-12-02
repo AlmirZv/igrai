@@ -5,8 +5,11 @@
     <div class="map-controls">
       <button @click="centerOnMe" class="control-btn" title="Мое местоположение">🧭</button>
       <button @click="createBot" class="control-btn bot-btn" title="Создать бота">🤖</button>
-      <button @click="createTask" :class="['control-btn', 'create-task-btn', { active: isCreatingTask }]"
-        title="Создать задачу">
+      <button
+        @click="createTask"
+        :class="['control-btn', 'create-task-btn', { active: isCreatingTask }]"
+        title="Создать задачу"
+      >
         +
       </button>
     </div>
@@ -55,7 +58,7 @@ const init = async () => {
     }
     addUserMarker('me', [lat, lng], userData, '#4CAF50')
     center([lat, lng])
-    socket.emit("UserEvent:locationUpdate", { userId: 'me', latitude: lat, longitude: lng })
+    socket.emit('UserEvent:locationUpdate', { userId: 'me', latitude: lat, longitude: lng })
   } catch (err) {
     console.warn('Geolocation failed', err)
   }
@@ -64,26 +67,23 @@ const init = async () => {
   const tasks = await loadTasks()
   const quests = await loadQuests()
   const publicTasks = await loadPublicTasks()
-  // console.log(quests)
 
   tasks.forEach(addTaskMarker)
   quests.forEach(addQuestMarker)
   publicTasks.forEach(addTaskMarker)
 
   // 4. Подписка на обновления пользователей
-  socket.on("locationUpdate",
-    (data) => {
-      // console.log('Location update received:', data)
-      const userData = {
-        id: data.userId,
-        name: data.name,
-        avatar: 'string',
-        status: 'string',
-      }
-      const coords: [number, number] = [data.location.latitude, data.location.longitude]
-      addUserMarker(data.userId, coords, userData, data.isBot ? 'grey' : '#2196F3')
+  socket.on('locationUpdate', (data) => {
+    // console.log('Location update received:', data)
+    const userData = {
+      id: data.userId,
+      name: data.name,
+      avatar: 'string',
+      status: 'string',
     }
-  )
+    const coords: [number, number] = [data.location.latitude, data.location.longitude]
+    addUserMarker(data.userId, coords, userData, data.isBot ? 'grey' : '#2196F3')
+  })
 }
 
 const centerOnMe = async () => {
@@ -98,11 +98,15 @@ const centerOnMe = async () => {
 const createBot = async () => {
   try {
     const { lat, lng } = await getLocation()
-    socket.emit("BotEvent:create", { userId: 'me', radius: 1000, userLocation: { lat, lng } }, (result: any) => {
-      console.log('bot created', result)
-    })
+    socket.emit(
+      'BotEvent:create',
+      { userId: 'me', radius: 1000, userLocation: { lat, lng } },
+      (result: any) => {
+        console.log('bot created', result)
+      },
+    )
   } catch {
-    socket.emit("BotEvent:create", { userId: 'me', radius: 1000 }, (result: any) => {
+    socket.emit('BotEvent:create', { userId: 'me', radius: 1000 }, (result: any) => {
       console.log('bot created', result)
     })
   }

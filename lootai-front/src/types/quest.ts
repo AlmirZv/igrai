@@ -86,11 +86,10 @@ export type QuestStep = RiddleStep | QRStep | PhotoStep
 
 export interface stepProgress {
   currentStepId: string
-  history: [
+  history?: [
     {
       stepId: string
       completedAt: string
-      userMessage: string // futured
     },
   ]
 }
