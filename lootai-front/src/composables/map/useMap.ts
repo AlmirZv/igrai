@@ -13,7 +13,7 @@ import publicTaskPopup from '@/components/Map/popups/tpopups/publicTaskPopup.vue
 
 import UserPopup from '@/components/Map/popups/UserPopup.vue'
 import { applyForTask, createTask } from '../useTasks'
-import { createQuest, applyForQuest, updateQuestStep } from '../useQuests'
+import { createQuest, applyForQuest, updateQuestStep, getQuest } from '../useQuests'
 import { createPublicTask } from '../usePublicTasks'
 import type { Task } from '@/types/task'
 import type { QuestTask, QuestParticipant, QuestStep } from '@/types/quest'
@@ -174,7 +174,7 @@ export function useMap() {
     })
   }
 
-  // 🧭 Добавление маркера задачи
+  // 🧭 Добавление маркера квеста
   function addQuestMarker(quest: QuestTask) {
     const color = '#ffffff'
     const icon = '🎯'
@@ -227,6 +227,17 @@ export function useMap() {
         onUpdateStep: async (payload: { id: string; step: QuestStep }) => {
           console.log(payload)
           await updateQuestStep(payload.id, payload.step)
+
+          // Пересоздаём маркер и попап с обновлёнными данными квеста
+          const updatedQuest = await getQuest(payload.id)
+          if (!updatedQuest) return true
+
+          // Удаляем старый маркер
+          removeMarker(payload.id)
+
+          // Создаём новый маркер с обновлённым квестом
+          addQuestMarker(updatedQuest)
+
           return true
         },
       })

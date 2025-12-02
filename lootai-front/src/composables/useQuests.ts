@@ -51,6 +51,25 @@ export async function loadQuests(): Promise<QuestTask[]> {
   return quests
 }
 
+// загрузка одного квеста по id (обновлённые данные после изменений)
+export async function getQuest(taskId: string): Promise<QuestTask | null> {
+  const taskRef = doc(db, 'quests', taskId)
+  const snap = await getDoc(taskRef)
+
+  if (!snap.exists()) {
+    return null
+  }
+
+  const data = snap.data()
+
+  return {
+    ...data,
+    id: snap.id,
+    createdAt: data.createdAt?.toDate() || new Date(),
+    updatedAt: data.updatedAt?.toDate() || new Date(),
+  } as QuestTask
+}
+
 // загрузка задач в которых учавствует пользователь
 export async function loadUserQuests(uid: string): Promise<QuestTask[]> {
   const questsRef = collection(db, 'quests')
