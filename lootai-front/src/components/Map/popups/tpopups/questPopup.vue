@@ -3,7 +3,10 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import type { QuestTask, QuestParticipant, QuestRequirements } from '@/types/quest'
 import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
+import { calculateDistance } from '@/utils/geolocation'
+import { useGeolocation } from '@/composables/useGeolocation'
 
+const { getLocation } = useGeolocation()
 type PopupType = 'quest'
 
 const props = defineProps<{
@@ -133,12 +136,25 @@ function checkHeight() {
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
   checkHeight()
   window.addEventListener('resize', checkHeight)
+  console.log(currentStep.value)
+  distance2quest.value = await checkDistance()
 })
 
 watch(() => props.data, checkHeight, { deep: true })
+
+const distance2quest = ref(100)
+async function checkDistance() {
+  // userposition
+  const { lat, lng } = await getLocation()
+  // step position
+  const stepPosition = currentStep.value.location
+  const distance = Math.ceil(calculateDistance(stepPosition.lat, stepPosition.lng, lat, lng) * 1000)
+  console.log(distance)
+  return distance
+}
 </script>
 
 <template>
@@ -160,7 +176,7 @@ watch(() => props.data, checkHeight, { deep: true })
     <p class="description">{{ data.description }}</p>
 
     <!-- Quest -->
-    <div v-if="type === 'quest'" class="quest">
+    <div v-if="type === 'quest' && distance2quest < 10" class="quest">
       <div>{{ currentStep?.description }}</div>
       <div class="step">
         <b>{{ currentStep?.title }}</b>
@@ -172,6 +188,7 @@ watch(() => props.data, checkHeight, { deep: true })
         <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
       </div>
     </div>
+    <div v-else class="step">Чтобы учавствовать вам надо быть в пределах квеста</div>
 
     <!-- Кнопка действия -->
     <!-- <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
