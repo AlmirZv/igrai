@@ -237,6 +237,7 @@ export function useMap() {
 
           // Создаём новый маркер с обновлённым квестом
           addQuestMarker(updatedQuest)
+          // to do add finishquest marker if its last step of the quest
 
           return true
         },

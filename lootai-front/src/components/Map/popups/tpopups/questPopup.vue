@@ -5,6 +5,8 @@ import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
 import { calculateDistance } from '@/utils/geolocation'
 import { useGeolocation } from '@/composables/useGeolocation'
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
+import questFinish from './questFinish.vue'
 
 const { getLocation } = useGeolocation()
 type PopupType = 'quest'
@@ -25,6 +27,7 @@ const isFullscreen = ref(false)
 const uicomposable = uInfoComposable()
 
 const solved = ref(false)
+const finished = ref(false)
 const riddleAnswer = ref('')
 
 const currentStep = computed(() => {
@@ -73,6 +76,30 @@ function checkRiddleAnswer() {
     console.log('Неправильный ответ')
   }
   isLoading.value = false
+}
+
+async function scanQRCode() {
+  await BarcodeScanner.checkPermission({ force: true })
+
+  document.body.classList.add('scanner-active')
+  await BarcodeScanner.startScan()
+
+  const result = await BarcodeScanner.startScan()
+
+  if (result.content == currentStep.value.id) {
+    if (currentStep.value.id == props.data.steps[props.data.steps.length - 1].id) {
+      finished.value = true
+    }
+    console.log(result.content)
+    emit('updateStep', { id: props.data.id, step: currentStep.value })
+    solved.value = true
+  }
+
+  document.body.classList.remove('scanner-active')
+  if (currentStep.value.id == props.data.steps[props.data.steps.length - 1].id) {
+    alert(props.data.finishWords)
+    finished.value = true
+  }
 }
 
 const actionDone = computed(() => {
@@ -159,42 +186,49 @@ async function checkDistance() {
 
 <template>
   <div ref="popupRef" class="popup" :class="{ fullscreen: isFullscreen }">
-    <!-- Заголовок -->
-    <h3 class="title">{{ data.title }}</h3>
+    <div>
+      <!-- Заголовок -->
+      <h3 class="title">{{ data.title }}</h3>
 
-    <!-- Автор -->
-    <p v-if="data.author" class="author">👤 {{ data.author }}</p>
-    <p class="author">🎯 Сложность: {{ (data as QuestTask).requirements.difficulty }}</p>
-    <div class="author">
-      <div>Награда:</div>
-      XP: {{ (data as QuestTask).reward.xp }}, Монет:
-      {{ (data as QuestTask).reward.points }}
-      {{ (data as QuestTask).reward.inventoryItem ? ',' : '' }}
-      {{ (data as QuestTask).reward.inventoryItem }}
-    </div>
-    <!-- Описание -->
-    <p class="description">{{ data.description }}</p>
-
-    <!-- Quest -->
-    <div v-if="type === 'quest' && distance2quest < 10" class="quest">
-      <div>{{ currentStep?.description }}</div>
-      <div class="step">
-        <b>{{ currentStep?.title }}</b>
-        <div>{{ stepContent }}</div>
+      <!-- Автор -->
+      <p v-if="data.author" class="author">👤 {{ data.author }}</p>
+      <p class="author">🎯 Сложность: {{ (data as QuestTask).requirements.difficulty }}</p>
+      <div class="author">
+        <div>Награда:</div>
+        XP: {{ (data as QuestTask).reward.xp }}, Монет:
+        {{ (data as QuestTask).reward.points }}
+        {{ (data as QuestTask).reward.inventoryItem ? ',' : '' }}
+        {{ (data as QuestTask).reward.inventoryItem }}
       </div>
+      <!-- Описание -->
+      <p class="description">{{ data.description }}</p>
 
-      <div class="field" v-if="currentStep?.type === 'riddle'">
-        Ответ: <input type="text" v-model="riddleAnswer" />
-        <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
+      <!-- Quest -->
+      <div v-if="type === 'quest' && distance2quest < 1000" class="quest">
+        <div>{{ currentStep?.description }}</div>
+        <div class="step">
+          <b>{{ currentStep?.title }}</b>
+          <div>{{ stepContent }}</div>
+        </div>
+
+        <div class="field" v-if="currentStep?.type === 'riddle'">
+          Ответ: <input type="text" v-model="riddleAnswer" />
+          <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
+        </div>
+
+        <div class="field" v-if="currentStep?.type === 'qr'">
+          <button v-if="!solved" class="action-btn" @click="scanQRCode">Scan</button>
+        </div>
       </div>
-    </div>
-    <div v-else class="step">Чтобы учавствовать вам надо быть в пределах квеста</div>
+      <div v-else class="step">Чтобы учавствовать вам надо быть в пределах квеста</div>
 
-    <!-- Кнопка действия -->
-    <!-- <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
+      <!-- Кнопка действия -->
+      <!-- <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
       {{ isLoading ? 'Вы уже участник!' : 'Начать квест' }}
     </button>
     <button v-if="actionDone && actionDone != true" class="action-btn">Ответ</button> -->
+    </div>
+    <questFinish v-if="finished" finish-words="blabla" reward="blabla" />
   </div>
 </template>
 

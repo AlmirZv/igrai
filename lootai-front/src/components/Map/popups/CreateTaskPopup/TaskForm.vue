@@ -108,6 +108,7 @@ watch(
           ...common.value,
           title: '',
           description: '',
+          finishWords: '',
           type: 'quest',
           status: 'active',
           requirements: {
@@ -237,9 +238,10 @@ function validatePublicTask(task: PublicTask): string {
 }
 
 function validateQuestTask(task: QuestTask): string {
-  const { title, description, requirements, reward, steps } = task
+  const { title, description, requirements, reward, steps, finishWords } = task
   console.log(task)
 
+  if (!finishWords?.trim()) return 'Заполните финальные слова пользователю'
   if (!title?.trim()) return 'Заполните заголовок'
   if (!description?.trim()) return 'Заполните описание'
 

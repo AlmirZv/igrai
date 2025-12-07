@@ -11,10 +11,12 @@ install! 'cocoapods', :disable_input_output_paths => true
 def capacitor_pods
   pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorCommunityBarcodeScanner', :path => '../../node_modules/@capacitor-community/barcode-scanner'
   pod 'CapacitorFirebaseAnalytics', :path => '../../node_modules/@capacitor-firebase/analytics'
   pod 'CapacitorFirebaseApp', :path => '../../node_modules/@capacitor-firebase/app'
   pod 'CapacitorFirebaseFirestore', :path => '../../node_modules/@capacitor-firebase/firestore'
   pod 'CapacitorFirebaseStorage', :path => '../../node_modules/@capacitor-firebase/storage'
+  pod 'CapacitorFilesystem', :path => '../../node_modules/@capacitor/filesystem'
 end
 
 target 'App' do

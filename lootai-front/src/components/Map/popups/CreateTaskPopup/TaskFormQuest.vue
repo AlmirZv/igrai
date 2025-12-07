@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import QRCode from 'qrcode'
+import { Filesystem, Directory } from '@capacitor/filesystem'
 
 const emit = defineEmits<{
   (e: 'select-step-location', stepId: any): void
@@ -25,6 +27,7 @@ const model = defineModel({
       points: 1,
       inventoryItem: '',
     },
+    finishWords: '',
     steps: [
       {
         id: crypto.randomUUID(),
@@ -85,6 +88,45 @@ function setStepLocation(stepId: string, lat: string, lng: string, address: stri
   if (step) {
     step.location = { lat, lng, address }
   }
+}
+
+// Store QR codes by step ID
+const qrCodes = ref<Record<string, string>>({})
+
+const generateQR = async (id: string) => {
+  return await QRCode.toDataURL(id)
+}
+
+// Watch for steps and generate QR codes for steps with type 'qr'
+watch(
+  () => model.value.steps,
+  async (steps) => {
+    for (const step of steps) {
+      if (step.type === 'qr' && step.id && !qrCodes.value[step.id]) {
+        try {
+          qrCodes.value[step.id] = await generateQR(step.id)
+        } catch (error) {
+          console.error('Error generating QR code:', error)
+        }
+      }
+    }
+  },
+  { immediate: true, deep: true },
+)
+
+const saveQrToPhone = async (code: string) => {
+  const base64 = code.replace(/^data:image\/png;base64,/, '')
+
+  const fileName = `qr-${Date.now()}.png`
+
+  await Filesystem.writeFile({
+    path: fileName,
+    data: base64,
+    directory: Directory.Documents, // Documents или Data или External
+    recursive: true,
+  })
+
+  return fileName
 }
 </script>
 
@@ -155,7 +197,7 @@ function setStepLocation(stepId: string, lat: string, lng: string, address: stri
         <label>Тип:</label>
         <select v-model="step.type">
           <option value="riddle">Загадка</option>
-          <option value="qr" disabled>Найти qr код</option>
+          <option value="qr">Найти qr код</option>
           <option value="photo" disabled>Сделайть похожее фото</option>
         </select>
       </div>
@@ -165,7 +207,7 @@ function setStepLocation(stepId: string, lat: string, lng: string, address: stri
         <textarea v-model="step.description" placeholder="Опишите шаг..." />
       </div>
 
-      <div class="field">
+      <div v-if="step.type == 'riddle'" class="field">
         <label>Загадка:</label>
         <textarea v-model="step.riddle" placeholder="Введите загадку..." />
       </div>
@@ -176,8 +218,19 @@ function setStepLocation(stepId: string, lat: string, lng: string, address: stri
       </div>
 
       <div v-if="step.type == 'qr'" class="field">
+        <label>Clue:</label>
+        <input v-model="step.clue" placeholder="Clue" />
+      </div>
+
+      <div v-if="step.type == 'qr'" class="field">
         <label>QR-Code:</label>
-        developing
+        <div v-if="qrCodes[step.id]">
+          <img :src="qrCodes[step.id]" alt="QR Code" />
+          <button class="create-btn small" type="button" @click="saveQrToPhone(qrCodes[step.id])">
+            скачать
+          </button>
+        </div>
+        <div v-else>Generating QR code...</div>
       </div>
 
       <div v-if="step.type == 'photo'" class="field">
@@ -216,6 +269,11 @@ function setStepLocation(stepId: string, lat: string, lng: string, address: stri
         <button class="create-btn small" @click.prevent="addItem">+</button>
       </div>
     </fieldset>
+
+    <div class="field">
+      <label>Описание:</label>
+      <textarea v-model="model.finishWords" placeholder="Слова благодарности пользователю" />
+    </div>
   </div>
 </template>
 

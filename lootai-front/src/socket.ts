@@ -9,7 +9,7 @@ export const state = reactive({
 const URL =
   import.meta.env.NODE_ENV === 'production'
     ? undefined
-    : import.meta.env.VITE_WS_URL || 'http://localhost:3000'
+    : import.meta.env.VITE_WS_URL || 'http://localhost:8000'
 
 export const socket = io(URL, {
   autoConnect: false,

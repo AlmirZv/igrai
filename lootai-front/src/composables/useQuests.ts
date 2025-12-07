@@ -169,8 +169,9 @@ export async function updateQuestStep(taskId: string, step: QuestStep) {
 
   const now = new Date().toISOString()
   console.log(task.participants)
+  console.log(task.participants.find((participant) => participant.id !== uid))
 
-  if (task.participants.find((participant) => participant.id !== uid)) {
+  if (task.participants.find((participant) => participant.id !== uid) == undefined) {
     const newParticipant: QuestParticipant = {
       id: uid,
       name: auth.currentUser.displayName || 'NoName',
@@ -193,6 +194,8 @@ export async function updateQuestStep(taskId: string, step: QuestStep) {
       participants: [...(task.participants || []), newParticipant],
     })
   } else {
+    console.log('here')
+
     const participant = task.participants.find((participant) => participant.id == uid)
     var newParticipant: QuestParticipant = participant as QuestParticipant
     newParticipant.progress.currentStepId = step.nextStepId

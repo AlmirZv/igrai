@@ -30,6 +30,7 @@ export interface QuestTask {
   authorId: string
   title: string
   description: string
+  finishWords: string
   reward: QuestReward
   requirements: QuestRequirements
   participants: QuestParticipant[]
