@@ -169,19 +169,21 @@ export async function updateQuestStep(taskId: string, step: QuestStep) {
 
   const now = new Date().toISOString()
   console.log(task.participants)
+  console.log(uid)
+
   console.log(task.participants.find((participant) => participant.id !== uid))
 
-  if (task.participants.find((participant) => participant.id !== uid) == undefined) {
+  if (task.participants.find((participant) => participant.id !== uid)) {
     const newParticipant: QuestParticipant = {
       id: uid,
       name: auth.currentUser.displayName || 'NoName',
-      status: 'accepted',
+      status: step.id == task.steps[task.steps.length - 1].id ? 'completed' : 'accepted',
       joinedAt: now,
       acceptedAt: now,
       age: usercomp.state.age.value,
       gender: usercomp.state.user.value.gender,
       progress: {
-        currentStepId: step.nextStepId,
+        currentStepId: step.id == task.steps[task.steps.length - 1].id ? step.id : step.nextStepId,
         history: [
           {
             stepId: step.id,
@@ -194,11 +196,18 @@ export async function updateQuestStep(taskId: string, step: QuestStep) {
       participants: [...(task.participants || []), newParticipant],
     })
   } else {
-    console.log('here')
-
     const participant = task.participants.find((participant) => participant.id == uid)
     var newParticipant: QuestParticipant = participant as QuestParticipant
-    newParticipant.progress.currentStepId = step.nextStepId
+    console.log(step.id)
+    console.log(task.steps[task.steps.length - 1].id)
+    console.log(step.id == task.steps[task.steps.length - 1].id)
+
+    if (step.id == task.steps[task.steps.length - 1].id) {
+      newParticipant.progress.currentStepId = task.steps[0].id
+      newParticipant.status = 'completed'
+    } else {
+      newParticipant.progress.currentStepId = step.nextStepId
+    }
     newParticipant.progress.history?.push({
       stepId: step.id,
       completedAt: now,

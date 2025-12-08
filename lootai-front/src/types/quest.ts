@@ -17,7 +17,7 @@ export interface QuestParticipant {
   id: string
   joinedAt: string
   acceptedAt?: string
-  status: 'pending' | 'accepted' | 'declined'
+  status: 'pending' | 'accepted' | 'declined' | 'completed'
   name: string
   age: number
   gender: string

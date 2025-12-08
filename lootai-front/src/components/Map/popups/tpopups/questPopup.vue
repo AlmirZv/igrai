@@ -87,19 +87,11 @@ async function scanQRCode() {
   const result = await BarcodeScanner.startScan()
 
   if (result.content == currentStep.value.id) {
-    if (currentStep.value.id == props.data.steps[props.data.steps.length - 1].id) {
-      finished.value = true
-    }
-    console.log(result.content)
     emit('updateStep', { id: props.data.id, step: currentStep.value })
     solved.value = true
   }
 
   document.body.classList.remove('scanner-active')
-  if (currentStep.value.id == props.data.steps[props.data.steps.length - 1].id) {
-    alert(props.data.finishWords)
-    finished.value = true
-  }
 }
 
 const actionDone = computed(() => {
@@ -186,7 +178,12 @@ async function checkDistance() {
 
 <template>
   <div ref="popupRef" class="popup" :class="{ fullscreen: isFullscreen }">
-    <div>
+    <div
+      v-if="
+        data.participants.find((participant) => participant.id !== auth.currentUser?.uid)?.status !=
+        'completed'
+      "
+    >
       <!-- Заголовок -->
       <h3 class="title">{{ data.title }}</h3>
 
@@ -204,21 +201,24 @@ async function checkDistance() {
       <p class="description">{{ data.description }}</p>
 
       <!-- Quest -->
-      <div v-if="type === 'quest' && distance2quest < 1000" class="quest">
+      <div v-if="type === 'quest' && distance2quest < 10000" class="quest">
         <div>{{ currentStep?.description }}</div>
         <div class="step">
           <b>{{ currentStep?.title }}</b>
           <div>{{ stepContent }}</div>
         </div>
 
-        <div class="field" v-if="currentStep?.type === 'riddle'">
-          Ответ: <input type="text" v-model="riddleAnswer" />
-          <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
-        </div>
+        <div v-if="auth.currentUser?.uid != data.authorId">
+          <div class="field" v-if="currentStep?.type === 'riddle'">
+            Ответ: <input type="text" v-model="riddleAnswer" />
+            <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
+          </div>
 
-        <div class="field" v-if="currentStep?.type === 'qr'">
-          <button v-if="!solved" class="action-btn" @click="scanQRCode">Scan</button>
+          <div class="field" v-if="currentStep?.type === 'qr'">
+            <button v-if="!solved" class="action-btn" @click="scanQRCode">Scan</button>
+          </div>
         </div>
+        <div v-else>You are creator</div>
       </div>
       <div v-else class="step">Чтобы учавствовать вам надо быть в пределах квеста</div>
 
@@ -228,136 +228,196 @@ async function checkDistance() {
     </button>
     <button v-if="actionDone && actionDone != true" class="action-btn">Ответ</button> -->
     </div>
-    <questFinish v-if="finished" finish-words="blabla" reward="blabla" />
+    <div v-else class="quest-complete">
+      <div class="header">
+        <span class="badge">Quest "{{ data.title }}" Completed</span>
+      </div>
+
+      <div class="meta">
+        <p v-if="data.author" class="author">👤 Автор: {{ data.author }}</p>
+        <p class="difficulty">🎯 Сложность: {{ (data as QuestTask).requirements.difficulty }}</p>
+      </div>
+
+      <div class="reward-block">
+        <div class="reward-title">🏆 Ваша награда</div>
+        <ul class="reward-list">
+          <li>
+            XP: <strong>{{ (data as QuestTask).reward.xp }}</strong>
+          </li>
+          <li>
+            Монеты: <strong>{{ (data as QuestTask).reward.points }}</strong>
+          </li>
+          <li v-if="(data as QuestTask).reward.inventoryItem">
+            Предмет: <strong>{{ (data as QuestTask).reward.inventoryItem }}</strong>
+          </li>
+        </ul>
+      </div>
+
+      <div class="finish-words">
+        {{ data.finishWords }}
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.field {
-  display: grid;
-  grid-template-columns: 100px 1fr; /* подпись фикс, поле тянется */
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  margin-top: 6px;
-}
-input,
-select,
-textarea {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-  flex: 1; /* поле растягивается по колонке */
-  min-width: 0; /* предотвращает переполнение */
+/* Общий стиль попапа */
+.popup {
+  font-family: 'Segoe UI', sans-serif;
+  width: 280px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #1b1e24;
+  color: #f1f1f1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
-.popup {
-  font-family: sans-serif;
-  width: 260px;
-  /* height:  80vh; */
-  padding: 10px;
-  border-radius: 12px;
-  background: white;
-  /* overflow: auto; */
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
-}
 .fullscreen {
-  font-family: sans-serif;
-  width: 260px;
-  /* height: 80vh; */
-  padding: 10px;
-  border-radius: 12px;
-  background: white;
+  width: 280px;
+  padding: 18px;
+  border-radius: 14px;
+  background: #1b1e24;
+  color: #f1f1f1;
   overflow: auto;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
 }
+
+/* Заголовок */
 .title {
-  margin: 0 0 6px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
 }
-.author {
-  margin: 0 0 8px 0;
-  font-size: 12px;
-  color: #777;
+
+/* Автор и мета */
+.author,
+.difficulty {
+  margin: 4px 0;
+  font-size: 14px;
+  opacity: 0.85;
 }
+
+/* Описание */
 .description {
-  margin: 0 0 10px 0;
-  font-size: 13px;
-  color: #444;
+  margin: 10px 0;
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.4;
 }
-.reward {
-  margin-bottom: 8px;
-  padding: 6px;
-  border-radius: 8px;
-  background: #f0f8ff;
-  font-size: 13px;
-}
-.step {
-  margin-top: 6px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 8px;
+
+/* Формы */
+.field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+input {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #3a3f4b;
+  background: #242830;
+  color: #fff;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3d7eff;
+}
+
+/* Шаги */
+.step {
+  margin-top: 12px;
+  background: #242830;
+  padding: 12px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   max-height: 40vh;
   overflow: auto;
+  font-size: 14px;
 }
-.requirements {
-  font-size: 12px;
-  margin-bottom: 8px;
-}
-.participants .list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 4px;
-}
-.participant {
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-.participant.accepted {
-  background: #d4f5d4;
-}
-.participant.pending {
-  background: #fce5cd;
-}
-.location {
-  margin: 0;
-  font-size: 12px;
-  color: #666;
-}
+
+/* Кнопки */
 .action-btn {
-  margin-top: 8px;
+  margin-top: 12px;
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   border: none;
-  border-radius: 8px;
-  background: #4caf50;
+  border-radius: 10px;
+  background: #3d7eff;
   color: white;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: bold;
   cursor: pointer;
 }
-.action-done-btn {
-  margin-top: 8px;
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  background: #91c293;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
+
 .action-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* --- Quest Completed блок --- */
+
+.quest-complete {
+  background: #1b1e24;
+  padding: 16px;
+  border-radius: 14px;
+  color: #f1f1f1;
+}
+
+.badge {
+  display: inline-block;
+  background: #3d7eff;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Награда */
+.reward-block {
+  margin-top: 18px;
+  background: #242830;
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.reward-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.reward-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.reward-list li {
+  margin: 5px 0;
+  font-size: 15px;
+}
+
+.reward-list strong {
+  color: #58ffab;
+}
+
+/* Финальные слова */
+.finish-words {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.4;
 }
 </style>

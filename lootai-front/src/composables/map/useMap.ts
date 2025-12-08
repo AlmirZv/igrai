@@ -201,8 +201,6 @@ export function useMap() {
             createTaskMarker(color, icon),
           )
         } else {
-          console.log(quest)
-
           marker = addMarker(
             quest.id,
             [quest.steps[0].location?.lat || 0, quest.steps[0].location?.lng || 0],
@@ -230,6 +228,7 @@ export function useMap() {
 
           // Пересоздаём маркер и попап с обновлёнными данными квеста
           const updatedQuest = await getQuest(payload.id)
+
           if (!updatedQuest) return true
 
           // Удаляем старый маркер
