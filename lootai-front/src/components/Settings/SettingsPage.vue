@@ -1,13 +1,21 @@
 <template>
   <div class="settings-page">
-    <MapSettings />
-    <ProfileSettings />
-    <!-- <NotificationsSettings /> -->
-    <AppSettings />
+    <div class="settings-section">
+      <MapSettings />
+    </div>
 
-    <!-- Инструменты разработчика (только в режиме разработки) -->
-    <!-- <div v-if="isDevelopment" class="dev-section">
+    <div class="settings-section">
+      <ProfileSettings />
+    </div>
+
+    <div class="settings-section">
+      <AppSettings />
+    </div>
+
+    <!-- DevTools (появляется только в dev-режиме) -->
+    <!-- <div v-if="isDevelopment" class="settings-section dev-section">
       <SeedDatabase />
+      <NotificationsSettings />
     </div> -->
   </div>
 </template>
@@ -20,38 +28,51 @@ import NotificationsSettings from './NotificationsSettings.vue'
 import AppSettings from './AppSettings.vue'
 import SeedDatabase from '../DevTools/SeedDatabase.vue'
 
-// Показываем инструменты разработчика только в режиме разработки
 const isDevelopment = computed(() => {
   return import.meta.env.DEV || import.meta.env.MODE === 'development'
 })
 </script>
 
 <style scoped>
+/* Общая страница */
 .settings-page {
-  font-family: Arial, sans-serif;
-  padding: 12px;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+  background: #121417;
+  min-height: 100vh;
+  color: #f1f1f1;
+}
+
+/* Карточка секции */
+.settings-section {
+  background: #1b1e24;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  color: white;
-  margin-top: 20px;
-  overflow: scroll;
 }
 
+/* DevTools */
 .dev-section {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid rgba(37, 185, 160, 0.3);
+  border: 1px solid rgba(61, 126, 255, 0.35);
+  padding-top: 24px;
+  margin-top: 10px;
 }
 
 .dev-section::before {
   content: '🛠️ ИНСТРУМЕНТЫ РАЗРАБОТЧИКА';
   display: block;
-  color: #25b9a0;
+  color: #3d7eff;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 1px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-align: center;
 }
 </style>

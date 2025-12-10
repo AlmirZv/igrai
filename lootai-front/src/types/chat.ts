@@ -1,22 +1,23 @@
 export interface ChatMessage {
   id: string
+  chatId: string
   text: string
   fromId: string
   fromName: string
   timestamp: Date
+  edited?: boolean
   type: 'text' | 'image' | 'location' | 'task'
   metadata?: any
 }
 
 export interface Chat {
   id: string
-  name: string
-  avatar: string
-  type: 'task' | 'friend' | 'team' | 'other'
+  name?: string
+  avatar?: string
+  type: 'task' | 'private' | 'group'
   participants: string[] // User IDs
   lastMessage?: ChatMessage
   unread: number
-  messages: ChatMessage[]
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -29,7 +30,7 @@ export interface ChatGroup {
 }
 
 export interface ChatFilters {
-  type?: 'task' | 'friend' | 'team' | 'other'
+  type?: 'task' | 'private' | 'group'
   hasUnread?: boolean
   isActive?: boolean
 }

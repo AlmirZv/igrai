@@ -356,34 +356,39 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  color: white;
+  color: #f1f1f1;
   min-height: 400px;
+  background: #121417;
 }
 
+/* Список чатов */
 .chat-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
+  gap: 14px;
+  padding: 16px;
   margin-top: 20px;
 }
 
-.loading-state {
+/* Состояние загрузки */
+.loading-state,
+.error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: #9ca3af;
+  text-align: center;
 }
 
+/* Новый спиннер */
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #374151;
-  border-top: 3px solid #25b9a0;
+  width: 46px;
+  height: 46px;
+  border: 4px solid rgba(255, 255, 255, 0.08);
+  border-top: 4px solid #25b9a0;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.9s linear infinite;
   margin-bottom: 16px;
 }
 
@@ -397,37 +402,33 @@ onMounted(() => {
 }
 
 .loading-state p {
-  font-size: 16px;
+  font-size: 15px;
+  color: #d1d5db;
   margin: 0;
-  color: #e5e7eb;
 }
 
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: #ef4444;
-  text-align: center;
-}
-
+/* Ошибки */
 .error-state p {
-  font-size: 16px;
+  font-size: 15px;
   margin: 0 0 16px 0;
   color: #ef4444;
 }
 
+.error-state {
+  color: #ef4444;
+}
+
+/* Кнопка повтора */
 .retry-btn {
-  background: linear-gradient(135deg, #25b9a0 0%, #1e9783 100%);
+  background: linear-gradient(135deg, #25b9a0, #1e9783);
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 12px 24px;
+  padding: 12px 26px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(37, 185, 160, 0.3);
+  transition: 0.25s ease;
+  box-shadow: 0 2px 8px rgba(37, 185, 160, 0.25);
 }
 
 .retry-btn:hover {
@@ -435,10 +436,11 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(37, 185, 160, 0.4);
 }
 
+/* Мобильная адаптация */
 @media (max-width: 480px) {
   .chat-list {
-    padding: 8px;
-    gap: 8px;
+    padding: 12px;
+    gap: 10px;
     margin-top: 16px;
   }
 
@@ -448,9 +450,9 @@ onMounted(() => {
   }
 
   .spinner {
-    width: 32px;
-    height: 32px;
-    border-width: 2px;
+    width: 34px;
+    height: 34px;
+    border-width: 3px;
   }
 
   .loading-state p,

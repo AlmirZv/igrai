@@ -1,12 +1,15 @@
 <template>
   <SettingsSection title="Карта" open>
-    <h4>Фильтры отображения</h4>
+    <!-- ОБЩИЕ ФИЛЬТРЫ -->
+    <div class="section-title">Фильтры отображения</div>
+
     <label v-for="f in filters" :key="f.key" class="row">
       <span>{{ f.label }}</span>
       <input type="checkbox" v-model="f.enabled" @change="saveSettings" />
     </label>
 
-    <div class="map-settings">
+    <!-- НАСТРОЙКИ КАРТЫ -->
+    <div class="sub-block">
       <label class="row">
         <span>Показывать задачи</span>
         <input type="checkbox" v-model="settings.map.showTasks" @change="saveSettings" />
@@ -26,9 +29,9 @@
         <span>Интервал обновления (мин)</span>
         <input
           type="number"
-          v-model="settings.map.refreshInterval"
           min="1"
           max="60"
+          v-model="settings.map.refreshInterval"
           @change="saveSettings"
           :disabled="!settings.map.autoRefresh"
         />
@@ -38,9 +41,9 @@
         <span>Масштаб по умолчанию</span>
         <input
           type="number"
-          v-model="settings.map.defaultZoom"
           min="1"
           max="20"
+          v-model="settings.map.defaultZoom"
           @change="saveSettings"
         />
       </label>
@@ -55,8 +58,10 @@
       </label>
     </div>
 
+    <!-- ФИЛЬТРЫ ЗАДАЧ -->
     <details class="task-filters">
       <summary>Фильтры по задачам</summary>
+
       <div class="content">
         <label class="row">
           <span>Пол</span>
@@ -66,11 +71,13 @@
             <option value="female">Женский</option>
           </select>
         </label>
+
         <label class="row">
           <span>Возраст</span>
           <input type="range" min="10" max="70" v-model="taskFilters.age" @change="saveSettings" />
-          <span>{{ taskFilters.age }}</span>
+          <span class="range-value">{{ taskFilters.age }}</span>
         </label>
+
         <label class="row">
           <span>Дистанция</span>
           <input
@@ -80,7 +87,7 @@
             v-model="taskFilters.distance"
             @change="saveSettings"
           />
-          <span>{{ taskFilters.distance }} км</span>
+          <span class="range-value">{{ taskFilters.distance }} км</span>
         </label>
       </div>
     </details>
@@ -185,22 +192,24 @@ onMounted(() => {
 </script>
 
 <style scoped>
-h4 {
-  margin: 12px 0 16px 0;
-  color: #25b9a0;
-  font-size: 16px;
+/* Заголовок блока */
+.section-title {
+  margin: 8px 0 14px;
+  font-size: 15px;
   font-weight: 600;
+  color: #3d7eff;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
 }
 
+/* Ряд настроек */
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 12px 0;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 0;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .row:last-child {
@@ -208,118 +217,102 @@ h4 {
 }
 
 .row span {
-  color: #e5e7eb;
-  font-size: 14px;
-  font-weight: 500;
+  color: #d7d7d7;
 }
 
+/* Чекбокс */
 .row input[type='checkbox'] {
   width: 20px;
   height: 20px;
-  accent-color: #25b9a0;
+  accent-color: #3d7eff;
   cursor: pointer;
 }
 
+/* Числовые поля */
 .row input[type='number'] {
-  background: #374151;
-  color: #e5e7eb;
-  border: 1px solid #4b5563;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 14px;
-  width: 80px;
+  width: 90px;
+  padding: 6px 10px;
+  background: #22252b;
+  border: 1px solid #2f3239;
+  border-radius: 8px;
+  color: #f1f1f1;
   text-align: center;
+  font-size: 14px;
 }
 
 .row input[type='number']:focus {
+  border-color: #3d7eff;
+  box-shadow: 0 0 0 2px rgba(61, 126, 255, 0.25);
   outline: none;
-  border-color: #25b9a0;
-  box-shadow: 0 0 0 2px rgba(37, 185, 160, 0.2);
 }
 
 .row input[type='number']:disabled {
-  background: #1f2937;
-  color: #6b7280;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
+/* Select */
 .row select {
-  background: #374151;
-  color: #e5e7eb;
-  border: 1px solid #4b5563;
-  border-radius: 6px;
+  background: #22252b;
+  border: 1px solid #2f3239;
+  border-radius: 8px;
   padding: 6px 12px;
-  font-size: 14px;
+  color: #f1f1f1;
   cursor: pointer;
-  min-width: 120px;
+  font-size: 14px;
 }
 
 .row select:focus {
+  border-color: #3d7eff;
+  box-shadow: 0 0 0 2px rgba(61, 126, 255, 0.25);
   outline: none;
-  border-color: #25b9a0;
-  box-shadow: 0 0 0 2px rgba(37, 185, 160, 0.2);
 }
 
+/* Range sliders */
 .row input[type='range'] {
-  width: 100px;
-  margin: 0 8px;
-  accent-color: #25b9a0;
+  accent-color: #3d7eff;
+  width: 120px;
 }
 
-.map-settings {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.range-value {
+  min-width: 40px;
+  text-align: right;
+  color: #bbb;
 }
 
+/* Подблок настроек */
+.sub-block {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Фильтры задач */
 .task-filters {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .task-filters summary {
-  color: #25b9a0;
-  font-weight: 600;
   cursor: pointer;
-  margin-bottom: 12px;
+  font-weight: 600;
+  color: #3d7eff;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .task-filters summary:hover {
-  color: #1e9783;
+  color: #6e9cff;
 }
 
 .content {
-  padding: 12px 0;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-@media (max-width: 480px) {
-  .row {
-    margin: 10px 0;
-    padding: 6px 0;
-  }
-
-  .row span {
-    font-size: 13px;
-  }
-
-  .row input[type='number'] {
-    width: 60px;
-    font-size: 13px;
-    padding: 4px 8px;
-  }
-
-  .row select {
-    font-size: 13px;
-    padding: 5px 10px;
-    min-width: 100px;
-  }
-
-  .row input[type='range'] {
-    width: 80px;
-  }
+  gap: 10px;
 }
 </style>
