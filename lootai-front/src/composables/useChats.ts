@@ -1,5 +1,5 @@
 import { reactive, toRefs, inject } from 'vue'
-import type { Chat } from '@/types/chat'
+import type { Chat, ChatMessage } from '@/types/chat'
 import {
   collection,
   getDocs,
@@ -11,6 +11,9 @@ import {
   getDoc,
   updateDoc,
   serverTimestamp,
+  onSnapshot,
+  orderBy,
+  limit,
 } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 import { auth } from '@/config/firebase'
@@ -38,11 +41,19 @@ export async function createChat(participants: string[], taskId?: string, name?:
   console.log(`Chat добавлен с ID: ${chatData.id}`)
 }
 
-export async function sendMessage(chatId: string, senderId: string, text: string) {
-  if (!text.trim()) return
+export async function sendMessageDB(
+  chatId: string,
+  senderId: string,
+  text: string,
+  fromName?: string,
+): Promise<ChatMessage> {
+  if (!text.trim()) {
+    throw new Error('Message text cannot be empty')
+  }
 
   try {
     const timestamp = serverTimestamp()
+    const now = new Date()
 
     // 1. Добавляем сообщение в коллекцию messages
     const messageRef = await addDoc(collection(db, 'messages'), {
@@ -66,9 +77,10 @@ export async function sendMessage(chatId: string, senderId: string, text: string
     return {
       id: messageRef.id,
       chatId,
-      senderId,
       text,
-      timestamp,
+      fromId: senderId,
+      fromName: fromName || 'User',
+      timestamp: now,
       type: 'text',
       edited: false,
     }
@@ -76,6 +88,65 @@ export async function sendMessage(chatId: string, senderId: string, text: string
     console.error('Ошибка при отправке сообщения:', error)
     throw error
   }
+}
+
+export async function loadUserChats(id: string) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+  const uid = auth.currentUser?.uid
+
+  const chatsRef = collection(db, 'chats')
+  const userChatsQuery = query(chatsRef, where('participants', 'array-contains', uid))
+  const snapshot = await getDocs(userChatsQuery)
+  const userChats: Chat[] = []
+
+  snapshot.forEach((doc) => {
+    const data = doc.data()
+    userChats.push(data as Chat)
+  })
+  console.log(`user's Chat: ${userChats}`)
+
+  return userChats
+}
+
+export async function loadChatMessages(chatId: string) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+  const uid = auth.currentUser?.uid
+
+  const messagesRef = collection(db, 'messages')
+
+  const userMessagesQuery = query(
+    messagesRef,
+    where('chatId', '==', chatId),
+    orderBy('timestamp', 'desc'),
+    limit(50),
+  )
+  const snapshot = await getDocs(userMessagesQuery)
+  const chatMessages: any[] = []
+
+  snapshot.forEach((doc) => {
+    const data = doc.data()
+    chatMessages.push({ id: doc.id, ...data })
+  })
+  console.log(`user's Chat: ${chatMessages}`)
+
+  return chatMessages
+}
+
+export function listenMessages(chatId: string, callback: any) {
+  const q = query(
+    collection(db, 'messages'),
+    where('chatId', '==', chatId),
+    orderBy('timestamp', 'asc'),
+  )
+
+  return onSnapshot(q, (snapshot) => {
+    const messages: any = []
+    snapshot.forEach((doc) => {
+      messages.push({ id: doc.id, ...doc.data() })
+    })
+
+    callback(messages)
+  })
 }
 
 export default () => {

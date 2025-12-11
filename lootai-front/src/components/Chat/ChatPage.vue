@@ -13,31 +13,28 @@
     <div v-else-if="!selectedChat" class="chat-list">
       <ChatGroup
         title="Чаты по задачам"
-        :chats="chats.tasks"
-        :loading="loadingStates.tasks"
+        :chats="chats.taskChats"
+        :loading="loadingStates.taskChats"
         @open="openChat"
       />
       <ChatGroup
         title="Друзья"
-        :chats="chats.friends"
-        :loading="loadingStates.friends"
+        :chats="chats.private"
+        :loading="loadingStates.private"
         @open="openChat"
       />
       <ChatGroup
         title="Командные чаты"
-        :chats="chats.teams"
-        :loading="loadingStates.teams"
-        @open="openChat"
-      />
-      <ChatGroup
-        title="Остальные"
-        :chats="chats.others"
-        :loading="loadingStates.others"
+        :chats="chats.group"
+        :loading="loadingStates.group"
         @open="openChat"
       />
     </div>
 
     <ChatWindow v-else :chat="selectedChat" @close="selectedChat = null" @send="sendMessage" />
+    <div>
+      <button class="create-btn" type="button" @click="createTestChat">Создать chat</button>
+    </div>
   </div>
 </template>
 
@@ -60,23 +57,23 @@ import { auth, db } from '../../config/firebase'
 import type { Chat, ChatMessage } from '../../types/chat'
 import ChatGroup from './ChatGroup.vue'
 import ChatWindow from './ChatWindow.vue'
+import { loadUserChats, loadChatMessages, sendMessageDB, createChat } from '@/composables/useChats'
 
 const selectedChat = ref<Chat | null>(null)
+const selectedChatMessages = ref<ChatMessage[] | null>(null)
 const isLoading = ref(true)
 const error = ref('')
 
 const loadingStates = reactive({
-  tasks: false,
-  friends: false,
-  teams: false,
-  others: false,
+  private: false,
+  group: false,
+  taskChats: false,
 })
 
 const chats = reactive({
-  tasks: [] as Chat[],
-  friends: [] as Chat[],
-  teams: [] as Chat[],
-  others: [] as Chat[],
+  private: [] as Chat[],
+  group: [] as Chat[],
+  taskChats: [] as Chat[],
 })
 
 const loadChats = async () => {
@@ -86,62 +83,28 @@ const loadChats = async () => {
 
     const uid = auth.currentUser?.uid
     if (!uid) {
-      // Load demo data for guests
-      loadDemoData()
       return
     }
 
     // Load user's chats
-    await loadUserChats(uid)
-  } catch (err) {
-    console.error('Error loading chats:', err)
-    error.value = 'Не удалось загрузить чаты'
-    // Load demo data as fallback
-    loadDemoData()
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const loadUserChats = async (uid: string) => {
-  try {
-    const chatsRef = collection(db, 'chats')
-    // Простой запрос без дополнительных фильтров
-    const userChatsQuery = query(chatsRef, where('participants', 'array-contains', uid))
-
-    const snapshot = await getDocs(userChatsQuery)
-    const userChats: Chat[] = []
-
-    snapshot.forEach((doc) => {
-      const data = doc.data()
-      userChats.push({
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
-        messages:
-          data.messages?.map((msg: any) => ({
-            ...msg,
-            timestamp: msg.timestamp?.toDate() || new Date(),
-          })) || [],
-      } as Chat)
-    })
-
+    const userChats = await loadUserChats(uid)
     // Фильтруем и сортируем локально
     const activeChats = userChats
       .filter((chat) => chat.isActive === true)
       .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
 
     // Separate by type
-    chats.tasks = activeChats.filter((chat) => chat.type === 'task')
-    chats.friends = activeChats.filter((chat) => chat.type === 'friend')
-    chats.teams = activeChats.filter((chat) => chat.type === 'team')
-    chats.others = activeChats.filter((chat) => chat.type === 'other')
+    chats.private = activeChats.filter((chat) => chat.type === 'private')
+    chats.group = activeChats.filter((chat) => chat.type === 'group')
+    chats.taskChats = activeChats.filter((chat) => chat.type === 'task')
 
     // Set up real-time listeners
     setupRealtimeListeners(uid)
   } catch (err) {
-    console.error('Error loading user chats:', err)
+    console.error('Error loading chats:', err)
+    error.value = 'Не удалось загрузить чаты'
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -157,17 +120,7 @@ const setupRealtimeListeners = (uid: string) => {
 
       snapshot.forEach((doc) => {
         const data = doc.data()
-        userChats.push({
-          id: doc.id,
-          ...data,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-          messages:
-            data.messages?.map((msg: any) => ({
-              ...msg,
-              timestamp: msg.timestamp?.toDate() || new Date(),
-            })) || [],
-        } as Chat)
+        userChats.push(data as Chat)
       })
 
       // Фильтруем и сортируем локально
@@ -176,10 +129,9 @@ const setupRealtimeListeners = (uid: string) => {
         .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
 
       // Update chats by type
-      chats.tasks = activeChats.filter((chat) => chat.type === 'task')
-      chats.friends = activeChats.filter((chat) => chat.type === 'friend')
-      chats.teams = activeChats.filter((chat) => chat.type === 'team')
-      chats.others = activeChats.filter((chat) => chat.type === 'other')
+      chats.private = activeChats.filter((chat) => chat.type === 'private')
+      chats.group = activeChats.filter((chat) => chat.type === 'group')
+      chats.taskChats = activeChats.filter((chat) => chat.type === 'task')
     },
     (error) => {
       console.error('Real-time listener error:', error)
@@ -187,91 +139,9 @@ const setupRealtimeListeners = (uid: string) => {
   )
 }
 
-const loadDemoData = () => {
-  // Demo data for guests
-  chats.tasks = [
-    {
-      id: 'demo-task-1',
-      name: 'Задача: Убрать парк',
-      avatar: '🌳',
-      type: 'task',
-      participants: ['demo-user-1', 'demo-user-2'],
-      lastMessage: {
-        id: 'msg-1',
-        text: 'Спасибо за помощь!',
-        fromId: 'demo-user-1',
-        fromName: 'Иван',
-        timestamp: new Date(),
-        type: 'text',
-      },
-      unread: 0,
-      messages: [
-        {
-          id: 'msg-1',
-          text: 'Привет!',
-          fromId: 'demo-user-2',
-          fromName: 'Анна',
-          timestamp: new Date(),
-          type: 'text',
-        },
-        {
-          id: 'msg-2',
-          text: 'Спасибо за помощь!',
-          fromId: 'demo-user-1',
-          fromName: 'Иван',
-          timestamp: new Date(),
-          type: 'text',
-        },
-      ],
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ]
-
-  chats.friends = [
-    {
-      id: 'demo-friend-1',
-      name: 'Алексей',
-      avatar: '👤',
-      type: 'friend',
-      participants: ['demo-user-1', 'demo-user-3'],
-      lastMessage: {
-        id: 'msg-3',
-        text: 'Когда встретимся?',
-        fromId: 'demo-user-3',
-        fromName: 'Алексей',
-        timestamp: new Date(),
-        type: 'text',
-      },
-      unread: 2,
-      messages: [
-        {
-          id: 'msg-3',
-          text: 'Завтра сможем?',
-          fromId: 'demo-user-3',
-          fromName: 'Алексей',
-          timestamp: new Date(),
-          type: 'text',
-        },
-        {
-          id: 'msg-4',
-          text: '??',
-          fromId: 'demo-user-3',
-          fromName: 'Алексей',
-          timestamp: new Date(),
-          type: 'text',
-        },
-      ],
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ]
-}
-
-const openChat = (chat: Chat) => {
+const openChat = async (chat: Chat) => {
   selectedChat.value = chat
+  selectedChatMessages.value = await loadChatMessages(chat.id)
 
   // Mark messages as read
   if (chat.unread > 0) {
@@ -280,45 +150,24 @@ const openChat = (chat: Chat) => {
 }
 
 const sendMessage = async (text: string) => {
-  if (!selectedChat.value) return
+  if (!selectedChat.value || !text.trim()) return
 
   try {
     const uid = auth.currentUser?.uid
     if (!uid) {
-      // Demo mode - just add to local state
-      const newMessage: ChatMessage = {
-        id: `msg-${Date.now()}`,
-        text,
-        fromId: 'current-user',
-        fromName: 'Вы',
-        timestamp: new Date(),
-        type: 'text',
-      }
-
-      selectedChat.value.messages.push(newMessage)
-      selectedChat.value.lastMessage = newMessage
       return
     }
 
     // Add message to Firebase
-    const chatRef = doc(db, 'chats', selectedChat.value.id)
-    const newMessage: ChatMessage = {
-      id: `msg-${Date.now()}`,
+    const newMessage: ChatMessage = await sendMessageDB(
+      selectedChat.value.id,
+      uid,
       text,
-      fromId: uid,
-      fromName: auth.currentUser?.displayName || 'User',
-      timestamp: new Date(),
-      type: 'text',
-    }
-
-    await updateDoc(chatRef, {
-      messages: [...selectedChat.value.messages, newMessage],
-      lastMessage: newMessage,
-      updatedAt: serverTimestamp(),
-    })
+      auth.currentUser?.displayName || 'User',
+    )
 
     // Update local state
-    selectedChat.value.messages.push(newMessage)
+    selectedChatMessages.value?.push(newMessage)
     selectedChat.value.lastMessage = newMessage
   } catch (err) {
     console.error('Error sending message:', err)
@@ -349,6 +198,12 @@ const markMessagesAsRead = async (chatId: string) => {
 onMounted(() => {
   loadChats()
 })
+
+const createTestChat = () => {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+  console.log('test', auth.currentUser?.uid)
+  createChat(['8EKmf9xT9AZA1T2H2Trn5Njrc1Q2', auth.currentUser?.uid])
+}
 </script>
 
 <style scoped>
