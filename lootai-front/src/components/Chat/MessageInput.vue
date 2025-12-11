@@ -23,7 +23,7 @@ function send() {
   display: flex;
   padding: 8px;
   border-top: 1px solid #ccc;
-  margin-bottom: 50px;
+  margin-bottom: 65px;
 }
 input {
   flex: 1;

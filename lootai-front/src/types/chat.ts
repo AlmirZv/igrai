@@ -10,13 +10,19 @@ export interface ChatMessage {
   metadata?: any
 }
 
+export interface LastMessage {
+  text: string
+  fromId: string
+  timestamp: Date
+}
+
 export interface Chat {
   id: string
   name?: string
   avatar?: string
   type: 'task' | 'private' | 'group'
   participants: string[] // User IDs
-  lastMessage?: ChatMessage
+  lastMessage?: LastMessage
   unread: number
   isActive: boolean
   createdAt: Date

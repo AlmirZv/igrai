@@ -20,11 +20,11 @@ const state = reactive({
   user: {} as UserProfile,
   age: 0,
 })
-export async function getUserInfo() {
+export async function getUserInfo(id?: string) {
   if (!auth.currentUser) throw new Error('Необходимо войти в систему')
   const uid = auth.currentUser?.uid
 
-  const tasksRef = doc(db, 'users', uid)
+  const tasksRef = doc(db, 'users', id ? id : uid)
 
   const snap = await getDoc(tasksRef)
   const user = snap.data() as UserProfile
@@ -32,6 +32,7 @@ export async function getUserInfo() {
 
   const age = calculateAge(user.birthday)
   state.age = age
+  return user
 }
 
 export async function updateUserXp(uid: string, newxp: number, newpoints?: number) {

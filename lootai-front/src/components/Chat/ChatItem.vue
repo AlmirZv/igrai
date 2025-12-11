@@ -6,7 +6,7 @@
         <div class="name">{{ chat.name }}</div>
         <span v-if="chat.unread > 0" class="badge">{{ chat.unread }}</span>
       </div>
-      <div class="last-message">{{ chat.lastMessage }}</div>
+      <div class="last-message">{{ chat.lastMessage.text }}</div>
     </div>
   </li>
 </template>

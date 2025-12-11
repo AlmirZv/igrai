@@ -171,7 +171,7 @@ const sendMessage = async (text: string) => {
     selectedChat.value.lastMessage = newMessage
   } catch (err) {
     console.error('Error sending message:', err)
-    alert('Ошибка при отправке сообщения')
+    // alert('Ошибка при отправке сообщения')
   }
 }
 
