@@ -19,7 +19,17 @@ onMounted(async () => {
   onAuthStateChanged(auth, (currentUser) => {
     user.value = currentUser
     if (currentUser) {
-      socket.connect()
+      console.log('🔌 Attempting to connect socket for user:', currentUser.uid)
+      if (!socket.connected) {
+        socket.connect()
+      } else {
+        console.log('✅ Socket already connected')
+      }
+    } else {
+      // Отключаем сокет при выходе
+      if (socket.connected) {
+        socket.disconnect()
+      }
     }
     if (Object.keys(userComposable().state.user.value).length == 0) {
       getUserInfo()
@@ -28,7 +38,12 @@ onMounted(async () => {
 
   // Connect to WebSocket if user is already logged in
   if (user.value) {
-    socket.connect()
+    console.log('🔌 Attempting to connect socket for existing user:', user.value.uid)
+    if (!socket.connected) {
+      socket.connect()
+    } else {
+      console.log('✅ Socket already connected')
+    }
   }
 })
 </script>

@@ -27,8 +27,6 @@ const menuItems = [
   { id: 'map', icon: '🗺️', label: 'Карта' },
   { id: 'user', icon: '👤', label: 'Профиль' },
   { id: 'tasks', icon: '📋', label: 'Задачи' },
-  //{ id: 'achievements', icon: '🏆', label: 'Достижения' },
-  //{ id: 'inventory', icon: '🎒', label: 'Инвентарь' },
   { id: 'chats', icon: '💬', label: 'Чаты' },
   { id: 'settings', icon: '⚙️', label: 'Настройки' },
 ]

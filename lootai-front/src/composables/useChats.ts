@@ -22,7 +22,11 @@ import { getUserInfo } from '@/composables/userInfo'
 
 const state = reactive({})
 
-export async function createChat(participants: string[], taskId?: string, name?: string) {
+export async function createChat(
+  participants: string[],
+  taskId?: string,
+  name?: string,
+): Promise<string> {
   if (!auth.currentUser) throw new Error('Необходимо войти в систему')
   const uid = auth.currentUser?.uid
 
@@ -64,6 +68,7 @@ export async function createChat(participants: string[], taskId?: string, name?:
 
   await setDoc(docRef, chatData)
   console.log(`Chat добавлен с ID: ${chatData.id}`)
+  return docRef.id
 }
 
 export async function sendMessageDB(
@@ -190,6 +195,80 @@ export function listenMessages(chatId: string, callback: any) {
 
     callback(messages)
   })
+}
+
+/**
+ * Находит существующий приватный чат между двумя пользователями или создает новый
+ * @param otherUserId ID другого пользователя
+ * @returns Chat объект чата
+ */
+export async function findOrCreatePrivateChat(otherUserId: string): Promise<Chat> {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+  const currentUserId = auth.currentUser.uid
+
+  if (currentUserId === otherUserId) {
+    throw new Error('Нельзя создать чат с самим собой')
+  }
+
+  // Ищем существующий приватный чат между двумя пользователями
+  const chatsRef = collection(db, 'chats')
+  const userChatsQuery = query(chatsRef, where('participants', 'array-contains', currentUserId))
+  const snapshot = await getDocs(userChatsQuery)
+
+  // Проверяем, есть ли уже приватный чат с этим пользователем
+  for (const docSnapshot of snapshot.docs) {
+    const chatData = docSnapshot.data() as Chat
+    const chatId = docSnapshot.id
+
+    // Проверяем, что это приватный чат и содержит обоих пользователей
+    if (
+      chatData.type === 'private' &&
+      chatData.participants.length === 2 &&
+      chatData.participants.includes(currentUserId) &&
+      chatData.participants.includes(otherUserId) &&
+      chatData.isActive
+    ) {
+      // Возвращаем существующий чат с правильным ID
+      const createdAt =
+        (chatData.createdAt as any)?.toDate?.() ??
+        (chatData.createdAt instanceof Date ? chatData.createdAt : new Date())
+      const updatedAt =
+        (chatData.updatedAt as any)?.toDate?.() ??
+        (chatData.updatedAt instanceof Date ? chatData.updatedAt : new Date())
+
+      return {
+        ...chatData,
+        id: chatId,
+        createdAt,
+        updatedAt,
+      }
+    }
+  }
+
+  // Если чат не найден, создаем новый
+  const participants = [currentUserId, otherUserId]
+  const newChatId = await createChat(participants)
+
+  // Получаем только что созданный чат по ID
+  const chatDoc = await getDoc(doc(db, 'chats', newChatId))
+  if (!chatDoc.exists()) {
+    throw new Error('Не удалось найти созданный чат')
+  }
+
+  const chatData = chatDoc.data() as Chat
+  const createdAt =
+    (chatData.createdAt as any)?.toDate?.() ??
+    (chatData.createdAt instanceof Date ? chatData.createdAt : new Date())
+  const updatedAt =
+    (chatData.updatedAt as any)?.toDate?.() ??
+    (chatData.updatedAt instanceof Date ? chatData.updatedAt : new Date())
+
+  return {
+    ...chatData,
+    id: newChatId,
+    createdAt,
+    updatedAt,
+  }
 }
 
 export default () => {

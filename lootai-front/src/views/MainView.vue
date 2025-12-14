@@ -2,17 +2,18 @@
   <div class="main-container">
     <Header />
 
-    <component :is="components[currentView]" />
+    <component :is="components[currentView]" :key="currentView" />
 
     <Menu @changePage="changePage" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { auth } from '../config/firebase'
 import Header from '../components/Header.vue'
 import Menu from '../components/Menu.vue'
+import { useNavigation } from '@/composables/useNavigation'
 
 import Map from '../components/Map/Map.vue'
 import Tasks from '../components/Tasks/Tasks.vue'
@@ -20,7 +21,8 @@ import Settings from '../components/Settings/SettingsPage.vue'
 import Chats from '../components/Chat/ChatPage.vue'
 import Profile from '../components/Profile/Profile.vue'
 
-const currentView = ref('Map')
+const { currentPage, navigateToPage } = useNavigation()
+const currentView = computed(() => currentPage.value)
 
 // Component mapping
 const components: { [key: string]: any } = {
@@ -58,7 +60,8 @@ onMounted(() => {
 })
 
 const changePage = (page: string) => {
-  currentView.value = getComponentName(page)
+  const componentName = getComponentName(page)
+  navigateToPage(componentName)
 }
 </script>
 

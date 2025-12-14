@@ -3,7 +3,7 @@ import { db } from "../config/firebase";
 import { LocationData } from "../types/default";
 import { SocketWrapper } from "./SocketWrapper";
 
-export const UserSocketHandler = new SocketWrapper('UserEvent');
+export const UserSocketHandler = new SocketWrapper("UserEvent");
 
 interface UserData {
   id: string;
@@ -13,70 +13,143 @@ interface UserData {
   lastSeen: number;
 }
 
-UserSocketHandler.add("register", async (io, socket, userData: { id: string; name?: string }) => {
-  try {
-    const user: UserData = {
-      id: userData.id,
-      name: userData.name,
-      connected: true,
-      lastSeen: Date.now(),
-    };
+UserSocketHandler.add(
+  "register",
+  async (io, socket, userData: { id: string; name?: string }) => {
+    try {
+      console.log(`📝 Registering user:`, userData);
 
-    // Save user to Firestore
-    await db
-      .collection("users")
-      .doc(userData.id)
-      .set(user, { merge: true });
+      const user: UserData = {
+        id: userData.id,
+        name: userData.name,
+        connected: true,
+        lastSeen: Date.now(),
+      };
 
-    socket.join(`user:${userData.id}`);
-    socket.emit("registered", { success: true, userId: userData.id });
+      // Save user to Firestore
+      console.log(`💾 Saving user to Firestore: ${userData.id}`);
+      await db.collection("users").doc(userData.id).set(user, { merge: true });
+      console.log(`✅ User saved to Firestore: ${userData.id}`);
 
-    console.log(`User registered: ${userData.id}`);
-  } catch (error) {
-    console.error("Registration error:", error);
-    socket.emit("error", { message: "Failed to register user" });
+      // Сохраняем userId в данных сокета для последующего использования
+      (socket as any).data = {
+        ...((socket as any).data || {}),
+        userId: userData.id,
+      };
+
+      socket.join(`user:${userData.id}`);
+      socket.emit("registered", { success: true, userId: userData.id });
+
+      console.log(`✅ User registered: ${userData.id}`);
+    } catch (error) {
+      console.error("❌ Registration error:", error);
+      socket.emit("error", { message: "Failed to register user" });
+    }
   }
-})
+);
 
 // Handle location updates
-UserSocketHandler.add("locationUpdate", async (io, socket, locationData: LocationData) => {
-  try {
-    const userId = locationData.userId || socket.id;
+UserSocketHandler.add(
+  "locationUpdate",
+  async (io, socket, locationData: LocationData) => {
+    try {
+      console.log(`📍 Location update received:`, locationData);
 
-    // Update user location in Firestore
-    await db.collection("users").doc(userId).update({
-      location: locationData,
-      lastSeen: Date.now(),
-    });
+      // Используем userId из locationData, если он есть и не равен 'me'
+      // Иначе используем socket.id, но это не идеально - лучше всегда передавать userId
+      let userId: string = locationData.userId || "";
 
-    // Update bot manager with user location
-    BotManager.updateUserLocation(userId, {
-      latitude: locationData.latitude,
-      longitude: locationData.longitude,
-    });
+      // Если userId равен 'me' или не указан, пытаемся получить из socket.data или используем socket.id
+      if (!userId || userId === "me") {
+        // Пытаемся получить userId из данных сокета (если он был сохранен при регистрации)
+        userId = (socket as any).data?.userId || socket.id;
+        console.log(`🔄 Using userId from socket.data: ${userId}`);
+      }
 
-    // Broadcast location to all connected clients
-    io.emit("locationUpdate", {
-      userId,
-      location: locationData,
-      isBot: false,
-    });
+      // Убеждаемся, что userId всегда строка
+      if (!userId) {
+        userId = socket.id;
+        console.log(`⚠️ Using socket.id as userId: ${userId}`);
+      }
 
-    console.log(`Location update from ${userId}:`, locationData);
-  } catch (error) {
-    console.error("Location update error:", error);
-    socket.emit("error", { message: "Failed to update location" });
+      console.log(`👤 Processing location update for userId: ${userId}`);
+
+      // Обновляем статус connected при обновлении местоположения
+      console.log(`💾 Updating user location in Firestore: ${userId}`);
+      try {
+        await db
+          .collection("users")
+          .doc(userId)
+          .update({
+            location: {
+              latitude: locationData.latitude,
+              longitude: locationData.longitude,
+              accuracy: locationData.accuracy,
+              timestamp: locationData.timestamp || Date.now(),
+            },
+            connected: true,
+            lastSeen: Date.now(),
+          });
+        console.log(`✅ User location updated in Firestore: ${userId}`);
+      } catch (firestoreError) {
+        console.error(
+          `❌ Firestore update error for ${userId}:`,
+          firestoreError
+        );
+        // Продолжаем выполнение, даже если Firestore не работает
+      }
+
+      // Update bot manager with user location
+      BotManager.updateUserLocation(userId, {
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+      });
+
+      // Получаем информацию о пользователе для отправки
+      const userDoc = await db.collection("users").doc(userId).get();
+      const userData = userDoc.exists ? userDoc.data() : null;
+
+      // Broadcast location to all connected clients
+      const broadcastData = {
+        userId,
+        name: userData?.name || "Пользователь",
+        avatar: userData?.avatar || "",
+        location: {
+          latitude: locationData.latitude,
+          longitude: locationData.longitude,
+          accuracy: locationData.accuracy,
+          timestamp: locationData.timestamp || Date.now(),
+        },
+        isBot: false,
+      };
+
+      console.log(
+        `📡 Broadcasting location update from ${userId} to all clients:`,
+        broadcastData
+      );
+      io.emit("locationUpdate", broadcastData);
+      console.log(
+        `✅ Location update broadcasted to ${io.sockets.sockets.size} connected clients`
+      );
+    } catch (error) {
+      console.error("Location update error:", error);
+      socket.emit("error", { message: "Failed to update location" });
+    }
   }
-});
+);
 
 // Handle chat messages
 UserSocketHandler.add(
   "message",
-  async (io, socket, messageData: {
-    text: string;
-    userId: string;
-    timestamp: number;
-  }) => {
+  async (
+    io,
+    socket,
+    messageData: {
+      text: string;
+      userId: string;
+      timestamp: number;
+    }
+  ) => {
     try {
       const message = {
         ...messageData,
@@ -101,7 +174,11 @@ UserSocketHandler.add(
 // Handle tracking requests
 UserSocketHandler.add(
   "startTracking",
-  async (io, socket, trackingData: { userId: string; targetUserId?: string }) => {
+  async (
+    io,
+    socket,
+    trackingData: { userId: string; targetUserId?: string }
+  ) => {
     try {
       const trackingId = `tracking_${Date.now()}`;
 
@@ -124,29 +201,36 @@ UserSocketHandler.add(
 );
 
 // Handle stop tracking
-UserSocketHandler.add("stopTracking", async (io, socket, data: { trackingId: string }) => {
-  try {
-    await db.collection("tracking").doc(data.trackingId).update({
-      active: false,
-      endTime: Date.now(),
-    });
+UserSocketHandler.add(
+  "stopTracking",
+  async (io, socket, data: { trackingId: string }) => {
+    try {
+      await db.collection("tracking").doc(data.trackingId).update({
+        active: false,
+        endTime: Date.now(),
+      });
 
-    socket.emit("trackingStopped", { trackingId: data.trackingId });
-    console.log(`Tracking stopped: ${data.trackingId}`);
-  } catch (error) {
-    console.error("Stop tracking error:", error);
-    socket.emit("error", { message: "Failed to stop tracking" });
+      socket.emit("trackingStopped", { trackingId: data.trackingId });
+      console.log(`Tracking stopped: ${data.trackingId}`);
+    } catch (error) {
+      console.error("Stop tracking error:", error);
+      socket.emit("error", { message: "Failed to stop tracking" });
+    }
   }
-});
+);
 
 // Handle get nearby users
 UserSocketHandler.add(
   "getNearbyUsers",
-  async (io, socket, data: {
-    latitude: number;
-    longitude: number;
-    radius: number; // in meters
-  }) => {
+  async (
+    io,
+    socket,
+    data: {
+      latitude: number;
+      longitude: number;
+      radius: number; // in meters
+    }
+  ) => {
     try {
       let nearbyUsers: any[] = [];
 
@@ -205,9 +289,3 @@ function calculateDistance(
 
   return R * c; // Distance in meters
 }
-
-
-
-
-
-

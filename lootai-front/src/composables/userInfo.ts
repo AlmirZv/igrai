@@ -11,8 +11,7 @@ import {
   getDoc,
   updateDoc,
 } from 'firebase/firestore'
-import { db } from '@/config/firebase'
-import { auth } from '@/config/firebase'
+import { db, auth } from '@/config/firebase'
 
 const state = reactive({
   authorized: false,

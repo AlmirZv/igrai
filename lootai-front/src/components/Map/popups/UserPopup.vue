@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { auth } from '@/config/firebase'
+import { findOrCreatePrivateChat } from '@/composables/useChats'
+import { useNavigation } from '@/composables/useNavigation'
 
 interface UserData {
   id: string
@@ -18,6 +20,7 @@ const emit = defineEmits<{
 }>()
 
 const isSending = ref(false)
+const { openChat } = useNavigation()
 
 // временные данные
 const rating = ref(4.5)
@@ -26,10 +29,26 @@ const reviews = ref([
   { id: 2, text: 'Всегда помогает 👍', author: 'Макс' },
 ])
 
-function sendMessage() {
-  isSending.value = true
-  emit('message', props.user.id)
-  setTimeout(() => (isSending.value = false), 800) // имитация
+async function sendMessage() {
+  if (isSending.value) return
+
+  try {
+    isSending.value = true
+
+    // Находим или создаем приватный чат с пользователем
+    const chat = await findOrCreatePrivateChat(props.user.id)
+
+    // Открываем чат через навигацию
+    openChat(chat.id)
+
+    // Эмитим событие для обратной совместимости (если нужно)
+    emit('message', props.user.id)
+  } catch (error) {
+    console.error('Ошибка при открытии чата:', error)
+    // Можно показать уведомление об ошибке
+  } finally {
+    isSending.value = false
+  }
 }
 </script>
 

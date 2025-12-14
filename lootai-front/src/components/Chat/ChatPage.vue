@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import {
   collection,
   query,
@@ -52,17 +52,20 @@ import {
   Timestamp,
   onSnapshot,
   serverTimestamp,
+  getDoc,
 } from 'firebase/firestore'
 import { auth, db } from '../../config/firebase'
 import type { Chat, ChatMessage } from '../../types/chat'
 import ChatGroup from './ChatGroup.vue'
 import ChatWindow from './ChatWindow.vue'
 import { loadUserChats, loadChatMessages, sendMessageDB, createChat } from '@/composables/useChats'
+import { useNavigation } from '@/composables/useNavigation'
 
 const selectedChat = ref<Chat | null>(null)
 const selectedChatMessages = ref<ChatMessage[] | null>(null)
 const isLoading = ref(true)
 const error = ref('')
+const { pendingChatId, clearPendingChat } = useNavigation()
 
 const loadingStates = reactive({
   private: false,
@@ -149,6 +152,56 @@ const openChat = async (chat: Chat) => {
   }
 }
 
+// Функция для открытия чата по ID
+const openChatById = async (chatId: string) => {
+  try {
+    const chatDoc = await getDoc(doc(db, 'chats', chatId))
+    if (!chatDoc.exists()) {
+      console.error('Чат не найден:', chatId)
+      return
+    }
+
+    const chatData = chatDoc.data() as Chat
+    const createdAt =
+      (chatData.createdAt as any)?.toDate?.() ??
+      (chatData.createdAt instanceof Date ? chatData.createdAt : new Date())
+    const updatedAt =
+      (chatData.updatedAt as any)?.toDate?.() ??
+      (chatData.updatedAt instanceof Date ? chatData.updatedAt : new Date())
+
+    const chat: Chat = {
+      ...chatData,
+      id: chatDoc.id,
+      createdAt,
+      updatedAt,
+    }
+
+    await openChat(chat)
+  } catch (err) {
+    console.error('Ошибка при открытии чата по ID:', err)
+  }
+}
+
+// Отслеживаем pendingChatId и открываем чат при его установке
+watch(
+  () => pendingChatId.value,
+  async (newChatId) => {
+    if (newChatId && !isLoading.value) {
+      await openChatById(newChatId)
+      clearPendingChat()
+    }
+  },
+  { immediate: true },
+)
+
+// Также проверяем при загрузке чатов
+watch(isLoading, async (isLoadingValue) => {
+  if (!isLoadingValue && pendingChatId.value) {
+    await openChatById(pendingChatId.value)
+    clearPendingChat()
+  }
+})
+
 const sendMessage = async (text: string) => {
   if (!selectedChat.value || !text.trim()) return
 
@@ -195,14 +248,20 @@ const markMessagesAsRead = async (chatId: string) => {
   }
 }
 
-onMounted(() => {
-  loadChats()
+onMounted(async () => {
+  await loadChats()
+  // Если есть pendingChatId после загрузки, открываем чат
+  if (pendingChatId.value) {
+    await openChatById(pendingChatId.value)
+    clearPendingChat()
+  }
 })
 
-const createTestChat = () => {
+const createTestChat = async () => {
   if (!auth.currentUser) throw new Error('Необходимо войти в систему')
   console.log('test', auth.currentUser?.uid)
-  createChat(['8EKmf9xT9AZA1T2H2Trn5Njrc1Q2', auth.currentUser?.uid])
+  const chatId = await createChat(['8EKmf9xT9AZA1T2H2Trn5Njrc1Q2', auth.currentUser?.uid])
+  console.log('Created chat with ID:', chatId)
 }
 </script>
 
