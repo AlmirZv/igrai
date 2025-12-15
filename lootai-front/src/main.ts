@@ -7,6 +7,13 @@ import App from './App.vue'
 import router from './router'
 import { auth, db } from './config/firebase'
 
+import './styles/base.css'
+
+import { applyTheme } from './designSystem'
+import { darkTheme } from './designSystem'
+
+applyTheme(darkTheme)
+
 const app = createApp(App)
 
 app.use(createPinia())

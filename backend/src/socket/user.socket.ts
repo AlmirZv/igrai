@@ -77,6 +77,9 @@ UserSocketHandler.add(
       // Обновляем статус connected при обновлении местоположения
       console.log(`💾 Updating user location in Firestore: ${userId}`);
       try {
+        await db.settings({
+          ignoreUndefinedProperties: true,
+        });
         await db
           .collection("users")
           .doc(userId)
