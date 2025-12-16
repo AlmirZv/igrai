@@ -1,3 +1,4 @@
+// src/designSystem/utils/applyTheme.ts
 import type { ThemeTokens } from '../tokens'
 
 export function applyTheme(theme: ThemeTokens) {

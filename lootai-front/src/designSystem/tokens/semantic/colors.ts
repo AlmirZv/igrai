@@ -1,5 +1,4 @@
-// src/design-system/tokens/semantic.ts
-export interface ThemeTokens {
+export interface SemanticColors {
   bg: {
     app: string
     map: string
@@ -26,18 +25,5 @@ export interface ThemeTokens {
   border: {
     subtle: string
     strong: string
-  }
-  space: {
-    xs: string
-    sm: string
-    md: string
-    lg: string
-    xl: string
-  }
-  radius: {
-    sm: string
-    md: string
-    lg: string
-    xl: string
   }
 }

@@ -1,8 +1,0 @@
-:root {
-  --input-bg: var(--color-surface);
-  --input-border: var(--color-border);
-  --input-border-focus: var(--color-accent-primary);
-  --input-text: var(--color-text-primary);
-  --input-radius: var(--radius-md);
-  --input-padding: var(--space-sm);
-}

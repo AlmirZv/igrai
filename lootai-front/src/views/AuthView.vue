@@ -58,14 +58,14 @@
           {{ error }}
         </div>
 
-        <button @click="handleAuth" :disabled="loading" class="auth-button primary">
+        <Button @click="handleAuth" variant="primary">
           <span v-if="loading">Загрузка...</span>
           <span v-else>{{ isLogin ? 'Войти' : 'Зарегистрироваться' }}</span>
-        </button>
+        </Button>
 
-        <button @click="toggleMode" class="auth-button secondary">
+        <Button @click="toggleMode" variant="secondary">
           {{ isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Есть аккаунт? Войти' }}
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -79,6 +79,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth'
+import { Button } from '@/designSystem/components'
 
 const isLogin = ref(true)
 const email = ref('')
@@ -164,53 +165,36 @@ const getErrorMessage = (code: string): string => {
 <style scoped>
 .auth-container {
   min-height: 100vh;
-  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   background: var(--bg-app);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* padding: 1rem; */
   padding: var(--space-lg);
 }
 
 .auth-card {
-  /* background: rgba(255, 255, 255, 0.95); */
-  /* backdrop-filter: blur(20px); */
-  /* border-radius: 20px; */
   background: var(--bg-surface);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  /* padding: 1rem; */
   width: 100%;
   max-width: 400px;
-  /* box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); */
-  /* border: 1px solid rgba(255, 255, 255, 0.2); */
   border: 1px solid var(--border-subtle);
 }
 
 .auth-header {
   text-align: center;
   margin-bottom: var(--space-lg);
-  /* margin-bottom: 1.5rem; */
 }
 
 .app-title {
   font-family: cursive;
   font-size: 2.5rem;
   font-weight: 700;
-  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 0.5rem 0; */
   color: var(--accent-primary);
   margin-bottom: var(--space-sm);
 }
 
 .app-subtitle {
-  /* color: #666;
-  font-size: 1rem;
-  margin: 0; */
   color: var(--text-secondary);
 }
 
@@ -218,14 +202,12 @@ const getErrorMessage = (code: string): string => {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  /* gap: 0.5rem; */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  /* gap: 0.5rem; */
 }
 
 .form-group label {
@@ -235,12 +217,6 @@ const getErrorMessage = (code: string): string => {
 }
 
 .form-input {
-  /* padding: 0.5rem;
-  border: 2px solid #e1e5e9;
-  border-radius: 12px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.8); */
   padding: var(--space-sm);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
@@ -249,31 +225,19 @@ const getErrorMessage = (code: string): string => {
 }
 
 .form-input:focus {
-  /* outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); */
   border-color: var(--accent-primary);
 }
 
 .error-message {
-  /* background: #fee;
-  color: #c33;
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  text-align: center;
-  border: 1px solid #fcc; */
   background: var(--state-error);
   color: var(--text-onAccent);
   border-radius: var(--radius-sm);
 }
 
 .auth-button {
-  /* padding: 1rem; */
   padding: var(--space-lg);
   border: none;
   border-radius: var(--radius-md);
-  /* border-radius: 12px; */
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -282,8 +246,6 @@ const getErrorMessage = (code: string): string => {
 }
 
 .auth-button.primary {
-  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white; */
   background: var(--accent-primary);
   color: var(--text-onAccent);
 }
@@ -294,33 +256,18 @@ const getErrorMessage = (code: string): string => {
 }
 
 .auth-button.secondary {
-  /* background: transparent;
-  color: #667eea;
-  border: 2px solid #667eea; */
   background: transparent;
   border: 1px solid var(--accent-primary);
   color: var(--accent-primary);
 }
 
 .auth-button.secondary:hover {
-  /* background: #667eea; */
   background: var(--accent-primary);
-  color: white;
+  color: var(--text-onAccent);
 }
 
 .auth-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-@media (max-width: 480px) {
-  .auth-card {
-    padding: 1rem;
-    margin: 0.5rem;
-  }
-
-  .app-title {
-    font-size: 2rem;
-  }
 }
 </style>
