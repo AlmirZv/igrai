@@ -1,9 +1,11 @@
 import { ref, reactive, computed } from 'vue'
 import type { Chat } from '@/types/chat'
 
+export type PageName = 'Map' | 'Chats' | 'Profile' | 'Tasks' | 'Settings'
+
 // Глобальное состояние для навигации
 const navigationState = reactive({
-  currentPage: 'Map',
+  currentPage: 'Map' as PageName,
   pendingChatId: null as string | null,
 })
 
@@ -11,7 +13,7 @@ const navigationState = reactive({
  * Composable для управления навигацией и открытием чатов
  */
 export function useNavigation() {
-  const navigateToPage = (page: string) => {
+  const navigateToPage = (page: PageName) => {
     navigationState.currentPage = page
   }
 

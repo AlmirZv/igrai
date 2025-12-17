@@ -3,6 +3,7 @@ export interface TypographyTokens {
     family: {
       base: string
       mono: string
+      brand: string
     }
     size: {
       xs: string

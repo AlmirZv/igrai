@@ -53,6 +53,7 @@ export const darkTheme: ThemeTokens = {
     family: {
       base: 'Inter, system-ui, -apple-system, sans-serif',
       mono: 'JetBrains Mono, monospace',
+      brand: '"Pacifico", cursive',
     },
     size: {
       xs: '12px',
@@ -60,7 +61,7 @@ export const darkTheme: ThemeTokens = {
       md: '16px',
       lg: '18px',
       xl: '22px',
-      xxl: '28px',
+      xxl: '40px',
     },
     weight: {
       regular: '400',
@@ -76,9 +77,9 @@ export const darkTheme: ThemeTokens = {
   },
   motion: {
     duration: {
-      fast: '0.3',
-      normal: '0.5',
-      slow: '1',
+      fast: '0.15',
+      normal: '0.3',
+      slow: '0.5',
     },
     easing: {
       standard: 'ease',

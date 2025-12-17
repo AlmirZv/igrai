@@ -13,4 +13,8 @@ body {
   margin: 0;
   background: var(--bg-app);
   color: var(--text-primary);
+
+  font-family: var(--typography-fontFamily-base);
+  font-size: var(--typography-fontSize-md);
+  line-height: var(--typography-lineHeight-normal);
 }
