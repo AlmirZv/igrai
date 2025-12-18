@@ -1,11 +1,14 @@
 <template>
   <header class="app-header">
-    <h1 class="logo">igrai</h1>
+    <!-- <h1 class="logo">igrai</h1> -->
+    <h1 class="logo">
+      <Text variant="h2" color="accent" letter-spacing="lg">igrai</Text>
+    </h1>
   </header>
 </template>
 
 <script setup>
-// фиксированное название
+import { Text } from '@/designSystem/components'
 </script>
 
 <style scoped>
@@ -20,19 +23,12 @@
 .logo {
   position: relative;
   margin: 0;
-  padding: 0px 10px;
-  font-family: cursive;
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  text-align: center;
-  color: #25b9a0;
-  /* color: #667eea; */
-  background: linear-gradient(180deg, #1f1f1f 0%, #242424 100%);
-  /* clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%); */
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  padding: 0px var(--space-md);
+  font-family: var(--font-family-brand);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-overlay) 100%);
+  border-bottom-left-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
   border-top-style: none;
 }

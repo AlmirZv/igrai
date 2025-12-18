@@ -24,5 +24,13 @@ export interface TypographyTokens {
       normal: string
       relaxed: string
     }
+    letterSpacing: {
+      xs: string
+      sm: string
+      md: string
+      lg: string
+      xl: string
+      xxl: string
+    }
   }
 }

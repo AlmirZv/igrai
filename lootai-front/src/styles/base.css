@@ -14,7 +14,7 @@ body {
   background: var(--bg-app);
   color: var(--text-primary);
 
-  font-family: var(--typography-fontFamily-base);
-  font-size: var(--typography-fontSize-md);
-  line-height: var(--typography-lineHeight-normal);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--font-lineHeight-normal);
 }

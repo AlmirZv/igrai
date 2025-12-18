@@ -74,6 +74,14 @@ export const darkTheme: ThemeTokens = {
       normal: '1.5',
       relaxed: '1.7',
     },
+    letterSpacing: {
+      xs: '0.02em',
+      sm: '0.04em',
+      md: '0.06em',
+      lg: '0.08em',
+      xl: '0.1em',
+      xxl: '0.14em',
+    },
   },
   motion: {
     duration: {
