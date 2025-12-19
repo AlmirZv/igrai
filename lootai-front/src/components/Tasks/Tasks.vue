@@ -1,19 +1,16 @@
 <template>
   <div class="tasks-page">
-    <div v-if="isLoading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Загрузка задач...</p>
-    </div>
+    <LoadingSpinner v-if="isLoading">Загрузка задач...</LoadingSpinner>
 
-    <div v-else-if="error" class="error-state">
+    <ErrorState v-else-if="error">
       <p>Ошибка загрузки: {{ error }}</p>
-      <button @click="loadTasks" class="retry-btn">Повторить</button>
-    </div>
+      <Button @click="loadTasks">Повторить</Button>
+    </ErrorState>
 
     <div v-else>
       <TaskTabs v-model="activeTab" />
 
-      <div v-if="activeTab === 'taken'" class="task-groups">
+      <div v-if="activeTab === 'taken' && mode === 'active'" class="task-groups">
         <TaskGroup
           title="Задачи"
           :tasks="tasks.taken.user"
@@ -38,10 +35,15 @@
           :loading="loadingStates.event"
           @open="openTask"
         />
-        <TaskHistory title="История" :history="tasks.history.taken" @open="openTask" />
       </div>
+      <TaskHistory
+        v-else-if="activeTab === 'taken' && mode === 'history'"
+        title="История"
+        :history="tasks.history.taken"
+        @open="openTask"
+      />
 
-      <div v-else class="task-groups">
+      <div v-else-if="activeTab === 'created' && mode === 'active'" class="task-groups">
         <TaskGroup
           title="Задачи"
           :tasks="tasks.created.user"
@@ -66,12 +68,13 @@
           :loading="loadingStates.event"
           @open="openTask"
         />
-        <TaskHistory
-          title="История"
-          :history="(activeTab as 'taken') == 'taken' ? tasks.history.taken : tasks.history.created"
-          @open="openTask"
-        />
       </div>
+      <TaskHistory
+        v-else-if="activeTab === 'created' && mode === 'history'"
+        title="История"
+        :history="(activeTab as 'taken') == 'taken' ? tasks.history.taken : tasks.history.created"
+        @open="openTask"
+      />
 
       <TaskModal
         v-if="selectedTask"
@@ -102,6 +105,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import { auth, db } from '../../config/firebase'
+import { LoadingSpinner, Button, ErrorState } from '@/designSystem/components'
 import type { Task, TaskFilters, TaskParticipant } from '../../types/task'
 import TaskTabs from './TaskTabs.vue'
 import TaskGroup from './TaskGroup.vue'
@@ -116,6 +120,8 @@ import {
 } from '../../composables/useTasks'
 
 const activeTab = ref<'taken' | 'created'>('taken')
+const mode = ref<'active' | 'history'>('active')
+
 const selectedTask = ref<Task | null>(null)
 const isLoading = ref(true)
 const error = ref('')
@@ -328,114 +334,14 @@ onMounted(() => {
 
 <style scoped>
 .tasks-page {
-  margin-top: 30px;
-  font-family: cursive;
-  color: #fff;
-  min-height: 400px;
-
   overflow: auto;
-  margin-bottom: 50px;
+  margin-bottom: 80px;
 }
 
 .task-groups {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-  color: black;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: #9ca3af;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #374151;
-  border-top: 3px solid #25b9a0;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-state p {
-  font-size: 16px;
-  margin: 0;
-  color: #e5e7eb;
-}
-
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: #ef4444;
-  text-align: center;
-}
-
-.error-state p {
-  font-size: 16px;
-  margin: 0 0 16px 0;
-  color: #ef4444;
-}
-
-.retry-btn {
-  background: linear-gradient(135deg, #25b9a0 0%, #1e9783 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(37, 185, 160, 0.3);
-}
-
-.retry-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 185, 160, 0.4);
-}
-
-@media (max-width: 480px) {
-  .tasks-page {
-    margin-top: 30px;
-  }
-
-  .task-groups {
-    padding: 8px;
-    gap: 8px;
-  }
-
-  .loading-state,
-  .error-state {
-    padding: 40px 16px;
-  }
-
-  .spinner {
-    width: 32px;
-    height: 32px;
-    border-width: 2px;
-  }
-
-  .loading-state p,
-  .error-state p {
-    font-size: 14px;
-  }
+  gap: var(--space-md);
+  padding: 0 var(--space-md);
 }
 </style>

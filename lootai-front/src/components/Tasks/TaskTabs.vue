@@ -1,71 +1,74 @@
 <template>
   <div class="tabs">
-    <button
+    <div class="indicator" :class="modelValue"></div>
+
+    <Button
+      class="tab"
       :class="{ active: modelValue === 'taken' }"
-      class="tab left"
       @click="$emit('update:modelValue', 'taken')"
     >
       Исполнитель
-    </button>
-    <button
+    </Button>
+
+    <Button
+      class="tab"
       :class="{ active: modelValue === 'created' }"
-      class="tab right"
       @click="$emit('update:modelValue', 'created')"
     >
       Создатель
-    </button>
+    </Button>
   </div>
 </template>
 
 <script setup>
+import { Button } from '@/designSystem/components'
 defineProps({
   modelValue: String,
+  required: true,
 })
 defineEmits(['update:modelValue'])
 </script>
 
 <style scoped>
 .tabs {
+  position: relative;
   display: flex;
-  /* width: fit-content; */
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  margin: 16px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  font-family: cursive;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2px;
+  background: var(--bg-overlay);
+  margin: var(--space-lg);
+}
+
+.indicator {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: calc(50% - 2px);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  transition: transform var(--motion-duration-slow) var(--motion-easing-standart);
+  z-index: 0;
+}
+
+.indicator.taken {
+  transform: translateX(0);
+}
+
+.indicator.created {
+  transform: translateX(100%);
 }
 
 .tab {
   flex: 1;
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  background: #f5f5f5;
-  color: #333;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.tab:hover {
-  background: #e8f0ff;
+  background: transparent;
+  z-index: 1;
+  color: var(--text-muted);
 }
 
 .tab.active {
-  background: linear-gradient(135deg, #6a9cff, #783ff0);
-  color: white;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.left {
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-}
-
-.right {
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
+  color: var(--text-primary);
+  box-shadow: none;
+  transform: none;
 }
 </style>

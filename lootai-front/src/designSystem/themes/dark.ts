@@ -33,6 +33,7 @@ export const darkTheme: ThemeTokens = {
     sm: '0 2px 6px rgba(0,0,0,0.2)',
     md: '0 10px 20px rgba(0,0,0,0.3)',
     lg: '0 10px 20px rgba(102, 126, 234, 0.3)',
+    xs: '0 3px 6px rgba(102, 126, 234, 0.3)',
   },
   space: {
     xs: '4px',
@@ -85,9 +86,9 @@ export const darkTheme: ThemeTokens = {
   },
   motion: {
     duration: {
-      fast: '0.15',
-      normal: '0.3',
-      slow: '0.5',
+      fast: '0.15s',
+      normal: '0.3s',
+      slow: '0.5s',
     },
     easing: {
       standard: 'ease',

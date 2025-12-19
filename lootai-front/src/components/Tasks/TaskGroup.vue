@@ -1,119 +1,132 @@
 <template>
-  <details class="section">
-    <summary>
+  <section class="section">
+    <header class="header" @click="open = !open">
       <span class="title">{{ title }}</span>
-      <span class="arrow">▸</span>
-    </summary>
+      <div class="actions" @click.stop>
+        <!-- Кнопка Архив -->
+        <!-- TODO: вывод истории -->
+        <button class="archive-btn" @click="mode = !mode">Архив</button>
 
-    <div class="content">
-      <div v-if="loading" class="loading">Загрузка...</div>
+        <!-- Стрелка -->
+        <span class="arrow" :class="{ open }">▸</span>
+      </div>
+    </header>
 
-      <ul v-else>
-        <li v-for="task in tasks" :key="task.id" class="task-item" @click="$emit('open', task)">
-          {{ task.title }}
-        </li>
-        <li v-if="!tasks || !tasks.length" class="empty">Нет задач</li>
-      </ul>
-    </div>
-  </details>
+    <transition name="fade">
+      <div v-show="open" class="content">
+        <LoadingSpinner v-if="loading">Загрузка...</LoadingSpinner>
+
+        <ul v-else>
+          <li v-for="task in tasks" :key="task.id" class="task-item" @click="$emit('open', task)">
+            {{ task.title }}
+          </li>
+
+          <li v-if="!tasks.length" class="empty">Нет задач</li>
+        </ul>
+
+        <slot name="footer"></slot>
+      </div>
+    </transition>
+  </section>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { LoadingSpinner } from '@/designSystem/components'
+
 defineProps({
-  title: { type: String, default: 'Задачи' },
-  tasks: { type: Array, default: () => [] },
-  loading: { type: Boolean, default: false },
+  title: String,
+  tasks: Array,
+  History: Array,
+  loading: Boolean,
 })
+
 defineEmits(['open'])
+
+const open = ref(false)
+const mode = (ref < 'active') | ('history' > 'active')
 </script>
 
 <style scoped>
 .section {
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  background: #fdfdfd;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s;
-}
-.section:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
 }
 
-summary {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  padding: 12px 16px;
-  font-weight: 600;
-  background: #f0f4f8;
+  padding: var(--space-md) var(--space-lg);
+  font-weight: var(--font-weight-semibold);
   user-select: none;
-  transition: background 0.2s;
-  border-bottom: 1px solid #ddd;
+}
+/* Правая группа кнопок */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-summary:hover {
-  background: #e0e7ef;
+.archive-btn {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  padding: var(--space-xxs) var(--space-xs);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background var(--motion-duration-fast);
 }
 
+.archive-btn:hover {
+  background: var(--bg-overlay-hover);
+  color: var(--text-primary);
+}
 .arrow {
-  transition: transform 0.3s ease;
+  transition: transform var(--motion-duration-fast);
 }
-
-details[open] .arrow {
+.arrow.open {
   transform: rotate(90deg);
 }
 
 .content {
-  padding: 8px 16px;
-  animation: fadeIn 0.3s ease;
+  padding: var(--space-sm) var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.task-item {
+  padding: var(--space-sm) 0;
+  cursor: pointer;
+  transition: background var(--motion-duration-fast);
+}
+
+.task-item:hover {
+  background: var(--bg-overlay-hover);
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  padding: var(--space-sm) 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all var(--motion-duration-slow);
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
 ul {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.task-item {
-  background: #ffffff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin: 6px 0;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.task-item:hover {
-  background: #f0faff;
-  transform: translateX(4px);
-}
-
-.empty {
-  color: #888;
-  font-size: 13px;
-  text-align: center;
-  margin: 6px 0;
-}
-
-.loading {
-  color: #25b9a0;
-  font-size: 13px;
-  font-style: italic;
-  padding: 8px 0;
-  text-align: center;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-3px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>

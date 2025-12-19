@@ -1,6 +1,6 @@
 <template>
   <div class="modal-overlay" @click.self="$emit('close')">
-    <div class="modal">
+    <Card class="modal">
       <div class="modal-header">
         <h2 class="modal-title">{{ task.title }}</h2>
         <button class="close-btn" @click="$emit('close')">×</button>
@@ -64,12 +64,13 @@
         </button>
         <button class="close" @click="$emit('close')">Закрыть</button>
       </div>
-    </div>
+    </Card>
   </div>
 </template>
 
 <script setup>
 import UserPopup from './ParticipantInfo.vue'
+import { Card } from '@/designSystem/components'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -108,17 +109,10 @@ async function showParticipantInfo(participant) {
 }
 
 .modal {
-  background: #fff;
-  color: #222;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  padding: 20px;
   width: 90%;
-  max-width: 420px;
   transform: translateY(10px);
   animation: slideUp 0.3s ease forwards;
-  margin: 5px;
-  margin-bottom: 70px;
+  margin-bottom: 80px;
   height: calc(100vh - 115px);
   overflow: auto;
 }
@@ -150,8 +144,6 @@ async function showParticipantInfo(participant) {
 
 .modal-section {
   margin-bottom: 16px;
-  /* border-bottom: 1px solid #eee; */
-  /* padding-bottom: 10px; */
 
   h4 {
     margin-top: 0;
@@ -164,7 +156,7 @@ async function showParticipantInfo(participant) {
 .modal-section h4 {
   margin-bottom: 6px;
   font-size: 1rem;
-  color: #555;
+  color: var(--text-muted);
 }
 
 .modal-section ul {
@@ -177,13 +169,13 @@ async function showParticipantInfo(participant) {
 }
 
 .reward {
-  background: #f8f9ff;
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   padding: 10px;
 }
 
 .requirements {
-  background: #fff8f5;
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
   padding: 10px;
 }

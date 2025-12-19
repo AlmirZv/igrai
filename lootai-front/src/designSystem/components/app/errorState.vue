@@ -5,13 +5,12 @@
 </template>
 
 <style lang="css">
-.loading-state {
+.error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px 20px;
-  font-family: var(--font-family-brand);
+  padding: var(--space-xxl) var(--space-xl);
   color: var(--state-error);
   text-align: center;
 }
