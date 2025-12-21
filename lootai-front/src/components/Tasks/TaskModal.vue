@@ -2,35 +2,35 @@
   <div class="modal-overlay" @click.self="$emit('close')">
     <Card class="modal">
       <div class="modal-header">
-        <h2 class="modal-title">{{ task.title }}</h2>
-        <button class="close-btn" @click="$emit('close')">×</button>
+        <Text variant="h2">{{ task.title }}</Text>
+        <Button variant="secondary" @click="$emit('close')">x</Button>
       </div>
 
       <div class="modal-section">
-        <p><strong>Автор:</strong> {{ task.author }}</p>
-        <p><strong>Описание:</strong> {{ task.description }}</p>
-        <p>
-          <strong>Время:</strong>from {{ task.requirements.startTime }}
+        <Text variant="p"><strong>Автор:</strong> {{ task.author }}</Text>
+        <Text variant="p"><strong>Описание:</strong> {{ task.description }}</Text>
+        <Text variant="p">
+          <strong>Время:</strong> {{ task.requirements.startTime }}
           {{ task.requirements.startDate }}
-          to
+          до
           {{ task.requirements.endTime }} {{ task.requirements.endDate }}
-        </p>
+        </Text>
+      </div>
+
+      <div class="modal-section requirements">
+        <Text variant="h4" color="muted">⚙️ Требования</Text>
+        <ul>
+          <li><strong>Возраст:</strong> {{ task.requirements.age }}</li>
+          <li><strong>Пол:</strong> {{ gender[task.requirements.gender] }}</li>
+        </ul>
       </div>
 
       <div class="modal-section reward">
-        <h4>💎 Награда</h4>
+        <Text variant="h4" color="muted">💎 Награда</Text>
         <ul>
           <li><strong>Опыт:</strong> {{ task.reward.xp }}</li>
           <li><strong>Вознаграждение:</strong> {{ task.reward.points }}</li>
           <li><strong>Инвентарь:</strong> {{ task.reward.inventoryItem }}</li>
-        </ul>
-      </div>
-
-      <div class="modal-section requirements">
-        <h4>⚙️ Требования</h4>
-        <ul>
-          <li><strong>Возраст:</strong> {{ task.requirements.age }}</li>
-          <li><strong>Пол:</strong> {{ gender[task.requirements.gender] }}</li>
         </ul>
       </div>
 
@@ -45,24 +45,24 @@
           >
             <span>{{ p.name }}({{ p.gender ? p.gender : '' }}, {{ p.age ? p.age : '' }})</span>
             <div class="participant-actions">
-              <button class="accept" @click="$emit('accept', p)">✔</button>
-              <button class="decline" @click="$emit('decline', p)">✖</button>
+              <Button @click="$emit('accept', p)">✔</Button>
+              <Button @click="$emit('decline', p)">✖</Button>
             </div>
           </li>
         </ul>
       </div>
 
       <div v-if="aTab === 'created'" class="modal-actions">
-        <button v-if="task.status != 'completed'" class="cancel" @click="$emit('complete')">
+        <Button variant="primary" v-if="task.status != 'completed'" @click="$emit('complete')">
           Завершить задачу
-        </button>
-        <button class="close" @click="$emit('close')">Закрыть</button>
+        </Button>
+        <Button variant="secondary" @click="$emit('close')">Закрыть</Button>
       </div>
       <div v-else class="modal-actions">
-        <button v-if="task.status != 'completed'" class="cancel" @click="$emit('cancel')">
+        <Button variant="primary" v-if="task.status != 'completed'" @click="$emit('cancel')">
           Отменить выполнение
-        </button>
-        <button class="close" @click="$emit('close')">Закрыть</button>
+        </Button>
+        <Button variant="secondary" @click="$emit('close')">Закрыть</Button>
       </div>
     </Card>
   </div>
@@ -70,7 +70,7 @@
 
 <script setup>
 import UserPopup from './ParticipantInfo.vue'
-import { Card } from '@/designSystem/components'
+import { Card, Text, Button } from '@/designSystem/components'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -81,8 +81,8 @@ defineEmits(['close', 'cancel', 'complete', 'accept', 'decline'])
 console.log(props.task)
 
 const gender = {
-  male: 'мужчины',
-  female: 'девушки',
+  male: 'мужчина',
+  female: 'женщина',
   any: 'любой',
 }
 
@@ -99,21 +99,18 @@ async function showParticipantInfo(participant) {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn var(--motion-duration-normal) var(--motion-easing-standart);
   z-index: 1000;
 }
 
 .modal {
   width: 90%;
   transform: translateY(10px);
-  animation: slideUp 0.3s ease forwards;
-  margin-bottom: 80px;
-  height: calc(100vh - 115px);
+  animation: slideUp var(--motion-duration-normal) var(--motion-easing-standart) forwards;
   overflow: auto;
 }
 
@@ -121,42 +118,13 @@ async function showParticipantInfo(participant) {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-}
-
-.modal-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.6rem;
-  cursor: pointer;
-  color: #666;
-  transition: color 0.2s;
-}
-.close-btn:hover {
-  color: #000;
 }
 
 .modal-section {
-  margin-bottom: 16px;
-
-  h4 {
-    margin-top: 0;
-  }
+  margin-bottom: var(--space-lg);
 }
 .modal-section:last-child {
   border: none;
-}
-
-.modal-section h4 {
-  margin-bottom: 6px;
-  font-size: 1rem;
-  color: var(--text-muted);
 }
 
 .modal-section ul {
@@ -165,89 +133,43 @@ async function showParticipantInfo(participant) {
   margin: 0;
 }
 .modal-section li {
-  margin: 4px 0;
+  margin: var(--space-xs) 0;
 }
 
 .reward {
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
 }
 
 .requirements {
   border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
 }
 
 .participants .participant-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f7f7f7;
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin-top: 6px;
+  background: var(--bg-overlay);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  margin-top: var(--space-xs);
 }
 
-.participant-actions button {
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.9rem;
-}
-
-.accept {
-  background: #d1f7c4;
-  color: #227a1c;
-}
-.accept:hover {
-  background: #bdf0a8;
-}
-
-.decline {
-  background: #ffd2d2;
-  color: #a91a1a;
-}
-.decline:hover {
-  background: #ffb8b8;
+.participant-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-xs);
 }
 
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.modal-actions button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 500;
-  transition:
-    background 0.2s,
-    transform 0.1s;
-}
-
-.modal-actions .cancel {
-  background: #ffecec;
-  color: #c23a3a;
-}
-.modal-actions .cancel:hover {
-  background: #ffd9d9;
-}
-
-.modal-actions .close {
-  background: #e9f0ff;
-  color: #2a4ba1;
-}
-.modal-actions .close:hover {
-  background: #d5e4ff;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
 }
 
 @keyframes fadeIn {

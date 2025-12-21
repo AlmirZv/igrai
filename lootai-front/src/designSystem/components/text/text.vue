@@ -21,6 +21,7 @@ const props = withDefaults(
       | 'h1'
       | 'h2'
       | 'h3'
+      | 'h4'
       | 'body'
       | 'body-muted'
       | 'caption'
@@ -39,6 +40,8 @@ const tagMap: Record<string, string> = {
   'app-subtitle': 'p',
   h1: 'h1',
   h2: 'h2',
+  h3: 'h4',
+  h4: 'h4',
   body: 'p',
   'body-muted': 'p',
   caption: 'span',
@@ -67,7 +70,12 @@ const tag = props.as || tagMap[props.variant] || 'p'
 }
 
 .text--h3 {
-  font-size: var(--font-size-xxl);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.text--h4 {
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
 }
 
