@@ -4,12 +4,14 @@
     v-bind="$attrs"
     :value="modelValue"
     @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+    :style="width ? `width:${width}px` : '100%'"
   />
 </template>
 
 <script setup lang="ts">
 defineProps<{
-  modelValue?: string
+  modelValue?: string | Number
+  width?: string
 }>()
 
 defineEmits<{

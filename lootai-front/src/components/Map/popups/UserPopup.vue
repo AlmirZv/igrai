@@ -100,7 +100,6 @@ async function sendMessage() {
 <style scoped>
 .popup {
   font-family: sans-serif;
-  /* width: 260px; */
   padding: 14px;
   border-radius: 14px;
   background: white;
@@ -108,6 +107,7 @@ async function sendMessage() {
   display: flex;
   flex-direction: row;
   align-items: center;
+  background-color: var(--bg-overlay);
 }
 
 .avatar {
@@ -211,5 +211,15 @@ async function sendMessage() {
 .review-author {
   margin-left: 4px;
   color: #777;
+}
+
+.my-dark-popup .leaflet-popup-content-wrapper {
+  background: #1f1f1f;
+  color: #eee;
+  border-radius: 12px;
+}
+
+.my-dark-popup .leaflet-popup-tip {
+  background: #1f1f1f;
 }
 </style>

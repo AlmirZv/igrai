@@ -12,7 +12,7 @@
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   width: 100%;
-  max-height: calc(100vh - var(--space-xl) * 2);
+  /* max-height: calc(100vh - var(--space-xl) * 2); */
   display: flex;
   flex-direction: column;
 }

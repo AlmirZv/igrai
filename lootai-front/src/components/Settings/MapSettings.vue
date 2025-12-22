@@ -1,7 +1,7 @@
 <template>
   <SettingsSection title="Карта" open>
     <!-- ОБЩИЕ ФИЛЬТРЫ -->
-    <div class="section-title">Фильтры отображения</div>
+    <Text variant="h4" color="accent">Фильтры отображения</Text>
 
     <label v-for="f in filters" :key="f.key" class="row">
       <span>{{ f.label }}</span>
@@ -27,10 +27,11 @@
 
       <label class="row">
         <span>Интервал обновления (мин)</span>
-        <input
+        <Input
           type="number"
           min="1"
           max="60"
+          width="100"
           v-model="settings.map.refreshInterval"
           @change="saveSettings"
           :disabled="!settings.map.autoRefresh"
@@ -39,10 +40,11 @@
 
       <label class="row">
         <span>Масштаб по умолчанию</span>
-        <input
+        <Input
           type="number"
           min="1"
           max="20"
+          width="100"
           v-model="settings.map.defaultZoom"
           @change="saveSettings"
         />
@@ -50,11 +52,11 @@
 
       <label class="row">
         <span>Тип карты</span>
-        <select v-model="settings.map.mapType" @change="saveSettings">
+        <Select width="100" v-model="settings.map.mapType" @change="saveSettings">
           <option value="default">Стандартная</option>
           <option value="satellite">Спутник</option>
           <option value="terrain">Рельеф</option>
-        </select>
+        </Select>
       </label>
     </div>
 
@@ -65,11 +67,11 @@
       <div class="content">
         <label class="row">
           <span>Пол</span>
-          <select v-model="taskFilters.gender" @change="saveSettings">
+          <Select width="100" v-model="taskFilters.gender" @change="saveSettings">
             <option value="any">Любой</option>
             <option value="male">Мужской</option>
             <option value="female">Женский</option>
-          </select>
+          </Select>
         </label>
 
         <label class="row">
@@ -100,6 +102,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { auth, db } from '../../config/firebase'
 import type { UserSettings } from '../../types/settings'
 import SettingsSection from './SettingsSection.vue'
+import { Text, Input, Select } from '@/designSystem/components'
 
 const settings = ref<UserSettings>({
   profile: {
@@ -192,24 +195,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Заголовок блока */
-.section-title {
-  margin: 8px 0 14px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #3d7eff;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
 /* Ряд настроек */
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: var(--space-sm) 0;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .row:last-child {
@@ -217,74 +210,34 @@ onMounted(() => {
 }
 
 .row span {
-  color: #d7d7d7;
+  color: var(--text-muted);
 }
 
 /* Чекбокс */
 .row input[type='checkbox'] {
   width: 20px;
   height: 20px;
-  accent-color: #3d7eff;
+  accent-color: var(--text-accent);
   cursor: pointer;
-}
-
-/* Числовые поля */
-.row input[type='number'] {
-  width: 90px;
-  padding: 6px 10px;
-  background: #22252b;
-  border: 1px solid #2f3239;
-  border-radius: 8px;
-  color: #f1f1f1;
-  text-align: center;
-  font-size: 14px;
-}
-
-.row input[type='number']:focus {
-  border-color: #3d7eff;
-  box-shadow: 0 0 0 2px rgba(61, 126, 255, 0.25);
-  outline: none;
-}
-
-.row input[type='number']:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Select */
-.row select {
-  background: #22252b;
-  border: 1px solid #2f3239;
-  border-radius: 8px;
-  padding: 6px 12px;
-  color: #f1f1f1;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.row select:focus {
-  border-color: #3d7eff;
-  box-shadow: 0 0 0 2px rgba(61, 126, 255, 0.25);
-  outline: none;
 }
 
 /* Range sliders */
 .row input[type='range'] {
-  accent-color: #3d7eff;
+  accent-color: var(--text-accent);
   width: 120px;
 }
 
 .range-value {
   min-width: 40px;
   text-align: right;
-  color: #bbb;
+  color: var(--text-muted);
 }
 
 /* Подблок настроек */
 .sub-block {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -292,27 +245,23 @@ onMounted(() => {
 
 /* Фильтры задач */
 .task-filters {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .task-filters summary {
   cursor: pointer;
-  font-weight: 600;
-  color: #3d7eff;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.task-filters summary:hover {
-  color: #6e9cff;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-accent);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .content {
-  padding: 10px 0;
+  padding: var(--space-sm) 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 </style>

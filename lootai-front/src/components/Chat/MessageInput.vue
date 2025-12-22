@@ -1,12 +1,13 @@
 <template>
   <div class="input-bar">
-    <input type="text" v-model="text" placeholder="Напишите сообщение..." @keyup.enter="send" />
-    <button @click="send">➤</button>
+    <Input type="text" v-model="text" placeholder="Напишите сообщение..." @keyup.enter="send" />
+    <Button @click="send">➤</Button>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { Input, Button } from '@/designSystem/components'
 
 const text = ref('')
 const emit = defineEmits(['send'])
@@ -21,23 +22,8 @@ function send() {
 <style scoped>
 .input-bar {
   display: flex;
-  padding: 8px;
-  border-top: 1px solid #ccc;
-  margin-bottom: 65px;
-}
-input {
-  flex: 1;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-button {
-  margin-left: 6px;
-  padding: 6px 10px;
-  border: none;
-  background: #8000ff;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
+  padding: var(--space-sm);
+  margin-bottom: 60px;
+  gap: var(--space-md);
 }
 </style>

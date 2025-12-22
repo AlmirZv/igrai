@@ -27,12 +27,10 @@ defineEmits(['open'])
 .chat-item {
   display: flex;
   align-items: center;
-  padding: 6px;
+  padding: var(--space-xs);
   cursor: pointer;
 }
-.chat-item:hover {
-  background: #f0f0f0;
-}
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -58,17 +56,15 @@ defineEmits(['open'])
   font-weight: bold;
 }
 .last-message {
-  font-size: 12px;
-  color: #666;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
 }
 .badge {
-  background: red;
-  color: white;
-  font-size: 11px;
-  font-weight: bold;
+  margin-left: var(--space-xs);
   padding: 2px 6px;
-  border-radius: 12px;
-  min-width: 18px;
-  text-align: center;
+  font-size: var(--font-size-xs);
+  border-radius: var(--radius-sm);
+  background: var(--accent-primary);
+  color: var(--text-onAccent);
 }
 </style>

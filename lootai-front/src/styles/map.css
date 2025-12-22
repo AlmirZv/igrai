@@ -1,0 +1,9 @@
+.map-popup-dark .leaflet-popup-content-wrapper {
+  background: #1f1f1f;
+  color: #eee;
+  border-radius: 12px;
+}
+
+.map-popup-dark .leaflet-popup-tip {
+  background: #1f1f1f;
+}

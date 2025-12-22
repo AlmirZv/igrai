@@ -18,7 +18,7 @@
 
     <!-- Уведомления -->
     <div class="notifications-block">
-      <h4>Уведомления</h4>
+      <Text variant="h4">Уведомления</Text>
 
       <label class="row">
         <span>Обновления задач</span>
@@ -59,8 +59,8 @@
 
     <!-- Кнопки действий -->
     <div class="buttons">
-      <button class="btn" @click="editProfile">Редактировать профиль</button>
-      <button class="btn secondary" @click="changeAccount">Сменить аккаунт</button>
+      <Button @click="editProfile">Редактировать профиль</Button>
+      <Button variant="secondary" @click="changeAccount">Сменить аккаунт</Button>
     </div>
   </SettingsSection>
 </template>
@@ -72,6 +72,7 @@ import { auth, db } from '../../config/firebase'
 import type { UserSettings } from '../../types/settings'
 import SettingsSection from './SettingsSection.vue'
 import { signOut } from 'firebase/auth'
+import { Button, Text, Input, Select } from '@/designSystem/components'
 
 const settings = ref<UserSettings>({
   profile: {
@@ -163,24 +164,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Заголовок блока */
-.section-title {
-  margin: 8px 0 14px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #3d7eff;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
 /* Ряд настроек */
 .row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
-  font-size: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: var(--space-sm) 0;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .row:last-child {
@@ -188,74 +179,34 @@ onMounted(() => {
 }
 
 .row span {
-  color: #d7d7d7;
+  color: var(--text-muted);
 }
 
 /* Чекбокс */
 .row input[type='checkbox'] {
   width: 20px;
   height: 20px;
-  accent-color: #3d7eff;
+  accent-color: var(--text-accent);
   cursor: pointer;
-}
-
-/* Числовые поля */
-.row input[type='number'] {
-  width: 90px;
-  padding: 6px 10px;
-  background: #22252b;
-  border: 1px solid #2f3239;
-  border-radius: 8px;
-  color: #f1f1f1;
-  text-align: center;
-  font-size: 14px;
-}
-
-.row input[type='number']:focus {
-  border-color: #3d7eff;
-  box-shadow: 0 0 0 2px rgba(61, 126, 255, 0.25);
-  outline: none;
-}
-
-.row input[type='number']:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Select */
-.row select {
-  background: #22252b;
-  border: 1px solid #2f3239;
-  border-radius: 8px;
-  padding: 6px 12px;
-  color: #f1f1f1;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.row select:focus {
-  border-color: #3d7eff;
-  box-shadow: 0 0 0 2px rgba(61, 126, 255, 0.25);
-  outline: none;
 }
 
 /* Range sliders */
 .row input[type='range'] {
-  accent-color: #3d7eff;
+  accent-color: var(--text-accent);
   width: 120px;
 }
 
 .range-value {
   min-width: 40px;
   text-align: right;
-  color: #bbb;
+  color: var(--text-muted);
 }
 
 /* Подблок настроек */
 .sub-block {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -263,77 +214,30 @@ onMounted(() => {
 
 /* Фильтры задач */
 .task-filters {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .task-filters summary {
   cursor: pointer;
-  font-weight: 600;
-  color: #3d7eff;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.task-filters summary:hover {
-  color: #6e9cff;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-accent);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .content {
-  padding: 10px 0;
+  padding: var(--space-sm) 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-sm);
 }
+
 /* Кнопки */
 .buttons {
-  margin-top: 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.btn {
-  width: 100%;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #25b9a0, #1e9783);
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
-  box-shadow: 0 2px 8px rgba(37, 185, 160, 0.3);
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 185, 160, 0.4);
-}
-
-.btn.secondary {
-  background: linear-gradient(135deg, #374151, #4b5563);
-  box-shadow: 0 2px 8px rgba(75, 85, 99, 0.3);
-}
-
-.btn.secondary:hover {
-  box-shadow: 0 4px 12px rgba(75, 85, 99, 0.4);
-}
-
-/* Мобильные адаптации */
-@media (max-width: 480px) {
-  .row {
-    padding: 8px 0;
-  }
-
-  .row span {
-    font-size: 13px;
-  }
-
-  .btn {
-    padding: 10px 12px;
-    font-size: 14px;
-  }
+  gap: var(--space-sm);
 }
 </style>

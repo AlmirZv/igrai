@@ -5,6 +5,7 @@
       v-bind="$attrs"
       :value="modelValue"
       @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+      :style="width ? `width:${width}px` : '100%'"
     >
       <slot />
     </select>
@@ -17,6 +18,7 @@
 <script setup lang="ts">
 defineProps<{
   modelValue?: string
+  width?: string
 }>()
 
 defineEmits<{

@@ -1,8 +1,8 @@
 <template>
   <div class="chat-window">
     <header>
-      <button @click="$emit('close')">←</button>
-      <h3>{{ chat.name }}</h3>
+      <Text variant="h3">{{ chat.name }}</Text>
+      <Button @click="$emit('close')">←</Button>
     </header>
 
     <MessageList :messages="messages" :members="chatMembers" />
@@ -18,6 +18,7 @@ import { listenMessages } from '@/composables/useChats'
 import type { Chat, ChatMessage } from '@/types/chat'
 import { onMounted, onUnmounted, ref, reactive } from 'vue'
 import { getUserInfo } from '@/composables/userInfo'
+import { Button, Text } from '@/designSystem/components'
 
 const props = defineProps<{
   chat: Chat
@@ -60,12 +61,10 @@ defineEmits(['close', 'send'])
 header {
   display: flex;
   align-items: center;
-  padding: 8px;
-  background: #8000ff;
-  color: white;
-}
-header h3 {
-  margin-left: 8px;
-  font-size: 16px;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--bg-surface), var(--bg-overlay));
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(16px);
+  padding: var(--space-sm);
 }
 </style>

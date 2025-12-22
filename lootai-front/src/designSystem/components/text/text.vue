@@ -105,7 +105,7 @@ const tag = props.as || tagMap[props.variant] || 'p'
 }
 
 .text--color-accent {
-  color: var(--accent-primary);
+  color: var(--text-accent);
 }
 
 .text--color-muted {

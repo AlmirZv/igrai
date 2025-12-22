@@ -16,18 +16,11 @@ defineProps({
 
 <style scoped>
 .section {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  padding: 6px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
 }
 summary {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
-  padding: 4px;
-}
-.content {
-  margin-top: 8px;
-  padding-left: 6px;
 }
 </style>

@@ -1,22 +1,16 @@
 <template>
   <div class="settings-page">
-    <div class="settings-section">
+    <Card>
       <MapSettings />
-    </div>
+    </Card>
 
-    <div class="settings-section">
+    <Card>
       <ProfileSettings />
-    </div>
+    </Card>
 
-    <div class="settings-section">
+    <Card>
       <AppSettings />
-    </div>
-
-    <!-- DevTools (появляется только в dev-режиме) -->
-    <!-- <div v-if="isDevelopment" class="settings-section dev-section">
-      <SeedDatabase />
-      <NotificationsSettings />
-    </div> -->
+    </Card>
   </div>
 </template>
 
@@ -27,6 +21,7 @@ import MapSettings from './MapSettings.vue'
 import NotificationsSettings from './NotificationsSettings.vue'
 import AppSettings from './AppSettings.vue'
 import SeedDatabase from '../DevTools/SeedDatabase.vue'
+import { Card } from '@/designSystem/components'
 
 const isDevelopment = computed(() => {
   return import.meta.env.DEV || import.meta.env.MODE === 'development'
@@ -36,26 +31,12 @@ const isDevelopment = computed(() => {
 <style scoped>
 /* Общая страница */
 .settings-page {
-  font-family: 'Segoe UI', sans-serif;
-  padding: 16px;
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--space-lg);
   overflow-y: auto;
-  background: #121417;
-  min-height: 100vh;
-  color: #f1f1f1;
-}
-
-/* Карточка секции */
-.settings-section {
-  background: #1b1e24;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  padding-bottom: 80px;
 }
 
 /* DevTools */

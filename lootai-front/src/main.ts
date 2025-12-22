@@ -8,11 +8,12 @@ import router from './router'
 import { auth, db } from './config/firebase'
 
 import './styles/base.css'
+import '@/styles/map.css'
 
 import { applyTheme } from './designSystem'
-import { darkTheme } from './designSystem'
+import { darkTheme, dandadanTheme } from './designSystem'
 
-applyTheme(darkTheme)
+applyTheme(dandadanTheme)
 
 const app = createApp(App)
 

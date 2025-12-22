@@ -1,14 +1,10 @@
 <template>
   <div class="chat-page">
-    <div v-if="isLoading" class="loading-state">
-      <div class="spinner"></div>
-      <p>Загрузка чатов...</p>
-    </div>
-
-    <div v-else-if="error" class="error-state">
+    <LoadingSpinner v-if="isLoading">Загрузка чатов...</LoadingSpinner>
+    <ErrorState v-else-if="error">
       <p>Ошибка загрузки: {{ error }}</p>
-      <button @click="loadChats" class="retry-btn">Повторить</button>
-    </div>
+      <Button @click="loadChats">Повторить</Button>
+    </ErrorState>
 
     <div v-else-if="!selectedChat" class="chat-list">
       <ChatGroup
@@ -32,9 +28,9 @@
     </div>
 
     <ChatWindow v-else :chat="selectedChat" @close="selectedChat = null" @send="sendMessage" />
-    <div>
+    <!-- <div>
       <button class="create-btn" type="button" @click="createTestChat">Создать chat</button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -58,6 +54,7 @@ import { auth, db } from '../../config/firebase'
 import type { Chat, ChatMessage } from '../../types/chat'
 import ChatGroup from './ChatGroup.vue'
 import ChatWindow from './ChatWindow.vue'
+import { LoadingSpinner, ErrorState, Button } from '@/designSystem/components'
 import { loadUserChats, loadChatMessages, sendMessageDB, createChat } from '@/composables/useChats'
 import { useNavigation } from '@/composables/useNavigation'
 
@@ -270,108 +267,13 @@ const createTestChat = async () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  color: #f1f1f1;
-  min-height: 400px;
-  background: #121417;
 }
 
 /* Список чатов */
 .chat-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  margin-top: 20px;
-}
-
-/* Состояние загрузки */
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-}
-
-/* Новый спиннер */
-.spinner {
-  width: 46px;
-  height: 46px;
-  border: 4px solid rgba(255, 255, 255, 0.08);
-  border-top: 4px solid #25b9a0;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-state p {
-  font-size: 15px;
-  color: #d1d5db;
-  margin: 0;
-}
-
-/* Ошибки */
-.error-state p {
-  font-size: 15px;
-  margin: 0 0 16px 0;
-  color: #ef4444;
-}
-
-.error-state {
-  color: #ef4444;
-}
-
-/* Кнопка повтора */
-.retry-btn {
-  background: linear-gradient(135deg, #25b9a0, #1e9783);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 26px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
-  box-shadow: 0 2px 8px rgba(37, 185, 160, 0.25);
-}
-
-.retry-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(37, 185, 160, 0.4);
-}
-
-/* Мобильная адаптация */
-@media (max-width: 480px) {
-  .chat-list {
-    padding: 12px;
-    gap: 10px;
-    margin-top: 16px;
-  }
-
-  .loading-state,
-  .error-state {
-    padding: 40px 16px;
-  }
-
-  .spinner {
-    width: 34px;
-    height: 34px;
-    border-width: 3px;
-  }
-
-  .loading-state p,
-  .error-state p {
-    font-size: 14px;
-  }
+  gap: var(--space-md);
+  padding: var(--space-lg);
 }
 </style>

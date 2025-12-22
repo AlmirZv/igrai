@@ -3,15 +3,15 @@
     <div ref="mapContainer" class="map"></div>
 
     <div class="map-controls">
-      <button @click="centerOnMe" class="control-btn" title="Мое местоположение">🧭</button>
-      <button @click="createBot" class="control-btn bot-btn" title="Создать бота">🤖</button>
-      <button
+      <Button class="control-btn" @click="centerOnMe" title="Мое местоположение">🧭</Button>
+      <!-- <Button @click="createBot"  title="Создать бота">🤖</Button> -->
+      <Button
         @click="createTask"
-        :class="['control-btn', 'create-task-btn', { active: isCreatingTask }]"
+        :class="['control-btn', { active: isCreatingTask }]"
         title="Создать задачу"
       >
         +
-      </button>
+      </Button>
     </div>
   </div>
 </template>
@@ -27,6 +27,7 @@ import { loadQuests } from '@/composables/useQuests'
 import { loadPublicTasks } from '@/composables/usePublicTasks'
 import { socket, state } from '@/socket'
 import type { UserSettings } from '@/types/settings'
+import { Button } from '@/designSystem/components'
 
 const mapContainer = ref<HTMLElement>()
 const settings = ref<UserSettings | null>(null)
@@ -414,49 +415,33 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* расстояние между кнопками */
-  /* background: rgba(255, 255, 255, 0.9); легкий фон */
   padding: 8px;
   border-radius: 12px;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
 }
 
 .control-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 50%;
-  background-color: #ffffff;
-  cursor: pointer;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xs);
 }
 
-.control-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.bot-btn {
-  background-color: #f0f0f0;
-}
-
-.create-task-btn {
-  background-color: #f0f0f0;
-  color: #388e3c;
-}
-
-.create-task-btn.active {
-  background-color: #388e3c;
-  color: #f0f0f0;
+.control-btn.active {
+  background-color: var(--text-accent);
+  /* color: #f0f0f0; */
   transform: scale(1.1);
 }
 
 .control-btn:active {
   transform: scale(0.95);
+}
+</style>
+<style>
+.leaflet-popup-content-wrapper {
+  background: var(--bg-overlay);
+  border-radius: 12px;
+}
+
+.leaflet-popup-tip {
+  background: var(--bg-overlay);
 }
 </style>

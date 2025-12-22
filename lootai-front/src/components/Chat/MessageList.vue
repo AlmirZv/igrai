@@ -1,50 +1,80 @@
 <template>
   <div class="messages">
     <div v-for="(msg, i) in messages" :key="i">
-      <div :style="[fromMe(msg.fromId) ? 'text-align:right' : '']">
-        {{ members[msg.fromId].name }}
+      <div :class="['message', fromMe(msg.fromId) ? 'me' : 'other']">
+        <!-- <div class="messageSender">
+          <Text color="accent">
+            {{ members[msg.fromId].name }}
+          </Text>
+          <Text color="muted">
+            {{ new Date(msg.timestamp).toLocaleString(undefined, options) }}
+          </Text>
+        </div> -->
+        <Text color="accent">
+          {{ members[msg.fromId].name }}
+        </Text>
+        <div>
+          {{ msg.text }}
+        </div>
       </div>
-      <div :class="['message', fromMe(msg.fromId) ? 'me' : 'other']">{{ msg.text }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { auth } from '@/config/firebase'
+import { Text } from '@/designSystem/components'
 
-defineProps({
+const props = defineProps({
   messages: Array,
   members: Object,
 })
+console.log(props)
 
 function fromMe(id) {
   const uid = auth.currentUser.uid
   if (uid == id) return true
   else false
 }
+
+const options = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false, // Use AM/PM
+  // timeZoneName: 'short', // e.g., PST
+}
 </script>
 
 <style scoped>
 .messages {
   flex: 1;
-  padding: 10px;
+  padding: var(--space-sm);
   overflow-y: auto;
 }
 .message {
   max-width: 70%;
-  margin: 6px 0;
-  padding: 8px;
-  border-radius: 10px;
+  margin: var(--space-xs) 0;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
 }
 .me {
-  background: #8000ff;
-  color: white;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   margin-left: auto;
   text-align: right;
 }
 .other {
-  background: #eee;
-  color: black;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   margin-right: auto;
+}
+.messageSender {
+  /* color: var(--text-accent); */
+  display: flex;
 }
 </style>

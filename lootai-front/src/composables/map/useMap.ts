@@ -101,7 +101,9 @@ export function useMap() {
     if (!marker) return
     if (!mapInstance.value) return
 
-    marker.bindPopup(L.popup())
+    marker.bindPopup('', {
+      className: 'my-dark-popup',
+    })
 
     marker.on('popupopen', () => {
       const el = document.createElement('div')
