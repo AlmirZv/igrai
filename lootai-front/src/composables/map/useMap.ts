@@ -1,4 +1,4 @@
-import { ref, createApp } from 'vue'
+import { ref, createApp, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { auth } from '@/config/firebase'
@@ -19,14 +19,24 @@ import type { Task } from '@/types/task'
 import type { QuestTask, QuestParticipant, QuestStep } from '@/types/quest'
 import type { EventTask } from '@/types/event'
 import type { PublicTask } from '@/types/publicTask'
-const { map, init, addMarker, removeMarker, center } = useMapCore()
+const { map, init, addMarker, removeMarker, center, setTheme } = useMapCore()
 const { open, close, move, hide, ignoreNextClick } = useMapPopups(map)
+import useSettings from '@/composables/useSettings'
+const { state } = useSettings()
 
 export function useMap() {
   const isCreatingTask = ref(false)
   const selectingStep = ref(false)
   const pendingQuestData = ref<any>(null)
   const mapInstance = ref<L.Map>()
+
+  watch(
+    () => state.draft.value.app.theme,
+    (newTheme) => {
+      if (!map.value) return // теперь map уже есть
+      setTheme(newTheme === 'dark' ? 'dark' : 'light')
+    },
+  )
 
   // 🗺️ Инициализация карты
   function initMap(container: HTMLElement, coords: [number, number], zoom = 13) {

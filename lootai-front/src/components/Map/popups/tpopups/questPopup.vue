@@ -7,6 +7,7 @@ import { calculateDistance } from '@/utils/geolocation'
 import { useGeolocation } from '@/composables/useGeolocation'
 import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 import questFinish from './questFinish.vue'
+import { Input, Button } from '@/designSystem/components'
 
 const { getLocation } = useGeolocation()
 type PopupType = 'quest'
@@ -210,12 +211,12 @@ async function checkDistance() {
 
         <div v-if="auth.currentUser?.uid != data.authorId">
           <div class="field" v-if="currentStep?.type === 'riddle'">
-            Ответ: <input type="text" v-model="riddleAnswer" />
-            <button v-if="!solved" class="action-btn" @click="checkRiddleAnswer">Ответ</button>
+            Ответ: <Input type="text" v-model="riddleAnswer" />
+            <Button v-if="!solved" @click="checkRiddleAnswer">Ответ</Button>
           </div>
 
           <div class="field" v-if="currentStep?.type === 'qr'">
-            <button v-if="!solved" class="action-btn" @click="scanQRCode">Scan</button>
+            <Button v-if="!solved" @click="scanQRCode">Scan</Button>
           </div>
         </div>
         <div v-else>You are creator</div>
@@ -261,139 +262,78 @@ async function checkDistance() {
 </template>
 
 <style scoped>
-/* Общий стиль попапа */
-.popup {
-  font-family: 'Segoe UI', sans-serif;
-  width: 280px;
-  padding: 18px;
-  border-radius: 14px;
-  background: #1b1e24;
-  color: #f1f1f1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-
-.fullscreen {
-  width: 280px;
-  padding: 18px;
-  border-radius: 14px;
-  background: #1b1e24;
-  color: #f1f1f1;
-  overflow: auto;
-}
-
 /* Заголовок */
 .title {
-  margin: 0 0 10px;
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Автор и мета */
 .author,
 .difficulty {
-  margin: 4px 0;
-  font-size: 14px;
-  opacity: 0.85;
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
 }
 
 /* Описание */
 .description {
-  margin: 10px 0;
-  font-size: 14px;
-  opacity: 0.9;
-  line-height: 1.4;
+  margin: 0 0 var(--space-md) 0;
+  font-size: var(--font-size-sm);
+  /* font-weight: var(--font-weight-semibold); */
+  /* color: var(--text-muted); */
 }
 
 /* Формы */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 10px;
-  font-size: 14px;
-}
-
-input {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #3a3f4b;
-  background: #242830;
-  color: #fff;
-  font-size: 14px;
-}
-
-input:focus {
-  outline: none;
-  border-color: #3d7eff;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
 }
 
 /* Шаги */
 .step {
-  margin-top: 12px;
-  background: #242830;
-  padding: 12px;
-  border-radius: 10px;
+  margin-top: var(--space-md);
+  background: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
   max-height: 40vh;
   overflow: auto;
-  font-size: 14px;
-}
-
-/* Кнопки */
-.action-btn {
-  margin-top: 12px;
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #3d7eff;
-  color: white;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.action-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  font-size: var(--font-size-sm);
 }
 
 /* --- Quest Completed блок --- */
 
-.quest-complete {
-  background: #1b1e24;
-  padding: 16px;
-  border-radius: 14px;
-  color: #f1f1f1;
-}
-
 .badge {
   display: inline-block;
-  background: #3d7eff;
-  color: #fff;
-  padding: 5px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 14px;
+  background: var(--bg-surface);
+  color: var(--text-accent);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-md);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 /* Награда */
 .reward-block {
-  margin-top: 18px;
-  background: #242830;
-  padding: 14px;
-  border-radius: 12px;
+  margin-top: var(--space-md);
+  background: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
 }
 
 .reward-title {
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-md);
 }
 
 .reward-list {
@@ -403,21 +343,21 @@ input:focus {
 }
 
 .reward-list li {
-  margin: 5px 0;
-  font-size: 15px;
+  margin: var(--space-xs) 0;
+  font-size: var(--font-size-md);
 }
 
 .reward-list strong {
-  color: #58ffab;
+  color: var(--text-accent);
 }
 
 /* Финальные слова */
 .finish-words {
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 14px;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--font-size-sm);
   opacity: 0.9;
-  line-height: 1.4;
+  line-height: var(--font-lineHeight-normal);
 }
 </style>

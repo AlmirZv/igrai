@@ -438,10 +438,33 @@ onUnmounted(() => {
 <style>
 .leaflet-popup-content-wrapper {
   background: var(--bg-overlay);
+  color: var(--text-primary);
   border-radius: 12px;
+  box-shadow: var(--shadow-xs);
 }
 
 .leaflet-popup-tip {
   background: var(--bg-overlay);
+}
+
+/* .leaflet-control-zoom leaflet-bar leaflet-control */
+
+.leaflet-touch .leaflet-control-zoom-out {
+  color: var(--text-accent);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+.leaflet-touch .leaflet-control-zoom-in {
+  color: var(--text-accent);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+.leaflet-control-zoom .leaflet-control .leaflet-bar {
+  color: var(--text-accent);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+.leaflet-bar a {
+  border-bottom: 1px solid var(--border-strong);
 }
 </style>

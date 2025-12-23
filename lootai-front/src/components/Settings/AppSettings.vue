@@ -2,7 +2,7 @@
   <SettingsSection title="Приложение" open>
     <label class="row">
       <span>Язык интерфейса 🌐</span>
-      <Select width="100" v-model="settings.app.language" @change="saveSettings">
+      <Select width="100" v-model="settings.app.language" @change="saveToDB">
         <option value="ru">Русский</option>
         <option value="en">English</option>
       </Select>
@@ -10,15 +10,17 @@
 
     <label class="row">
       <span>Тема</span>
-      <Select width="100" v-model="settings.app.theme" @change="saveSettings">
+      <Select width="100" v-model="state.draft.value.app.theme" @change="saveToDB">
         <option value="light">Светлая</option>
+        dandadan
         <option value="dark">Тёмная</option>
+        <option value="dandadan">dandadan</option>
       </Select>
     </label>
 
     <label class="row">
       <span>Размер шрифта</span>
-      <Select width="100" v-model="settings.app.fontSize" @change="saveSettings">
+      <Select width="100" v-model="settings.app.fontSize" @change="saveToDB">
         <option value="small">Маленький</option>
         <option value="medium">Средний</option>
         <option value="large">Большой</option>
@@ -27,12 +29,12 @@
 
     <label class="row">
       <span>Звуки</span>
-      <input type="checkbox" v-model="settings.app.soundEnabled" @change="saveSettings" />
+      <input type="checkbox" v-model="settings.app.soundEnabled" @change="saveToDB" />
     </label>
 
     <label class="row">
       <span>Вибрация</span>
-      <input type="checkbox" v-model="settings.app.vibrationEnabled" @change="saveSettings" />
+      <input type="checkbox" v-model="settings.app.vibrationEnabled" @change="saveToDB" />
     </label>
 
     <div class="version-info">
@@ -49,6 +51,9 @@ import { auth, db } from '../../config/firebase'
 import type { UserSettings, AppConfig } from '../../types/settings'
 import SettingsSection from './SettingsSection.vue'
 import { Text, Input, Select } from '@/designSystem/components'
+import useSettings from '@/composables/useSettings'
+
+const { state, applyDraft, resetDraft, getUserSettings } = useSettings()
 
 const settings = ref<UserSettings>({
   profile: {
@@ -96,37 +101,22 @@ const appConfig = ref<AppConfig>({
   },
 })
 
-const loadSettings = async () => {
-  try {
-    const uid = auth.currentUser?.uid
-    if (!uid) return
-
-    const settingsRef = doc(db, 'userSettings', uid)
-    const snap = await getDoc(settingsRef)
-
-    if (snap.exists()) {
-      settings.value = { ...settings.value, ...snap.data() }
-    }
-  } catch (error) {
-    console.error('Error loading app settings:', error)
-  }
-}
-
-const saveSettings = async () => {
-  try {
-    const uid = auth.currentUser?.uid
-    if (!uid) return
-
-    const settingsRef = doc(db, 'userSettings', uid)
-    await setDoc(settingsRef, settings.value, { merge: true })
-  } catch (error) {
-    console.error('Error saving app settings:', error)
-  }
-}
-
-onMounted(() => {
-  loadSettings()
+onMounted(async () => {
+  const uid = auth.currentUser?.uid
+  if (uid) await getUserSettings(uid)
 })
+
+// Сохранить настройки карты в userSettings
+const saveToDB = async () => {
+  const uid = auth.currentUser?.uid
+  if (!uid) return
+
+  // при необходимости запиши filters / taskFilters в state.draft
+  // state.draft.value.mapFilters = filters
+  // state.draft.taskFilters = taskFilters
+
+  await applyDraft(uid)
+}
 </script>
 
 <style scoped>

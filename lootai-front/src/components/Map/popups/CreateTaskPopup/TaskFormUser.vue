@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Input, Textarea, Select, Text, Button } from '@/designSystem/components'
 
 const model = defineModel({
   type: Object,
@@ -34,48 +35,48 @@ function addItem() {
   <div class="form">
     <div class="field">
       <label>Заголовок:</label>
-      <input v-model="model.title" placeholder="Название" />
+      <Input v-model="model.title" placeholder="Название" />
     </div>
 
     <div class="field">
       <label>Описание:</label>
-      <textarea v-model="model.description" placeholder="Опишите задачу..." />
+      <Textarea v-model="model.description" placeholder="Опишите задачу..." />
     </div>
 
     <!-- Пол -->
     <div class="field">
       <label>Пол:</label>
-      <select v-model="model.requirements.gender">
+      <Select v-model="model.requirements.gender">
         <option value="any">Любой</option>
         <option value="male">Мужчины</option>
         <option value="female">Женщины</option>
-      </select>
+      </Select>
     </div>
 
     <!-- Возраст -->
     <div class="field">
       <label>Возраст:</label>
-      <input type="number" v-model="model.requirements.age" min="0" />
+      <Input type="number" v-model="model.requirements.age" min="0" />
     </div>
 
     <div class="field">
       <label>Количество:</label>
-      <input type="number" v-model="model.requirements.membersCount" min="1" />
+      <Input type="number" v-model="model.requirements.membersCount" min="1" />
     </div>
 
     <div class="field">
       <label>Начало:</label>
       <div class="inline-inputs">
-        <input type="date" v-model="model.requirements.startDate" />
-        <input type="time" v-model="model.requirements.startTime" />
+        <Input type="date" v-model="model.requirements.startDate" />
+        <Input type="time" v-model="model.requirements.startTime" />
       </div>
     </div>
 
     <div class="field">
       <label>Конец:</label>
       <div class="inline-inputs">
-        <input type="date" v-model="model.requirements.endDate" />
-        <input type="time" v-model="model.requirements.endTime" />
+        <Input type="date" v-model="model.requirements.endDate" />
+        <Input type="time" v-model="model.requirements.endTime" />
       </div>
     </div>
 
@@ -88,32 +89,17 @@ function addItem() {
       </div>
       <div class="field">
         <label>Очки:</label>
-        <input type="number" v-model="model.reward.points" min="0" />
+        <Input type="number" v-model="model.reward.points" min="0" />
       </div>
       <div class="field">
         <label>Предмет:</label>
-        <button class="create-btn small" @click.prevent="addItem">+</button>
+        <Button class="create-btn small" @click.prevent="addItem">+</Button>
       </div>
     </fieldset>
   </div>
 </template>
 
 <style scoped>
-.popup {
-  font-family: sans-serif;
-  width: 300px;
-  padding: 10px;
-  border-radius: 12px;
-  background: white;
-}
-
-.title {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-}
-
 .form {
   display: flex;
   flex-direction: column;
@@ -125,15 +111,16 @@ function addItem() {
 
 .field {
   display: grid;
-  grid-template-columns: 100px 1fr; /* подпись фикс, поле тянется */
+  grid-template-columns: 100px 1fr;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
 }
 
 .inline-inputs {
   display: grid;
-  gap: 6px;
+  gap: var(--space-sm);
   width: 100%;
   box-sizing: border-box;
 }
@@ -143,44 +130,25 @@ function addItem() {
   margin: 0px;
 }
 
-input,
-select,
-textarea {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-  flex: 1; /* поле растягивается по колонке */
-  min-width: 0; /* предотвращает переполнение */
-}
-
-textarea {
-  min-height: 50px;
-  resize: vertical;
-}
-
 .reward {
-  margin-top: 6px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  margin-top: var(--space-md);
+  background: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
 }
 
 .reward legend {
-  font-size: 13px;
-  font-weight: bold;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
 }
 
 .error {
-  color: red;
-  font-size: 13px;
+  color: var(--state-error);
+  font-size: var(--font-size-sm);
   text-align: center;
 }
 
-.create-btn {
+/* .create-btn {
   margin-top: 6px;
   padding: 8px;
   border: none;
@@ -190,12 +158,10 @@ textarea {
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-}
-.create-btn:hover {
-  background: #45a049;
-}
+} */
+
 .create-btn.small {
   width: auto;
-  padding: 4px 10px;
+  padding: var(--space-xs) var(--space-sm);
 }
 </style>

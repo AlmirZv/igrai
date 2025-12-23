@@ -10,7 +10,7 @@
 
     <transition name="fade">
       <div v-show="open" class="content">
-        <LoadingSpinner v-if="loading">Загрузка...</LoadingSpinner>
+        <!-- <LoadingSpinner v-if="loading">Загрузка...</LoadingSpinner> -->
 
         <ul>
           <ChatItem

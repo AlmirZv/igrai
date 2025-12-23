@@ -1,6 +1,6 @@
 <template>
   <Stack class="profile" v-if="!isLoading && user">
-    <Avatar :user="user" />
+    <Avatar :user="user" :show-personal-info="true" />
     <Stats :user="user" />
     <Achievements :user="user" />
     <Inventory :user="user" />

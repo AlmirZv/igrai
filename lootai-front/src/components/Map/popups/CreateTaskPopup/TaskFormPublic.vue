@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Input, Textarea, Select, Text, Button } from '@/designSystem/components'
+
 const model = defineModel({
   type: Object,
   default: () => ({
@@ -20,22 +22,22 @@ const model = defineModel({
   <div class="form-section">
     <div class="field">
       <label>Заголовок:</label>
-      <input v-model="model.title" placeholder="Название" />
+      <Input v-model="model.title" placeholder="Название" />
     </div>
 
     <div class="field">
       <label>Описание:</label>
-      <textarea v-model="model.description" placeholder="Опишите задачу..." />
+      <Textarea v-model="model.description" placeholder="Опишите задачу..." />
     </div>
 
     <div class="field">
       <label>Начало:</label>
-      <input type="date" v-model="model.startDate" />
+      <Input type="date" v-model="model.startDate" />
     </div>
 
     <div class="field">
       <label>Конец:</label>
-      <input type="date" v-model="model.endDate" />
+      <Input type="date" v-model="model.endDate" />
     </div>
 
     <!-- Награда -->
@@ -45,10 +47,10 @@ const model = defineModel({
         <label>XP:</label>
         <span>{{ model.reward.xp }}</span>
       </div>
-      <div class="field">
+      <!-- <div class="field">
         <label>Предмет:</label>
-        <!-- <button class="create-btn small" @click.prevent="addItem">+</button> -->
-      </div>
+        <Button class="create-btn small" @click.prevent="addItem">+</Button>
+      </div> -->
     </fieldset>
   </div>
 </template>
@@ -58,7 +60,20 @@ const model = defineModel({
   display: grid;
   grid-template-columns: 100px 1fr;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.reward {
+  margin-top: var(--space-md);
+  background: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.reward legend {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
 }
 </style>

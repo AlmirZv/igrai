@@ -46,4 +46,8 @@ defineEmits<{
   color: var(--text-muted);
   cursor: not-allowed;
 }
+
+.input::placeholder {
+  color: var(--text-muted);
+}
 </style>

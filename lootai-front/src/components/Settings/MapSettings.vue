@@ -5,24 +5,24 @@
 
     <label v-for="f in filters" :key="f.key" class="row">
       <span>{{ f.label }}</span>
-      <input type="checkbox" v-model="f.enabled" @change="saveSettings" />
+      <input type="checkbox" v-model="f.enabled" @change="saveToDB" />
     </label>
 
     <!-- НАСТРОЙКИ КАРТЫ -->
     <div class="sub-block">
       <label class="row">
         <span>Показывать задачи</span>
-        <input type="checkbox" v-model="settings.map.showTasks" @change="saveSettings" />
+        <input type="checkbox" v-model="settings.map.showTasks" @change="saveToDB" />
       </label>
 
       <label class="row">
         <span>Показывать пользователей</span>
-        <input type="checkbox" v-model="settings.map.showUsers" @change="saveSettings" />
+        <input type="checkbox" v-model="settings.map.showUsers" @change="saveToDB" />
       </label>
 
       <label class="row">
         <span>Автообновление</span>
-        <input type="checkbox" v-model="settings.map.autoRefresh" @change="saveSettings" />
+        <input type="checkbox" v-model="settings.map.autoRefresh" @change="saveToDB" />
       </label>
 
       <label class="row">
@@ -33,7 +33,7 @@
           max="60"
           width="100"
           v-model="settings.map.refreshInterval"
-          @change="saveSettings"
+          @change="saveToDB"
           :disabled="!settings.map.autoRefresh"
         />
       </label>
@@ -46,13 +46,13 @@
           max="20"
           width="100"
           v-model="settings.map.defaultZoom"
-          @change="saveSettings"
+          @change="saveToDB"
         />
       </label>
 
       <label class="row">
         <span>Тип карты</span>
-        <Select width="100" v-model="settings.map.mapType" @change="saveSettings">
+        <Select width="100" v-model="settings.map.mapType" @change="saveToDB">
           <option value="default">Стандартная</option>
           <option value="satellite">Спутник</option>
           <option value="terrain">Рельеф</option>
@@ -67,7 +67,7 @@
       <div class="content">
         <label class="row">
           <span>Пол</span>
-          <Select width="100" v-model="taskFilters.gender" @change="saveSettings">
+          <Select width="100" v-model="taskFilters.gender" @change="saveToDB">
             <option value="any">Любой</option>
             <option value="male">Мужской</option>
             <option value="female">Женский</option>
@@ -76,19 +76,13 @@
 
         <label class="row">
           <span>Возраст</span>
-          <input type="range" min="10" max="70" v-model="taskFilters.age" @change="saveSettings" />
+          <input type="range" min="10" max="70" v-model="taskFilters.age" @change="saveToDB" />
           <span class="range-value">{{ taskFilters.age }}</span>
         </label>
 
         <label class="row">
           <span>Дистанция</span>
-          <input
-            type="range"
-            min="1"
-            max="50"
-            v-model="taskFilters.distance"
-            @change="saveSettings"
-          />
+          <input type="range" min="1" max="50" v-model="taskFilters.distance" @change="saveToDB" />
           <span class="range-value">{{ taskFilters.distance }} км</span>
         </label>
       </div>
@@ -103,6 +97,9 @@ import { auth, db } from '../../config/firebase'
 import type { UserSettings } from '../../types/settings'
 import SettingsSection from './SettingsSection.vue'
 import { Text, Input, Select } from '@/designSystem/components'
+import useSettings from '@/composables/useSettings'
+
+const { state, applyDraft, resetDraft, getUserSettings } = useSettings()
 
 const settings = ref<UserSettings>({
   profile: {
@@ -147,51 +144,22 @@ const taskFilters = reactive({
   distance: 10,
 })
 
-const loadSettings = async () => {
-  try {
-    const uid = auth.currentUser?.uid
-    if (!uid) return
-
-    const settingsRef = doc(db, 'userSettings', uid)
-    const snap = await getDoc(settingsRef)
-
-    if (snap.exists()) {
-      const data = snap.data()
-      settings.value = { ...settings.value, ...data }
-
-      // Load map filters if they exist
-      if (data.mapFilters) {
-        Object.assign(filters, data.mapFilters)
-      }
-      if (data.taskFilters) {
-        Object.assign(taskFilters, data.taskFilters)
-      }
-    }
-  } catch (error) {
-    console.error('Error loading map settings:', error)
-  }
-}
-
-const saveSettings = async () => {
-  try {
-    const uid = auth.currentUser?.uid
-    if (!uid) return
-
-    const settingsRef = doc(db, 'userSettings', uid)
-    const settingsToSave = {
-      ...settings.value,
-      mapFilters: filters,
-      taskFilters: taskFilters,
-    }
-    await setDoc(settingsRef, settingsToSave, { merge: true })
-  } catch (error) {
-    console.error('Error saving map settings:', error)
-  }
-}
-
-onMounted(() => {
-  loadSettings()
+onMounted(async () => {
+  const uid = auth.currentUser?.uid
+  if (uid) await getUserSettings(uid)
 })
+
+// Сохранить настройки карты в userSettings
+const saveToDB = async () => {
+  const uid = auth.currentUser?.uid
+  if (!uid) return
+
+  // при необходимости запиши filters / taskFilters в state.draft
+  // state.draft.value.mapFilters = filters
+  // state.draft.taskFilters = taskFilters
+
+  await applyDraft(uid)
+}
 </script>
 
 <style scoped>

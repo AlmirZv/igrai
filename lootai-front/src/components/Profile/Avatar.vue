@@ -10,7 +10,7 @@
             {{ user.name }}
             <span class="level-badge">Lv {{ level }}</span>
           </Text>
-          <Text variant="caption" color="secondary">
+          <Text v-if="showPersonalInfo" variant="caption" color="secondary">
             {{ user.email }}
           </Text>
         </div>
@@ -32,7 +32,10 @@
 import { computed } from 'vue'
 import { Card, Stack, FormField } from '@/designSystem/components'
 import type { UserProfile } from '../../types/profile'
-const props = defineProps<{ user: UserProfile }>()
+const props = defineProps<{
+  user: UserProfile
+  showPersonalInfo?: Boolean
+}>()
 
 const avatarUrl = computed(() =>
   props.user.avatar === 'default-purple'

@@ -10,7 +10,7 @@
             {{ new Date(msg.timestamp).toLocaleString(undefined, options) }}
           </Text>
         </div> -->
-        <Text color="accent">
+        <Text v-if="members[msg.fromId]" color="accent">
           {{ members[msg.fromId].name }}
         </Text>
         <div>

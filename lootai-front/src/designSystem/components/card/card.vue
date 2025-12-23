@@ -15,6 +15,7 @@
   /* max-height: calc(100vh - var(--space-xl) * 2); */
   display: flex;
   flex-direction: column;
+  min-width: max-content;
 }
 .card--elevated {
   box-shadow: var(--shadow-lg);

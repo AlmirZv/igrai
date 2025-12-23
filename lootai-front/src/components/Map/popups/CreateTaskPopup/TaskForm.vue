@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { auth } from '@/config/firebase'
+import { Select, Text, Button } from '@/designSystem/components'
 
 // Импорт подкомпонентов
 import TaskFormPublic from './TaskFormPublic.vue'
@@ -365,7 +366,7 @@ function selectStepLocation(stepId: any) {
   <div class="popup">
     <!-- фиксированная шапка -->
     <div class="popup-header">
-      <h3 class="title">Создание задачи</h3>
+      <Text variant="h3">Создание задачи</Text>
       <!-- Ошибки -->
       <div v-if="showErrorMessage" class="error">{{ showErrorMessage }}</div>
     </div>
@@ -374,12 +375,12 @@ function selectStepLocation(stepId: any) {
     <div class="popup-scroll">
       <div class="field">
         <label>Тип задачи:</label>
-        <select v-model="type">
+        <Select v-model="type">
           <option value="public">Общественная</option>
           <option value="quest">Квест</option>
           <option value="event">Событие</option>
           <option value="user">Личная</option>
-        </select>
+        </Select>
       </div>
       <component
         :is="
@@ -399,7 +400,7 @@ function selectStepLocation(stepId: any) {
 
     <!-- фиксированная нижняя часть -->
     <div class="popup-footer">
-      <button class="create-btn" type="button" @click="createTask">Создать задачу</button>
+      <Button class="create-btn" type="button" @click="createTask">Создать задачу</Button>
     </div>
   </div>
 </template>
@@ -408,25 +409,12 @@ function selectStepLocation(stepId: any) {
 .popup {
   display: flex;
   flex-direction: column;
-  font-family: sans-serif;
-  width: 320px;
   max-height: 80vh;
-  background: white;
-  border-radius: 12px;
   overflow: hidden; /* важно — скрывает скролл вне контента */
 }
 
 /* === верхняя часть (не скроллится) === */
 .popup-header {
-  flex-shrink: 0;
-  padding: 10px;
-  z-index: 2;
-}
-
-.title {
-  margin: 0 0 8px 0;
-  font-size: 16px;
-  font-weight: bold;
   text-align: center;
 }
 
@@ -434,52 +422,33 @@ function selectStepLocation(stepId: any) {
 .popup-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: var(--space-sm);
 }
 
 /* === нижняя часть (кнопка) === */
 .popup-footer {
   flex-shrink: 0;
-  padding: 10px;
+  padding: var(--space-sm);
+  align-items: center;
 }
 
 .field {
   display: grid;
   grid-template-columns: 100px 1fr;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  margin-bottom: 6px;
-}
-
-input,
-textarea,
-select {
-  padding: 6px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xs);
 }
 
 .create-btn {
   width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #4caf50;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.create-btn:hover {
-  background: #45a049;
 }
 
 .error {
-  color: red;
-  font-size: 13px;
+  color: var(--state-error);
+  font-size: var(--font-size-sm);
   text-align: center;
-  margin-top: 8px;
+  margin-top: var(--space-sm);
 }
 </style>

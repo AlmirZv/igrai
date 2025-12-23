@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import type { PublicTask, TaskParticipant, TaskRequirements } from '@/types/publicTask'
 import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
+import { Button } from '@/designSystem/components'
 
 type PopupType = 'public'
 
@@ -127,96 +128,61 @@ function hasParticipants(participants: TaskParticipant | TaskParticipant[] | und
           : 'Записаться на событие'
       }}
     </button>
-    <button v-if="actionDone && actionDone != true" class="action-done-btn" :disabled="true">
+    <Button v-if="actionDone && actionDone != true" class="action-done-btn" :disabled="true">
       {{ actionDone }}
-    </button>
+    </Button>
   </div>
 </template>
 
 <style scoped>
-.popup {
-  font-family: sans-serif;
-  width: 260px;
-  padding: 10px;
-  border-radius: 12px;
-  background: white;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
-}
 .title {
-  margin: 0 0 6px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
 }
 .author {
-  margin: 0 0 8px 0;
-  font-size: 12px;
-  color: #777;
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
 }
 .description {
-  margin: 0 0 10px 0;
-  font-size: 13px;
-  color: #444;
+  margin: 0 0 var(--space-md) 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
 }
 .reward {
-  margin-bottom: 8px;
-  padding: 6px;
-  border-radius: 8px;
-  background: #f0f8ff;
-  font-size: 13px;
+  margin-bottom: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--space-sm);
+  background: var(--bg-surface);
+  font-size: var(--font-size-xs);
 }
 .requirements {
-  font-size: 12px;
-  margin-bottom: 8px;
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--space-sm);
 }
 .participants .list {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 4px;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
 }
 .participant {
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 6px;
+  font-size: var(--font-size-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--space-sm);
 }
 .participant.accepted {
-  background: #d4f5d4;
+  background: var(--state-success);
+  color: var(--text-accent);
 }
 .participant.pending {
-  background: #fce5cd;
+  background: var(--state-error);
+  color: var(--text-accent);
 }
 .location {
   margin: 0;
-  font-size: 12px;
-  color: #666;
-}
-.action-btn {
-  margin-top: 8px;
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  background: #4caf50;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.action-done-btn {
-  margin-top: 8px;
-  width: 100%;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  background: #91c293;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.action-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
 }
 </style>

@@ -1,3 +1,4 @@
+import { dandadanTheme, darkTheme } from '@/designSystem'
 export interface UserSettings {
   profile: {
     visibleOnMap: boolean
@@ -12,7 +13,7 @@ export interface UserSettings {
   }
   app: {
     language: 'ru' | 'en'
-    theme: 'light' | 'dark'
+    theme: 'dandadan' | 'dark' | 'light'
     fontSize: 'small' | 'medium' | 'large'
     soundEnabled: boolean
     vibrationEnabled: boolean
