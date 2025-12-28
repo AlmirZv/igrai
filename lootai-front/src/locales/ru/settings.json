@@ -1,0 +1,64 @@
+{
+  "app": {
+    "sectionTitle": "Приложение",
+    "language": "Язык интерфейса",
+    "theme": "Тема",
+    "fontSize": "Размер шрифта",
+    "sound": "Звуки",
+    "vibration": "Вибрация",
+    "version": "Версия",
+    "build": "Сборка",
+
+    "langOptions": {
+      "ru": "Русский",
+      "en": "English",
+      "ja": "日本語"
+    },
+
+    "themeOptions": {
+      "light": "Светлая",
+      "dark": "Тёмная",
+      "dandadan": "Dandadan"
+    },
+
+    "fontOptions": {
+      "small": "Маленький",
+      "medium": "Средний",
+      "large": "Большой"
+    }
+  },
+  "map": {
+    "sectionTitle": "Карта",
+    "displayFilters": "Фильтры отображения",
+    "filters": {
+      "people": "Люди рядом",
+      "friends": "Друзья",
+      "tasks": "Задачи",
+      "quests": "Квесты",
+      "public": "Общественные"
+    },
+    "displayTasks": "Показывать задачи",
+    "displayUsers": "Показывать пользователей",
+    "autoUpdate": "Автообновление",
+    "updateTime": "Интервал обновления (мин)",
+    "defaultScale": "Масштаб по умолчанию",
+    "mapType": "Тип карты",
+    "mapTypeOptions": {
+      "default": "Стандартная",
+      "satellite": "Спутник",
+      "terrain": "Рельеф"
+    },
+    "taskFiltersTitle": "Фильтры по задачам",
+    "taskFilters": {
+      "gender": "Пол",
+      "genderOptions": {
+        "any": "Любой",
+        "male": "Мужской",
+        "female": "Женский"
+      },
+      "age": "Возраст",
+      "distance": "Дистанция",
+      "distanceMeasure": "км"
+    }
+  }
+}

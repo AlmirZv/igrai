@@ -1,0 +1,29 @@
+{
+  "app": {
+    "sectionTitle": "Application",
+    "language": "Interface language",
+    "theme": "Theme",
+    "fontSize": "Font size",
+    "sound": "Sound",
+    "vibration": "Vibration",
+    "version": "Version",
+    "build": "Build",
+
+    "langOptions": {
+      "ru": "Russian",
+      "en": "English"
+    },
+
+    "themeOptions": {
+      "light": "Light",
+      "dark": "Dark",
+      "dandadan": "Dandadan"
+    },
+
+    "fontOptions": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
+  }
+}

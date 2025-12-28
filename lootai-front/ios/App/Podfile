@@ -17,6 +17,7 @@ def capacitor_pods
   pod 'CapacitorFirebaseFirestore', :path => '../../node_modules/@capacitor-firebase/firestore'
   pod 'CapacitorFirebaseStorage', :path => '../../node_modules/@capacitor-firebase/storage'
   pod 'CapacitorFilesystem', :path => '../../node_modules/@capacitor/filesystem'
+  pod 'CapacitorPreferences', :path => '../../node_modules/@capacitor/preferences'
 end
 
 target 'App' do

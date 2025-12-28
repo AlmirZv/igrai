@@ -75,12 +75,12 @@ const loadExistingUsers = async () => {
   }
 
   try {
-    console.log('🔍 Loading existing users from Firestore...')
+    // console.log('🔍 Loading existing users from Firestore...')
     const usersRef = collection(db, 'users')
     const usersQuery = query(usersRef, where('connected', '==', true))
     const snapshot = await getDocs(usersQuery)
 
-    console.log(`📊 Found ${snapshot.size} connected users`)
+    // console.log(`📊 Found ${snapshot.size} connected users`)
     let addedCount = 0
 
     snapshot.forEach((doc) => {
@@ -89,7 +89,7 @@ const loadExistingUsers = async () => {
 
       // Пропускаем себя
       if (userData.id === currentUserId || doc.id === currentUserId) {
-        console.log('⏭️ Skipping own user:', userData.id || doc.id)
+        // console.log('⏭️ Skipping own user:', userData.id || doc.id)
         return
       }
 
@@ -102,7 +102,7 @@ const loadExistingUsers = async () => {
           status: 'Онлайн',
         }
         const coords: [number, number] = [userData.location.latitude, userData.location.longitude]
-        console.log('✅ Adding existing user marker:', userInfo.id, coords)
+        // console.log('✅ Adding existing user marker:', userInfo.id, coords)
         addUserMarker(userData.id || doc.id, coords, userInfo, '#2196F3')
         addedCount++
       } else {
@@ -110,7 +110,7 @@ const loadExistingUsers = async () => {
       }
     })
 
-    console.log(`✅ Added ${addedCount} user markers`)
+    // console.log(`✅ Added ${addedCount} user markers`)
   } catch (error) {
     console.error('❌ Error loading existing users:', error)
   }
@@ -136,11 +136,11 @@ const setupUserLocationListener = () => {
   locationUpdateHandler.value = (data: any) => {
     const currentUserId = auth.currentUser?.uid
 
-    console.log('📍 Location update received:', data)
+    // console.log('📍 Location update received:', data)
 
     // Пропускаем свои обновления (они обрабатываются отдельно)
     if (data.userId === currentUserId || data.userId === 'me') {
-      console.log('⏭️ Skipping own location update')
+      // console.log('⏭️ Skipping own location update')
       return
     }
 
@@ -152,7 +152,7 @@ const setupUserLocationListener = () => {
         status: 'Онлайн',
       }
       const coords: [number, number] = [data.location.latitude, data.location.longitude]
-      console.log('✅ Adding user marker:', data.userId, coords)
+      // console.log('✅ Adding user marker:', data.userId, coords)
       addUserMarker(data.userId, coords, userData, data.isBot ? 'grey' : '#2196F3')
     } else {
       console.warn('⚠️ Location update missing coordinates:', data)
@@ -194,7 +194,7 @@ const sendLocationUpdate = async (lat: number, lng: number) => {
         if (!state.connected) {
           state.connected = true
         }
-        console.log('✅ Socket already connected')
+        // console.log('✅ Socket already connected')
         resolve()
         return
       }
@@ -259,7 +259,7 @@ const sendLocationUpdate = async (lat: number, lng: number) => {
     if (!state.connected) {
       state.connected = true
     }
-    console.log('📤 Sending location update:', { userId: currentUserId, lat, lng })
+    // console.log('📤 Sending location update:', { userId: currentUserId, lat, lng })
     socket.emit(
       'UserEvent:locationUpdate',
       {
@@ -270,7 +270,7 @@ const sendLocationUpdate = async (lat: number, lng: number) => {
       },
       (response: any) => {
         if (response && response.status === 'ok') {
-          console.log('✅ Location update sent successfully:', response.data)
+          // console.log('✅ Location update sent successfully:', response.data)
         } else if (response && response.status === 'error') {
           console.error('❌ Location update failed:', response.error)
         } else {
@@ -341,11 +341,11 @@ const init = async () => {
   }
 
   // 6. Логирование состояния
-  console.log('🗺️ Map initialized:', {
-    showUsers: showUsers.value,
-    socketConnected: state.connected,
-    currentUserId: auth.currentUser?.uid,
-  })
+  // console.log('🗺️ Map initialized:', {
+  //   showUsers: showUsers.value,
+  //   socketConnected: state.connected,
+  //   currentUserId: auth.currentUser?.uid,
+  // })
 }
 
 const centerOnMe = async () => {

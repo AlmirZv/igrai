@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import L from 'leaflet'
+import useSettings from '@/composables/useSettings'
+const { state } = useSettings()
 
 export function useMapCore() {
   const map = ref<L.Map>()
@@ -41,7 +43,9 @@ export function useMapCore() {
     }
 
     // дефолтное отображение
-    currentLayer = layers.light
+    if (state.draft.value.app.theme == 'light') {
+      currentLayer = layers.light
+    } else currentLayer = layers.dark
     currentLayer.addTo(m)
 
     map.value = m

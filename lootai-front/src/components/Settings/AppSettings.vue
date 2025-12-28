@@ -1,45 +1,44 @@
 <template>
-  <SettingsSection title="Приложение" open>
+  <SettingsSection :title="$t('settings.app.sectionTitle')" open>
     <label class="row">
-      <span>Язык интерфейса 🌐</span>
-      <Select width="100" v-model="settings.app.language" @change="saveToDB">
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
+      <span>{{ $t('settings.app.language') + ' 🌐' }}</span>
+      <Select width="100" v-model="state.draft.value.app.language" @change="saveToDB">
+        <option value="ru">{{ $t('settings.app.langOptions.ru') }}</option>
+        <option value="en">{{ $t('settings.app.langOptions.en') }}</option>
       </Select>
     </label>
 
     <label class="row">
-      <span>Тема</span>
+      <span>{{ $t('settings.app.theme') }}</span>
       <Select width="100" v-model="state.draft.value.app.theme" @change="saveToDB">
-        <option value="light">Светлая</option>
-        dandadan
-        <option value="dark">Тёмная</option>
-        <option value="dandadan">dandadan</option>
+        <option value="light">{{ $t('settings.app.themeOptions.light') }}</option>
+        <option value="dark">{{ $t('settings.app.themeOptions.dark') }}</option>
+        <option value="dandadan">{{ $t('settings.app.themeOptions.dandadan') }}</option>
       </Select>
     </label>
 
     <label class="row">
-      <span>Размер шрифта</span>
+      <span>{{ $t('settings.app.fontSize') }}</span>
       <Select width="100" v-model="settings.app.fontSize" @change="saveToDB">
-        <option value="small">Маленький</option>
-        <option value="medium">Средний</option>
-        <option value="large">Большой</option>
+        <option value="small">{{ $t('settings.app.fontOptions.small') }}</option>
+        <option value="medium">{{ $t('settings.app.fontOptions.medium') }}</option>
+        <option value="large">{{ $t('settings.app.fontOptions.large') }}</option>
       </Select>
     </label>
 
     <label class="row">
-      <span>Звуки</span>
+      <span>{{ $t('settings.app.sound') }}</span>
       <input type="checkbox" v-model="settings.app.soundEnabled" @change="saveToDB" />
     </label>
 
     <label class="row">
-      <span>Вибрация</span>
+      <span>{{ $t('settings.app.vibration') }}</span>
       <input type="checkbox" v-model="settings.app.vibrationEnabled" @change="saveToDB" />
     </label>
 
     <div class="version-info">
-      <p class="version">Версия: {{ appConfig.version }}</p>
-      <p class="build">Сборка: {{ appConfig.buildDate }}</p>
+      <p class="version">{{ $t('settings.app.version') }}: {{ appConfig.version }}</p>
+      <p class="build">{{ $t('settings.app.build') }}: {{ appConfig.buildDate }}</p>
     </div>
   </SettingsSection>
 </template>
@@ -52,6 +51,9 @@ import type { UserSettings, AppConfig } from '../../types/settings'
 import SettingsSection from './SettingsSection.vue'
 import { Text, Input, Select } from '@/designSystem/components'
 import useSettings from '@/composables/useSettings'
+import { i18n } from '@/locales/i18n'
+
+const allLocaleModules = import.meta.glob('@/locales/*/*.json')
 
 const { state, applyDraft, resetDraft, getUserSettings } = useSettings()
 
@@ -102,8 +104,12 @@ const appConfig = ref<AppConfig>({
 })
 
 onMounted(async () => {
+  console.log(allLocaleModules)
+
   const uid = auth.currentUser?.uid
   if (uid) await getUserSettings(uid)
+  console.log(i18n.global.messages.value)
+  console.log('locale =', i18n.global.locale.value)
 })
 
 // Сохранить настройки карты в userSettings

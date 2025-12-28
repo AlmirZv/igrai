@@ -33,6 +33,8 @@ export function useMap() {
   watch(
     () => state.draft.value.app.theme,
     (newTheme) => {
+      console.log(state.draft.value.app.theme)
+
       if (!map.value) return // теперь map уже есть
       setTheme(newTheme === 'dark' ? 'dark' : 'light')
     },

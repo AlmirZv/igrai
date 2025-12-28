@@ -5,6 +5,9 @@ import { db, auth } from '@/config/firebase'
 
 import { applyTheme, lightTheme, dandadanTheme, darkTheme } from '@/designSystem'
 
+import { i18n, setI18nLanguage } from '@/locales/i18n/index'
+import { Preferences } from '@capacitor/preferences'
+
 const emptySettings: UserSettings = {
   profile: {
     visibleOnMap: true,
@@ -59,6 +62,7 @@ export async function getUserSettings(id?: string) {
 
   // Применяем настройки при загрузке
   applyTheme(themeMap[state.draft.app.theme])
+  await setI18nLanguage(state.draft.app.language)
 
   return settings
 }
@@ -77,12 +81,40 @@ export function resetDraft() {
   state.draft = JSON.parse(JSON.stringify(state.settings))
 }
 
+export async function setLanguage(lang: string) {
+  // Меняем язык в vue-i18n
+  // i18n.global.locale.value = lang
+  await setI18nLanguage(lang)
+
+  // Сохраняем в нативное хранилище (Capacitor)
+  // await Preferences.set({
+  //   key: 'app_language',
+  //   value: lang,
+  // })
+}
+
+export async function loadPreferredLanguage() {
+  const { value } = await Preferences.get({ key: 'app_language' })
+  if (value) {
+    i18n.global.locale.value = value
+  }
+}
+
 // WATCHERS — Автоприменение настроек
 watch(
   () => state.draft.app?.theme,
   (newTheme) => {
     if (!newTheme) return
     applyTheme(themeMap[newTheme])
+  },
+)
+watch(
+  () => state.draft.app.language,
+  async (lang) => {
+    if (!lang) return
+    console.log('here')
+
+    await setI18nLanguage(lang)
   },
 )
 

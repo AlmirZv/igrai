@@ -1,5 +1,6 @@
 {
   "files": [],
+  "lib": ["ES2022", "DOM"],
   "references": [
     {
       "path": "./tsconfig.node.json"

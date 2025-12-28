@@ -1,32 +1,32 @@
 <template>
-  <SettingsSection title="Карта" open>
+  <SettingsSection :title="$t('settings.map.sectionTitle')" open>
     <!-- ОБЩИЕ ФИЛЬТРЫ -->
-    <Text variant="h4" color="accent">Фильтры отображения</Text>
+    <Text variant="h4" color="accent">{{ $t('settings.map.displayFilters') }}</Text>
 
     <label v-for="f in filters" :key="f.key" class="row">
-      <span>{{ f.label }}</span>
+      <span>{{ $t(`settings.map.filters.${f.key}`) + f.icon }}</span>
       <input type="checkbox" v-model="f.enabled" @change="saveToDB" />
     </label>
 
     <!-- НАСТРОЙКИ КАРТЫ -->
     <div class="sub-block">
       <label class="row">
-        <span>Показывать задачи</span>
+        <span>{{ $t('settings.map.displayTasks') }}</span>
         <input type="checkbox" v-model="settings.map.showTasks" @change="saveToDB" />
       </label>
 
       <label class="row">
-        <span>Показывать пользователей</span>
+        <span>{{ $t('settings.map.displayUsers') }}</span>
         <input type="checkbox" v-model="settings.map.showUsers" @change="saveToDB" />
       </label>
 
       <label class="row">
-        <span>Автообновление</span>
+        <span>{{ $t('settings.map.autoUpdate') }}</span>
         <input type="checkbox" v-model="settings.map.autoRefresh" @change="saveToDB" />
       </label>
 
       <label class="row">
-        <span>Интервал обновления (мин)</span>
+        <span>{{ $t('settings.map.updateTime') }}</span>
         <Input
           type="number"
           min="1"
@@ -39,7 +39,7 @@
       </label>
 
       <label class="row">
-        <span>Масштаб по умолчанию</span>
+        <span>{{ $t('settings.map.defaultScale') }}</span>
         <Input
           type="number"
           min="1"
@@ -51,11 +51,11 @@
       </label>
 
       <label class="row">
-        <span>Тип карты</span>
+        <span>{{ $t('settings.map.mapType') }}</span>
         <Select width="100" v-model="settings.map.mapType" @change="saveToDB">
-          <option value="default">Стандартная</option>
-          <option value="satellite">Спутник</option>
-          <option value="terrain">Рельеф</option>
+          <option value="default">{{ $t('settings.map.mapTypeOptions.default') }}</option>
+          <option value="satellite">{{ $t('settings.map.mapTypeOptions.satellite') }}</option>
+          <option value="terrain">{{ $t('settings.map.mapTypeOptions.terrain') }}</option>
         </Select>
       </label>
     </div>
@@ -131,11 +131,11 @@ const settings = ref<UserSettings>({
 })
 
 const filters = reactive([
-  { key: 'people', label: 'Люди рядом 👤', enabled: true },
-  { key: 'friends', label: 'Друзья 🤝', enabled: true },
-  { key: 'tasks', label: 'Задачи 📌', enabled: true },
-  { key: 'quests', label: 'Квесты 🎮', enabled: true },
-  { key: 'public', label: 'Общественные 🌍', enabled: true },
+  { key: 'people', label: 'Люди рядом', icon: ' 👤', enabled: true },
+  { key: 'friends', label: 'Друзья', icon: ' 🤝', enabled: true },
+  { key: 'tasks', label: 'Задачи', icon: ' 📌', enabled: true },
+  { key: 'quests', label: 'Квесты', icon: ' 🎮', enabled: true },
+  { key: 'public', label: 'Общественные', icon: ' 🌍', enabled: true },
 ])
 
 const taskFilters = reactive({
