@@ -25,5 +25,56 @@
       "medium": "Medium",
       "large": "Large"
     }
+  },
+  "map": {
+    "sectionTitle": "Map",
+    "displayFilters": "Display Filters",
+    "filters": {
+      "people": "People Nearby",
+      "friends": "Friends",
+      "tasks": "Tasks",
+      "quests": "Quests",
+      "public": "Public"
+    },
+    "displayTasks": "Show Tasks",
+    "displayUsers": "Show Users",
+    "autoUpdate": "Auto Update",
+    "updateTime": "Update Interval (min)",
+    "defaultScale": "Default Zoom",
+    "mapType": "Map Type",
+    "mapTypeOptions": {
+      "default": "Standard",
+      "satellite": "Satellite",
+      "terrain": "Terrain"
+    },
+    "taskFiltersTitle": "Task Filters",
+    "taskFilters": {
+      "gender": "Gender",
+      "genderOptions": {
+        "any": "Any",
+        "male": "Male",
+        "female": "Female"
+      },
+      "age": "Age",
+      "distance": "Distance",
+      "distanceMeasure": "km"
+    }
+  },
+  "profile": {
+    "sectionTitle": "My Profile",
+    "visibleOnMap": "Show Me on the Map",
+    "showLocation": "Show Location",
+    "allowTaskInvites": "Allow Task Invitations",
+    "notifications": "Notifications",
+    "notificationsFilters": {
+      "taskUpdates": "Task Updates",
+      "messages": "Messages",
+      "achievements": "Achievements",
+      "push": "Push Notifications"
+    },
+    "buttons": {
+      "editProfile": "Edit Profile",
+      "changeAccount": "Switch Account"
+    }
   }
 }

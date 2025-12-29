@@ -60,5 +60,22 @@
       "distance": "Дистанция",
       "distanceMeasure": "км"
     }
+  },
+  "profile": {
+    "sectionTitle": "Мой профиль",
+    "visibleOnMap": "Показывать меня на карте",
+    "showLocation": "Показывать местоположение",
+    "allowTaskInvites": "Разрешить приглашения в задачи",
+    "notifications": "Уведомления",
+    "notificationsFilters": {
+      "taskUpdates": "Обновления задач",
+      "messages": "Сообщения",
+      "achievements": "Достижения",
+      "push": "Push-уведомления"
+    },
+    "buttons": {
+      "editProfile": "Редактировать профиль",
+      "changeAccount": "Сменить аккаунт"
+    }
   }
 }

@@ -1,27 +1,27 @@
 <template>
-  <SettingsSection title="Мой профиль" open>
+  <SettingsSection :title="$t('settings.profile.sectionTitle')" open>
     <!-- Основные настройки -->
     <label class="row">
-      <span>Показывать меня на карте</span>
+      <span>{{ $t('settings.profile.visibleOnMap') }}</span>
       <input type="checkbox" v-model="settings.profile.visibleOnMap" @change="saveSettings" />
     </label>
 
     <label class="row">
-      <span>Показывать местоположение</span>
+      <span>{{ $t('settings.profile.showLocation') }}</span>
       <input type="checkbox" v-model="settings.profile.showLocation" @change="saveSettings" />
     </label>
 
     <label class="row">
-      <span>Разрешить приглашения в задачи</span>
+      <span>{{ $t('settings.profile.allowTaskInvites') }}</span>
       <input type="checkbox" v-model="settings.profile.allowTaskInvites" @change="saveSettings" />
     </label>
 
     <!-- Уведомления -->
     <div class="notifications-block">
-      <Text variant="h4">Уведомления</Text>
+      <Text variant="h4">{{ $t('settings.profile.notifications') }}</Text>
 
       <label class="row">
-        <span>Обновления задач</span>
+        <span>{{ $t('settings.profile.notificationsFilters.taskUpdates') }}</span>
         <input
           type="checkbox"
           v-model="settings.profile.notifications.taskUpdates"
@@ -30,7 +30,7 @@
       </label>
 
       <label class="row">
-        <span>Сообщения</span>
+        <span>{{ $t('settings.profile.notificationsFilters.messages') }}</span>
         <input
           type="checkbox"
           v-model="settings.profile.notifications.messages"
@@ -39,7 +39,7 @@
       </label>
 
       <label class="row">
-        <span>Достижения</span>
+        <span>{{ $t('settings.profile.notificationsFilters.achievements') }}</span>
         <input
           type="checkbox"
           v-model="settings.profile.notifications.achievements"
@@ -48,7 +48,7 @@
       </label>
 
       <label class="row">
-        <span>Push-уведомления</span>
+        <span>{{ $t('settings.profile.notificationsFilters.push') }}</span>
         <input
           type="checkbox"
           v-model="settings.profile.notifications.pushNotifications"
@@ -59,8 +59,10 @@
 
     <!-- Кнопки действий -->
     <div class="buttons">
-      <Button @click="editProfile">Редактировать профиль</Button>
-      <Button variant="secondary" @click="changeAccount">Сменить аккаунт</Button>
+      <Button @click="editProfile">{{ $t('settings.profile.buttons.editProfile') }}</Button>
+      <Button variant="secondary" @click="changeAccount">{{
+        $t('settings.profile.buttons.changeAccount')
+      }}</Button>
     </div>
   </SettingsSection>
 </template>

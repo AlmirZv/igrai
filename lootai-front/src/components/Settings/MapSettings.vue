@@ -62,28 +62,32 @@
 
     <!-- ФИЛЬТРЫ ЗАДАЧ -->
     <details class="task-filters">
-      <summary>Фильтры по задачам</summary>
+      <summary>{{ $t('settings.map.taskFiltersTitle') }}</summary>
 
       <div class="content">
         <label class="row">
-          <span>Пол</span>
+          <span>{{ $t('settings.map.taskFilters.gender') }}</span>
           <Select width="100" v-model="taskFilters.gender" @change="saveToDB">
-            <option value="any">Любой</option>
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
+            <option value="any">{{ $t('settings.map.taskFilters.genderOptions.any') }}</option>
+            <option value="male">{{ $t('settings.map.taskFilters.genderOptions.male') }}</option>
+            <option value="female">
+              {{ $t('settings.map.taskFilters.genderOptions.female') }}
+            </option>
           </Select>
         </label>
 
         <label class="row">
-          <span>Возраст</span>
+          <span>{{ $t('settings.map.taskFilters.age') }}</span>
           <input type="range" min="10" max="70" v-model="taskFilters.age" @change="saveToDB" />
           <span class="range-value">{{ taskFilters.age }}</span>
         </label>
 
         <label class="row">
-          <span>Дистанция</span>
+          <span>{{ $t('settings.map.taskFilters.distance') }}</span>
           <input type="range" min="1" max="50" v-model="taskFilters.distance" @change="saveToDB" />
-          <span class="range-value">{{ taskFilters.distance }} км</span>
+          <span class="range-value"
+            >{{ taskFilters.distance }} {{ $t('settings.map.taskFilters.distanceMeasure') }}</span
+          >
         </label>
       </div>
     </details>
