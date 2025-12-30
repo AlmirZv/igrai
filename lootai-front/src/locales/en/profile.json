@@ -1,1 +1,17 @@
-{}
+{
+  "loadingProfile": "Loading profile",
+  "achievements": "Achievements",
+  "buttons": {
+    "hide": "Hide",
+    "showAll": "Show all"
+  },
+  "old": "years",
+  "inventory": "Inventory",
+  "level": "Level",
+  "stats": {
+    "points": "Points",
+    "public": "Public",
+    "user": "User",
+    "quests": "Quests"
+  }
+}

@@ -1,1 +1,12 @@
-{}
+{
+  "chatsLoading": "Загрузка чатов",
+  "loadingError": "Ошибка загрузки",
+  "buttons": {
+    "reload": "Повторить"
+  },
+  "taskChatsTitle": "Чаты по задачам",
+  "friendsChatsTitle": "Друзья",
+  "teamChatsTitle": "Командные чаты",
+  "noChats": "Нет чатов",
+  "sendMessagePlaceHolder": "Напишите сообщение"
+}

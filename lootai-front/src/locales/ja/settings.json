@@ -1,0 +1,83 @@
+{
+  "app": {
+    "sectionTitle": "アプリ設定",
+    "language": "表示言語",
+    "theme": "テーマ",
+    "fontSize": "フォントサイズ",
+    "sound": "サウンド",
+    "vibration": "バイブレーション",
+    "version": "バージョン",
+    "build": "ビルド",
+
+    "langOptions": {
+      "ru": "ロシア語",
+      "en": "英語",
+      "ja": "日本語"
+    },
+
+    "themeOptions": {
+      "light": "ライト",
+      "dark": "ダーク",
+      "dandadan": "ダンダダン"
+    },
+
+    "fontOptions": {
+      "small": "小",
+      "medium": "中",
+      "large": "大"
+    }
+  },
+
+  "map": {
+    "sectionTitle": "マップ",
+    "displayFilters": "表示フィルター",
+    "filters": {
+      "people": "近くの人",
+      "friends": "友達",
+      "tasks": "タスク",
+      "quests": "クエスト",
+      "public": "公開"
+    },
+    "displayTasks": "タスクを表示",
+    "displayUsers": "ユーザーを表示",
+    "autoUpdate": "自動更新",
+    "updateTime": "更新間隔（分）",
+    "defaultScale": "デフォルトの倍率",
+    "mapType": "地図タイプ",
+    "mapTypeOptions": {
+      "default": "標準",
+      "satellite": "衛星",
+      "terrain": "地形"
+    },
+    "taskFiltersTitle": "タスクフィルター",
+    "taskFilters": {
+      "gender": "性別",
+      "genderOptions": {
+        "any": "指定なし",
+        "male": "男性",
+        "female": "女性"
+      },
+      "age": "年齢",
+      "distance": "距離",
+      "distanceMeasure": "km"
+    }
+  },
+
+  "profile": {
+    "sectionTitle": "プロフィール",
+    "visibleOnMap": "地図に表示する",
+    "showLocation": "位置情報を表示",
+    "allowTaskInvites": "タスク招待を許可",
+    "notifications": "通知",
+    "notificationsFilters": {
+      "taskUpdates": "タスク更新",
+      "messages": "メッセージ",
+      "achievements": "実績",
+      "push": "プッシュ通知"
+    },
+    "buttons": {
+      "editProfile": "プロフィール編集",
+      "changeAccount": "アカウント切替"
+    }
+  }
+}

@@ -1,1 +1,15 @@
-{}
+{
+  "popup": {
+    "creatingTask": "Создание задачи",
+    "taskType": "Тип задачи",
+    "types": {
+      "public": "Общественная",
+      "quest": "Квест",
+      "event": "Событие",
+      "user": "Личная"
+    }
+  },
+  "buttons": {
+    "createTask": "Создать задачу"
+  }
+}

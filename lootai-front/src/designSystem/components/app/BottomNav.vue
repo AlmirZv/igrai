@@ -15,7 +15,7 @@
         </span>
 
         <span class="bottom-nav__label">
-          {{ item.label }}
+          {{ $t(`nav.${item.id}`) }}
         </span>
       </button>
     </div>

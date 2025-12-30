@@ -7,35 +7,51 @@
       </div>
 
       <div class="modal-section">
-        <Text variant="p"><strong>Автор:</strong> {{ task.author }}</Text>
-        <Text variant="p"><strong>Описание:</strong> {{ task.description }}</Text>
+        <Text variant="p"
+          ><strong>{{ $t(`tasks.modal.author`) }}:</strong> {{ task.author }}</Text
+        >
+        <Text variant="p"
+          ><strong>{{ $t(`tasks.modal.description`) }}:</strong> {{ task.description }}</Text
+        >
         <Text variant="p">
-          <strong>Время:</strong> {{ task.requirements.startTime }}
+          <strong>{{ $t(`tasks.modal.time`) }}:</strong> {{ task.requirements.startTime }}
           {{ task.requirements.startDate }}
-          до
+          {{ $t(`tasks.modal.to`) }}
           {{ task.requirements.endTime }} {{ task.requirements.endDate }}
         </Text>
       </div>
 
       <div class="modal-section requirements">
-        <Text variant="h4" color="muted">⚙️ Требования</Text>
+        <Text variant="h4" color="muted">⚙️ {{ $t(`tasks.modal.requirements.title`) }}</Text>
         <ul>
-          <li><strong>Возраст:</strong> {{ task.requirements.age }}</li>
-          <li><strong>Пол:</strong> {{ gender[task.requirements.gender] }}</li>
+          <li>
+            <strong>{{ $t(`tasks.modal.requirements.age`) }}:</strong> {{ task.requirements.age }}
+          </li>
+          <li>
+            <strong>{{ $t(`tasks.modal.requirements.gender`) }}:</strong>
+            {{ gender[task.requirements.gender] }}
+          </li>
         </ul>
       </div>
 
       <div class="modal-section reward">
-        <Text variant="h4" color="muted">💎 Награда</Text>
+        <Text variant="h4" color="muted">💎 {{ $t(`tasks.modal.reward.title`) }}</Text>
         <ul>
-          <li><strong>Опыт:</strong> {{ task.reward.xp }}</li>
-          <li><strong>Вознаграждение:</strong> {{ task.reward.points }}</li>
-          <li><strong>Инвентарь:</strong> {{ task.reward.inventoryItem }}</li>
+          <li>
+            <strong>{{ $t(`tasks.modal.reward.experience`) }}:</strong> {{ task.reward.xp }}
+          </li>
+          <li>
+            <strong>{{ $t(`tasks.modal.reward.points`) }}:</strong> {{ task.reward.points }}
+          </li>
+          <li>
+            <strong>{{ $t(`tasks.modal.reward.inventory`) }}:</strong>
+            {{ task.reward.inventoryItem }}
+          </li>
         </ul>
       </div>
 
       <div v-if="aTab === 'created'" class="modal-section participants">
-        <h4>👥 Участники</h4>
+        <h4>👥 {{ $t(`tasks.modal.participants`) }}</h4>
         <ul>
           <li
             v-for="(p, i) in task.participants"
@@ -54,15 +70,19 @@
 
       <div v-if="aTab === 'created'" class="modal-actions">
         <Button variant="primary" v-if="task.status != 'completed'" @click="$emit('complete')">
-          Завершить задачу
+          {{ $t(`tasks.buttons.completeTask`) }}
         </Button>
-        <Button variant="secondary" @click="$emit('close')">Закрыть</Button>
+        <Button variant="secondary" @click="$emit('close')">{{
+          $t(`tasks.buttons.closeTask`)
+        }}</Button>
       </div>
       <div v-else class="modal-actions">
         <Button variant="primary" v-if="task.status != 'completed'" @click="$emit('cancel')">
-          Отменить выполнение
+          {{ $t(`tasks.buttons.cancelTask`) }}
         </Button>
-        <Button variant="secondary" @click="$emit('close')">Закрыть</Button>
+        <Button variant="secondary" @click="$emit('close')">{{
+          $t(`tasks.buttons.closeTask`)
+        }}</Button>
       </div>
     </Card>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <Card>
     <Stack gap="md">
-      <Text variant="h2">Достижения</Text>
+      <Text variant="h2">{{ $t(`profile.achievements`) }}</Text>
 
       <Stack gap="sm">
         <Text v-for="ach in visibleAchievements" :key="ach.id" variant="caption">
@@ -14,7 +14,7 @@
         variant="ghost"
         @click="expanded = !expanded"
       >
-        {{ expanded ? 'Свернуть' : 'Показать все' }}
+        {{ expanded ? $t(`profile.buttons.hide`) : $t(`profile.buttons.showAll`) }}
       </Button>
     </Stack>
   </Card>

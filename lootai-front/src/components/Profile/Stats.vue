@@ -3,7 +3,7 @@
     <Stack gap="md">
       <div class="xp-block">
         <div class="xp-header">
-          <Text variant="caption" color="secondary"> Уровень {{ level }} </Text>
+          <Text variant="caption" color="secondary"> {{ $t(`profile.level`) }} {{ level }} </Text>
 
           <Text variant="caption" color="muted"> {{ user.xp }} XP </Text>
         </div>
@@ -14,10 +14,10 @@
       </div>
 
       <div class="stats-grid">
-        <Stat label="Очки" :value="user.points" />
-        <Stat label="Общественные" :value="user.tasksCompleted.public" />
-        <Stat label="Пользовательские" :value="user.tasksCompleted.user" />
-        <Stat label="Квесты" :value="user.tasksCompleted.quest" />
+        <Stat :label="$t(`profile.stats.points`)" :value="user.points" />
+        <Stat :label="$t(`profile.stats.public`)" :value="user.tasksCompleted.public" />
+        <Stat :label="$t(`profile.stats.user`)" :value="user.tasksCompleted.user" />
+        <Stat :label="$t(`profile.stats.quests`)" :value="user.tasksCompleted.quest" />
       </div>
     </Stack>
   </Card>

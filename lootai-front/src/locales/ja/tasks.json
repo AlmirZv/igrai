@@ -1,0 +1,44 @@
+{
+  "loadingTasks": "タスクを読み込み中",
+  "loadingError": "読み込みエラー",
+  "buttons": {
+    "reload": "再読み込み",
+    "completeTask": "タスク完了",
+    "closeTask": "閉じる",
+    "cancelTask": "参加を取り消す",
+    "message": "メッセージ"
+  },
+  "titles": {
+    "tasks": "タスク",
+    "publicTasks": "公開タスク",
+    "quests": "クエスト",
+    "events": "イベント",
+    "history": "履歴"
+  },
+  "tabs": {
+    "taken": "実行中",
+    "created": "作成した"
+  },
+  "modal": {
+    "author": "作成者",
+    "description": "説明",
+    "time": "時間",
+    "to": "〜",
+    "requirements": {
+      "title": "条件",
+      "age": "年齢",
+      "gender": "性別"
+    },
+    "reward": {
+      "title": "報酬",
+      "experience": "経験値",
+      "points": "ポイント",
+      "inventory": "アイテム"
+    },
+    "participants": "参加者"
+  },
+  "loading": "読み込み中",
+  "tasksEmpty": "タスクがありません",
+  "reviews": "レビュー",
+  "archive": "アーカイブ"
+}

@@ -18,7 +18,7 @@
 
       <!-- Meta -->
       <div class="profile-meta">
-        <Text variant="caption" color="secondary"> {{ user.age }} лет </Text>
+        <Text variant="caption" color="secondary"> {{ user.age }} {{ $t(`profile.old`) }} </Text>
         <span class="dot" />
         <Text variant="caption" color="secondary">
           {{ user.gender }}

@@ -1,6 +1,11 @@
 <template>
   <div class="input-bar">
-    <Input type="text" v-model="text" placeholder="Напишите сообщение..." @keyup.enter="send" />
+    <Input
+      type="text"
+      v-model="text"
+      :placeholder="$t(`chat.sendMessagePlaceHolder`) + '...'"
+      @keyup.enter="send"
+    />
     <Button @click="send">➤</Button>
   </div>
 </template>

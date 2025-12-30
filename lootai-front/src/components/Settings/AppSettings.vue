@@ -5,6 +5,7 @@
       <Select width="100" v-model="state.draft.value.app.language" @change="saveToDB">
         <option value="ru">{{ $t('settings.app.langOptions.ru') }}</option>
         <option value="en">{{ $t('settings.app.langOptions.en') }}</option>
+        <option value="ja">{{ $t('settings.app.langOptions.ja') }}</option>
       </Select>
     </label>
 

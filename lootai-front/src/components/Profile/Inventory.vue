@@ -1,7 +1,7 @@
 <template>
   <Card>
     <Stack gap="md">
-      <Text variant="h2">Инвентарь</Text>
+      <Text variant="h2">{{ $t(`profile.inventory`) }}</Text>
 
       <div class="grid" ref="gridRef">
         <Text
@@ -32,7 +32,7 @@
         variant="ghost"
         @click="expanded = !expanded"
       >
-        {{ expanded ? 'Свернуть' : 'Показать все' }}
+        {{ expanded ? $t(`profile.buttons.hide`) : $t(`profile.buttons.showAll`) }}
       </Button>
     </Stack>
   </Card>

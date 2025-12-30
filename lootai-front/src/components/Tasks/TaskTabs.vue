@@ -7,7 +7,7 @@
       :class="{ active: modelValue === 'taken' }"
       @click="$emit('update:modelValue', 'taken')"
     >
-      Исполнитель
+      {{ $t(`tasks.tabs.created`) }}
     </Button>
 
     <Button
@@ -15,7 +15,7 @@
       :class="{ active: modelValue === 'created' }"
       @click="$emit('update:modelValue', 'created')"
     >
-      Создатель
+      {{ $t(`tasks.tabs.created`) }}
     </Button>
   </div>
 </template>

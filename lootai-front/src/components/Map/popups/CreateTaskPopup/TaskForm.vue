@@ -366,7 +366,7 @@ function selectStepLocation(stepId: any) {
   <div class="popup">
     <!-- фиксированная шапка -->
     <div class="popup-header">
-      <Text variant="h3">Создание задачи</Text>
+      <Text variant="h3">{{ $t(`map.popup.creatingTask`) }}</Text>
       <!-- Ошибки -->
       <div v-if="showErrorMessage" class="error">{{ showErrorMessage }}</div>
     </div>
@@ -374,12 +374,12 @@ function selectStepLocation(stepId: any) {
     <!-- прокручиваемая часть -->
     <div class="popup-scroll">
       <div class="field">
-        <label>Тип задачи:</label>
+        <label>{{ $t(`map.popup.taskType`) }}:</label>
         <Select v-model="type">
-          <option value="public">Общественная</option>
-          <option value="quest">Квест</option>
-          <option value="event">Событие</option>
-          <option value="user">Личная</option>
+          <option value="public">{{ $t(`map.popup.types.public`) }}</option>
+          <option value="quest">{{ $t(`map.popup.types.quest`) }}</option>
+          <option value="event">{{ $t(`map.popup.types.event`) }}</option>
+          <option value="user">{{ $t(`map.popup.types.user`) }}</option>
         </Select>
       </div>
       <component
@@ -400,7 +400,9 @@ function selectStepLocation(stepId: any) {
 
     <!-- фиксированная нижняя часть -->
     <div class="popup-footer">
-      <Button class="create-btn" type="button" @click="createTask">Создать задачу</Button>
+      <Button class="create-btn" type="button" @click="createTask">{{
+        $t(`map.buttons.createTask`)
+      }}</Button>
     </div>
   </div>
 </template>

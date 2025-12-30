@@ -1,10 +1,10 @@
 <template>
   <div class="tasks-page">
-    <LoadingSpinner v-if="isLoading">Загрузка задач...</LoadingSpinner>
+    <LoadingSpinner v-if="isLoading">{{ $t(`tasks.loadingTasks`) }}...</LoadingSpinner>
 
     <ErrorState v-else-if="error">
-      <p>Ошибка загрузки: {{ error }}</p>
-      <Button @click="loadTasks">Повторить</Button>
+      <p>{{ $t(`tasks.loadingError`) }}: {{ error }}</p>
+      <Button @click="loadTasks">{{ $t(`tasks.buttons.reload`) }}</Button>
     </ErrorState>
 
     <div v-else>
@@ -12,25 +12,25 @@
 
       <div v-if="activeTab === 'taken' && mode === 'active'" class="task-groups">
         <TaskGroup
-          title="Задачи"
+          :title="$t('tasks.titles.tasks')"
           :tasks="tasks.taken.user"
           :loading="loadingStates.user"
           @open="openTask"
         />
         <TaskGroup
-          title="Общественные"
+          :title="$t('tasks.titles.publicTasks')"
           :tasks="tasks.taken.public"
           :loading="loadingStates.public"
           @open="openTask"
         />
         <TaskGroup
-          title="Квесты"
+          :title="$t('tasks.titles.quests')"
           :tasks="tasks.taken.quest"
           :loading="loadingStates.quest"
           @open="openTask"
         />
         <TaskGroup
-          title="События"
+          :title="$t('tasks.titles.events')"
           :tasks="tasks.taken.event"
           :loading="loadingStates.event"
           @open="openTask"
@@ -38,32 +38,32 @@
       </div>
       <TaskHistory
         v-else-if="activeTab === 'taken' && mode === 'history'"
-        title="История"
+        ^title="$t('tasks.titles.history')"
         :history="tasks.history.taken"
         @open="openTask"
       />
 
       <div v-else-if="activeTab === 'created' && mode === 'active'" class="task-groups">
         <TaskGroup
-          title="Задачи"
+          :title="$t('tasks.titles.tasks')"
           :tasks="tasks.created.user"
           :loading="loadingStates.user"
           @open="openTask"
         />
         <TaskGroup
-          title="Общественные"
+          :title="$t('tasks.titles.publicTasks')"
           :tasks="tasks.created.public"
           :loading="loadingStates.public"
           @open="openTask"
         />
         <TaskGroup
-          title="Квесты"
+          :title="$t('tasks.titles.quests')"
           :tasks="tasks.created.quest"
           :loading="loadingStates.quest"
           @open="openTask"
         />
         <TaskGroup
-          title="События"
+          :title="$t('tasks.titles.events')"
           :tasks="tasks.created.event"
           :loading="loadingStates.event"
           @open="openTask"
@@ -71,7 +71,7 @@
       </div>
       <TaskHistory
         v-else-if="activeTab === 'created' && mode === 'history'"
-        title="История"
+        :title="$t('tasks.titles.history')"
         :history="(activeTab as 'taken') == 'taken' ? tasks.history.taken : tasks.history.created"
         @open="openTask"
       />

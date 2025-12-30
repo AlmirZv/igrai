@@ -20,7 +20,7 @@
             :chat="chat"
             @open="$emit('open', chat)"
           />
-          <li v-if="!chats.length" class="empty">Нет чатов</li>
+          <li v-if="!chats.length" class="empty">{{ $t(`chat.noChats`) }}</li>
         </ul>
       </div>
     </transition>

@@ -1,6 +1,44 @@
 {
-  "title": "Tasks",
-  "newTask": "New task",
-  "completed": "Completed",
-  "dueToday": "Due today"
+  "loadingTasks": "Loading tasks",
+  "loadingError": "Loading error",
+  "buttons": {
+    "reload": "Retry",
+    "completeTask": "Complete task",
+    "closeTask": "Close",
+    "cancelTask": "Cancel participation",
+    "message": "Message"
+  },
+  "titles": {
+    "tasks": "Tasks",
+    "publicTasks": "Public",
+    "quests": "Quests",
+    "events": "Events",
+    "history": "History"
+  },
+  "tabs": {
+    "taken": "Executor",
+    "created": "Creator"
+  },
+  "modal": {
+    "author": "Author",
+    "description": "Description",
+    "time": "Time",
+    "to": "to",
+    "requirements": {
+      "title": "Requirements",
+      "age": "Age",
+      "gender": "Gender"
+    },
+    "reward": {
+      "title": "Reward",
+      "experience": "Experience",
+      "points": "Points",
+      "inventory": "Inventory"
+    },
+    "participants": "Participants"
+  },
+  "loading": "Loading",
+  "tasksEmpty": "No tasks",
+  "reviews": "Reviews",
+  "archive": "Archive"
 }

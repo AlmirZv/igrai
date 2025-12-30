@@ -5,7 +5,7 @@
     <Achievements :user="user" />
     <Inventory :user="user" />
   </Stack>
-  <LoadingSpinner v-else>Загрузка профиля...</LoadingSpinner>
+  <LoadingSpinner v-else>{{ $t(`profile.loadingProfile`) }}...</LoadingSpinner>
 </template>
 
 <script setup lang="ts">

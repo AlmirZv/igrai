@@ -1,26 +1,26 @@
 <template>
   <div class="chat-page">
-    <LoadingSpinner v-if="isLoading">Загрузка чатов...</LoadingSpinner>
+    <LoadingSpinner v-if="isLoading">{{ $t(`chat.chatsLoading`) }}...</LoadingSpinner>
     <ErrorState v-else-if="error">
-      <p>Ошибка загрузки: {{ error }}</p>
-      <Button @click="loadChats">Повторить</Button>
+      <p>{{ $t(`chat.loadingError`) }}: {{ error }}</p>
+      <Button @click="loadChats">{{ $t(`chat.reload`) }}</Button>
     </ErrorState>
 
     <div v-else-if="!selectedChat" class="chat-list">
       <ChatGroup
-        title="Чаты по задачам"
+        :title="$t(`chat.taskChatsTitle`)"
         :chats="chats.taskChats"
         :loading="loadingStates.taskChats"
         @open="openChat"
       />
       <ChatGroup
-        title="Друзья"
+        :title="$t(`chat.friendsChatsTitle`)"
         :chats="chats.private"
         :loading="loadingStates.private"
         @open="openChat"
       />
       <ChatGroup
-        title="Командные чаты"
+        :title="$t(`chat.teamChatsTitle`)"
         :chats="chats.group"
         :loading="loadingStates.group"
         @open="openChat"

@@ -5,7 +5,7 @@
       <div class="actions" @click.stop>
         <!-- Кнопка Архив -->
         <!-- TODO: вывод истории -->
-        <button class="archive-btn" @click="mode = !mode">Архив</button>
+        <button class="archive-btn" @click="mode = !mode">{{ $t(`tasks.archive`) }}</button>
 
         <!-- Стрелка -->
         <span class="arrow" :class="{ open }">▸</span>
@@ -14,14 +14,14 @@
 
     <transition name="fade">
       <div v-show="open" class="content">
-        <LoadingSpinner v-if="loading">Загрузка...</LoadingSpinner>
+        <LoadingSpinner v-if="loading">{{ $t(`tasks.loading`) }}...</LoadingSpinner>
 
         <ul v-else>
           <li v-for="task in tasks" :key="task.id" class="task-item" @click="$emit('open', task)">
             {{ task.title }}
           </li>
 
-          <li v-if="!tasks.length" class="empty">Нет задач</li>
+          <li v-if="!tasks.length" class="empty">{{ $t(`tasks.tasksEmpty`) }}</li>
         </ul>
 
         <slot name="footer"></slot>

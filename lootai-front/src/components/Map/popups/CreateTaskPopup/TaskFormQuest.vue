@@ -134,53 +134,56 @@ const saveQrToPhone = async (code: string) => {
 <template>
   <div class="form">
     <div class="field">
-      <label>Заголовок:</label>
-      <Input v-model="model.title" placeholder="Название" />
+      <label>{{ $t(`map.popup.headline`) }}:</label>
+      <Input v-model="model.title" :placeholder="$t(`map.popup.placeholders.title`)" />
     </div>
 
     <div class="field">
-      <label>Описание:</label>
-      <Textarea v-model="model.description" placeholder="Опишите задачу..." />
+      <label>{{ $t(`map.popup.description`) }}:</label>
+      <Textarea
+        v-model="model.description"
+        :placeholder="$t(`map.popup.placeholders.describeTask`) + '...'"
+      />
     </div>
 
     <!-- Пол -->
     <div class="field">
-      <label>Пол:</label>
+      <label>{{ $t(`map.popup.gender`) }}:</label>
       <Select v-model="model.requirements.gender">
-        <option value="any">Любой</option>
-        <option value="male">Мужчины</option>
-        <option value="female">Женщины</option>
+        <option value="any">{{ $t(`map.popup.genderType.any`) }}</option>
+        <option value="male">{{ $t(`map.popup.genderType.male`) }}</option>
+        <option value="female">{{ $t(`map.popup.genderType.female`) }}</option>
       </Select>
     </div>
 
     <!-- Возраст -->
     <div class="field">
-      <label>Возраст от:</label>
+      <label>{{ $t(`map.popup.ageStart`) }}:</label>
       <Input type="number" v-model="model.requirements.minAge" min="0" />
 
-      <label>Возраст до:</label>
+      <label>{{ $t(`map.popup.ageEnd`) }}:</label>
       <Input type="number" v-model="model.requirements.maxAge" min="0" />
     </div>
 
     <!-- Сложность -->
     <div class="field">
-      <label>Сложность:</label>
+      <label>{{ $t(`map.popup.difficulty`) }}:</label>
       <Select v-model="model.requirements.difficulty">
-        <option value="easy">Легкая</option>
-        <option value="medium">Средняя</option>
-        <option value="Hard">Сложная</option>
+        <option value="easy">{{ $t(`map.popup.difficultyType.easy`) }}</option>
+        <option value="medium">{{ $t(`map.popup.difficultyType.medium`) }}</option>
+        <option value="Hard">{{ $t(`map.popup.difficultyType.hard`) }}</option>
       </Select>
     </div>
 
     <div class="field">
-      <label>Начало:</label>
+      <label>{{ $t(`map.popup.start`) }}:</label>
       <div class="inline-inputs">
         <Input type="date" v-model="model.requirements.startDate" />
       </div>
     </div>
 
     <div class="field">
-      <label>Конец:</label>
+      <label>{{ $t(`map.popup.end`) }}:</label>
       <div class="inline-inputs">
         <Input type="date" v-model="model.requirements.endDate" />
       </div>
@@ -188,92 +191,103 @@ const saveQrToPhone = async (code: string) => {
 
     <!-- Steps -->
     <fieldset v-for="step in model.steps" class="reward">
-      <legend>Шаг №{{ step.order }}</legend>
+      <legend>{{ $t(`map.popup.step`) }} №{{ step.order }}</legend>
       <div class="field">
-        <label>Название:</label>
-        <Input v-model="step.title" placeholder="Название" />
+        <label>{{ $t(`map.popup.title`) }}:</label>
+        <Input v-model="step.title" :placeholder="$t(`map.popup.placeholders.title`)" />
       </div>
 
       <div class="field">
-        <label>Тип:</label>
+        <label>{{ $t(`map.popup.type`) }}:</label>
         <Select v-model="step.type">
-          <option value="riddle">Загадка</option>
-          <option value="qr">Найти qr код</option>
-          <option value="photo" disabled>Сделайть похожее фото</option>
+          <option value="riddle">{{ $t(`map.popup.stepType.riddle`) }}</option>
+          <option value="qr">{{ $t(`map.popup.stepType.qr`) }}</option>
+          <option value="photo" disabled>{{ $t(`map.popup.stepType.photo`) }}</option>
         </Select>
       </div>
 
       <div class="field">
-        <label>Описание:</label>
-        <Textarea v-model="step.description" placeholder="Опишите шаг..." />
+        <label>{{ $t(`map.popup.description`) }}:</label>
+        <Textarea
+          v-model="step.description"
+          :placeholder="$t(`map.popup.placeholders.describeTask`) + '...'"
+        />
       </div>
 
       <div v-if="step.type == 'riddle'" class="field">
-        <label>Загадка:</label>
-        <Textarea v-model="step.riddle" placeholder="Введите загадку..." />
+        <label>{{ $t(`map.popup.riddle`) }}:</label>
+        <Textarea
+          v-model="step.riddle"
+          :placeholder="$t(`map.popup.placeholders.describeRiddle`) + '...'"
+        />
       </div>
 
       <div v-if="step.type == 'riddle'" class="field">
-        <label>Ответ:</label>
+        <label>{{ $t(`map.popup.answer`) }}:</label>
         <Input v-model="step.answer" placeholder="Ответ" />
       </div>
 
       <div v-if="step.type == 'qr'" class="field">
-        <label>Clue:</label>
-        <Input v-model="step.clue" placeholder="Clue" />
+        <label>{{ $t(`map.popup.clue`) }}:</label>
+        <Input v-model="step.clue" :placeholder="$t(`map.popup.enterClue`)" />
       </div>
 
       <div v-if="step.type == 'qr'" class="field">
-        <label>QR-Code:</label>
+        <label>{{ $t(`map.popup.qrcode`) }}:</label>
         <div v-if="qrCodes[step.id]">
           <img :src="qrCodes[step.id]" alt="QR Code" />
           <Button class="create-btn small" type="button" @click="saveQrToPhone(qrCodes[step.id])">
-            скачать
+            {{ $t(`map.buttons.download`) }}
           </Button>
         </div>
-        <div v-else>Generating QR code...</div>
+        <div v-else>{{ $t(`map.popup.generatingQRCode`) }}...</div>
       </div>
 
       <div v-if="step.type == 'photo'" class="field">
-        <label>Upload photo:</label>
+        <label>{{ $t(`map.popup.uploadPhoto`) }}:</label>
         <Input type="file" />
       </div>
       <div class="field">
-        <label>Локация выбрана:</label>
+        <label>{{ $t(`map.popup.locationChoosed`) }}:</label>
         <Input type="checkbox" :checked="!!step.location.lat" disabled />
       </div>
 
       <div class="field">
-        <label>Локация:</label>
+        <label>{{ $t(`map.popup.location`) }}:</label>
         <Button class="create-btn small" type="button" @click="chooseStepLocation(step.id)">
-          Выбрать на карте
+          {{ $t(`map.buttons.chooseOnMap`) }}
         </Button>
         <span v-if="step.location.address">{{ step.location.address }}</span>
       </div>
     </fieldset>
 
-    <Button class="create-btn" type="button" @click="addStep">Добавить шаг</Button>
+    <Button class="create-btn" type="button" @click="addStep">{{
+      $t(`map.buttons.addStep`)
+    }}</Button>
 
     <!-- Награда -->
     <fieldset class="reward">
-      <legend>Награда</legend>
+      <legend>{{ $t(`map.popup.reward`) }}</legend>
       <div class="field">
         <label>XP:</label>
         <span>{{ model.reward.xp }}</span>
       </div>
       <div class="field">
-        <label>Очки:</label>
+        <label>{{ $t(`map.popup.points`) }}:</label>
         <Input type="number" v-model="model.reward.points" min="0" />
       </div>
       <div class="field">
-        <label>Предмет:</label>
+        <label>{{ $t(`map.popup.inventoryItem`) }}:</label>
         <Button class="create-btn small" @click.prevent="addItem">+</Button>
       </div>
     </fieldset>
 
     <div class="field">
-      <label>Описание:</label>
-      <Textarea v-model="model.finishWords" placeholder="Слова благодарности пользователю" />
+      <label>{{ $t(`map.popup.description`) }}:</label>
+      <Textarea
+        v-model="model.finishWords"
+        :placeholder="$t(`map.popup.placeholders.wordsOfGratitude`)"
+      />
     </div>
   </div>
 </template>

@@ -1,0 +1,12 @@
+{
+  "chatsLoading": "チャットを読み込み中",
+  "loadingError": "読み込みエラー",
+  "buttons": {
+    "reload": "再試行"
+  },
+  "taskChatsTitle": "タスクチャット",
+  "friendsChatsTitle": "友だち",
+  "teamChatsTitle": "チームチャット",
+  "noChats": "チャットがありません",
+  "sendMessagePlaceHolder": "メッセージを入力"
+}

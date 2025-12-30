@@ -21,28 +21,31 @@ const model = defineModel({
 <template>
   <div class="form-section">
     <div class="field">
-      <label>Заголовок:</label>
-      <Input v-model="model.title" placeholder="Название" />
+      <label>{{ $t(`map.popup.headline`) }}:</label>
+      <Input v-model="model.title" :placeholder="$t(`map.popup.placeholders.title`)" />
     </div>
 
     <div class="field">
-      <label>Описание:</label>
-      <Textarea v-model="model.description" placeholder="Опишите задачу..." />
+      <label>{{ $t(`map.popup.description`) }}:</label>
+      <Textarea
+        v-model="model.description"
+        :placeholder="$t(`map.popup.placeholders.describeTask`) + '...'"
+      />
     </div>
 
     <div class="field">
-      <label>Начало:</label>
+      <label>{{ $t(`map.popup.start`) }}:</label>
       <Input type="date" v-model="model.startDate" />
     </div>
 
     <div class="field">
-      <label>Конец:</label>
+      <label>{{ $t(`map.popup.end`) }}:</label>
       <Input type="date" v-model="model.endDate" />
     </div>
 
     <!-- Награда -->
     <fieldset class="reward">
-      <legend>Награда</legend>
+      <legend>{{ $t(`map.popup.reward`) }}</legend>
       <div class="field">
         <label>XP:</label>
         <span>{{ model.reward.xp }}</span>

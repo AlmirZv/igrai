@@ -61,14 +61,14 @@ function sendMessage() {
         @click="sendMessage"
         :disabled="isSending"
       >
-        {{ isSending ? '⏳...' : 'Сообщение 💬' }}
+        {{ isSending ? '⏳...' : $t(`tasks.buttons.message`) + '  💬' }}
       </button>
     </div>
   </div>
 
   <!-- Отзывы -->
   <div class="reviews">
-    <h4>Отзывы:</h4>
+    <h4>{{ $t(`tasks.reviews`) }}:</h4>
     <ul>
       <li v-for="r in reviews" :key="r.id">
         <span class="review-text">"{{ r.text }}"</span>
