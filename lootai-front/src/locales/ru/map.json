@@ -7,9 +7,59 @@
       "quest": "Квест",
       "event": "Событие",
       "user": "Личная"
-    }
+    },
+    "headline": "Заголовок",
+    "description": "Описание",
+    "placeholders": {
+      "title": "Название",
+      "describeTask": "Опишите задачу",
+      "describeStep": "Опишите шаг",
+      "enterRiddle": "Введите загадку",
+      "answer": "Ответ",
+      "enterClue": "Подсказка",
+      "wordsOfGratitude": "Слова благодарности пользователю"
+    },
+    "start": "Начало",
+    "end": "Конец",
+    "reward": "Награда",
+    "inventoryItem": "Предмет",
+    "points": "Очки",
+    "gender": "Пол",
+    "genderType": {
+      "any": "Любой",
+      "male": "Мужчины",
+      "female": "Женщины"
+    },
+    "ageStart": "Возраст от",
+    "ageEnd": "Возраст до",
+    "difficulty": "Сложность",
+    "difficultyType": {
+      "easy": "Легкая",
+      "medium": "Средняя",
+      "hard": "Сложная"
+    },
+    "quantitty": "Количество",
+    "step": "Шаг",
+    "title": "Название",
+    "type": "Тип",
+    "stepType": {
+      "riddle": "Загадка",
+      "qr": "Найти QR-код",
+      "photo": "Сделайть похожее фото"
+    },
+    "riddle": "Загадка",
+    "answer": "Ответ",
+    "clue": "Подсказка",
+    "qrcode": "QR-код",
+    "generatingQRCode": "Генерация QR-кода",
+    "uploadPhoto": "Загрузить фото",
+    "locationChoosed": "Локация выбрана",
+    "location": "Локация"
   },
   "buttons": {
-    "createTask": "Создать задачу"
+    "createTask": "Создать задачу",
+    "download": "Скачать",
+    "chooseOnMap": "Выбрать на карте",
+    "addStep": "Добавить шаг"
   }
 }

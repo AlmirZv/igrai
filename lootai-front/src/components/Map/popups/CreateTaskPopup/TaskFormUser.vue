@@ -34,38 +34,41 @@ function addItem() {
 <template>
   <div class="form">
     <div class="field">
-      <label>Заголовок:</label>
-      <Input v-model="model.title" placeholder="Название" />
+      <label>{{ $t(`map.popup.headline`) }}:</label>
+      <Input v-model="model.title" :placeholder="$t(`map.popup.placeholders.title`)" />
     </div>
 
     <div class="field">
-      <label>Описание:</label>
-      <Textarea v-model="model.description" placeholder="Опишите задачу..." />
+      <label>{{ $t(`map.popup.description`) }}:</label>
+      <Textarea
+        v-model="model.description"
+        :placeholder="$t(`map.popup.placeholders.describeTask`) + '...'"
+      />
     </div>
 
     <!-- Пол -->
     <div class="field">
-      <label>Пол:</label>
+      <label>{{ $t(`map.popup.gender`) }}:</label>
       <Select v-model="model.requirements.gender">
-        <option value="any">Любой</option>
-        <option value="male">Мужчины</option>
-        <option value="female">Женщины</option>
+        <option value="any">{{ $t(`map.popup.genderType.any`) }}</option>
+        <option value="male">{{ $t(`map.popup.genderType.male`) }}</option>
+        <option value="female">{{ $t(`map.popup.genderType.female`) }}</option>
       </Select>
     </div>
 
     <!-- Возраст -->
     <div class="field">
-      <label>Возраст:</label>
+      <label>{{ $t(`map.popup.age`) }}:</label>
       <Input type="number" v-model="model.requirements.age" min="0" />
     </div>
 
     <div class="field">
-      <label>Количество:</label>
+      <label>{{ $t(`map.popup.quantity`) }}:</label>
       <Input type="number" v-model="model.requirements.membersCount" min="1" />
     </div>
 
     <div class="field">
-      <label>Начало:</label>
+      <label>{{ $t(`map.popup.start`) }}:</label>
       <div class="inline-inputs">
         <Input type="date" v-model="model.requirements.startDate" />
         <Input type="time" v-model="model.requirements.startTime" />
@@ -73,7 +76,7 @@ function addItem() {
     </div>
 
     <div class="field">
-      <label>Конец:</label>
+      <label>{{ $t(`map.popup.end`) }}:</label>
       <div class="inline-inputs">
         <Input type="date" v-model="model.requirements.endDate" />
         <Input type="time" v-model="model.requirements.endTime" />
@@ -82,17 +85,17 @@ function addItem() {
 
     <!-- Награда -->
     <fieldset class="reward">
-      <legend>Награда</legend>
+      <legend>{{ $t(`map.popup.reward`) }}</legend>
       <div class="field">
         <label>XP:</label>
         <span>{{ model.reward.xp }}</span>
       </div>
       <div class="field">
-        <label>Очки:</label>
+        <label>{{ $t(`map.popup.points`) }}:</label>
         <Input type="number" v-model="model.reward.points" min="0" />
       </div>
       <div class="field">
-        <label>Предмет:</label>
+        <label>{{ $t(`map.popup.inventoryItem`) }}:</label>
         <Button class="create-btn small" @click.prevent="addItem">+</Button>
       </div>
     </fieldset>
