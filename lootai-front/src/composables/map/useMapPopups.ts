@@ -1,5 +1,6 @@
 import { ref, createApp } from 'vue'
 import L from 'leaflet'
+import { i18n } from '@/locales/i18n'
 
 type OnRemoveCallback = (wasProgrammatic: boolean) => void
 
@@ -55,6 +56,7 @@ export function useMapPopups(mapRef: { value?: L.Map }) {
 
     popupContainer.value = document.createElement('div')
     popupApp.value = createApp(component, props)
+    popupApp.value?.use(i18n)
     popupApp.value?.mount(popupContainer.value)
 
     popupInstance.value = L.popup(options?.popupOptions ?? {})

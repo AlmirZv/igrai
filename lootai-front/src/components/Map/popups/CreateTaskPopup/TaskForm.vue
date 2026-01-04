@@ -14,6 +14,7 @@ import type { QuestTask } from '@/types/quest'
 import type { PublicTask } from '@/types/publicTask'
 import type { EventTask } from '@/types/event'
 import { latLng } from 'leaflet'
+import { i18n } from '@/locales/i18n'
 
 const props = defineProps<{
   lat: number

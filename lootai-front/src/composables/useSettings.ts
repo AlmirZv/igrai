@@ -21,7 +21,7 @@ const emptySettings: UserSettings = {
     },
   },
   app: {
-    language: 'ru',
+    language: 'en',
     theme: 'dark',
     fontSize: 'medium',
     soundEnabled: true,
@@ -49,7 +49,14 @@ const themeMap = {
 } as const
 
 export async function getUserSettings(id?: string) {
-  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+  if (!auth.currentUser) {
+    state.settings = JSON.parse(JSON.stringify(emptySettings))
+    state.draft = JSON.parse(JSON.stringify(emptySettings))
+    // Применяем настройки при загрузке
+    applyTheme(themeMap[state.draft.app.theme])
+    await setI18nLanguage(state.draft.app.language)
+    return emptySettings
+  }
   const uid = auth.currentUser.uid
 
   const settingsRef = doc(db, 'userSettings', id ?? uid)

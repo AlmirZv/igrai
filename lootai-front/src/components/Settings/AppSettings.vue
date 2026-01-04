@@ -109,8 +109,8 @@ onMounted(async () => {
 
   const uid = auth.currentUser?.uid
   if (uid) await getUserSettings(uid)
-  console.log(i18n.global.messages.value)
-  console.log('locale =', i18n.global.locale.value)
+  // console.log(i18n.global.messages.value)
+  // console.log('locale =', i18n.global.locale.value)
 })
 
 // Сохранить настройки карты в userSettings

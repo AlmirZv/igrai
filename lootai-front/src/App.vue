@@ -7,6 +7,8 @@ import MainMapView from './views/MainView.vue'
 import { getUserInfo } from '@/composables/userInfo'
 import userComposable from '@/composables/userInfo'
 
+import useSettings from '@/composables/useSettings'
+const { getUserSettings } = useSettings()
 import { socket } from '@/socket'
 
 const user = ref(auth.currentUser)
@@ -16,9 +18,10 @@ socket.off()
 
 onMounted(async () => {
   // Listen for auth state changes
-  onAuthStateChanged(auth, (currentUser) => {
+  onAuthStateChanged(auth, async (currentUser) => {
     user.value = currentUser
     if (currentUser) {
+      await getUserSettings(currentUser.uid)
       console.log('🔌 Attempting to connect socket for user:', currentUser.uid)
       if (!socket.connected) {
         socket.connect()
@@ -39,6 +42,8 @@ onMounted(async () => {
   // Connect to WebSocket if user is already logged in
   if (user.value) {
     console.log('🔌 Attempting to connect socket for existing user:', user.value.uid)
+
+    await getUserSettings(user.value.uid)
     if (!socket.connected) {
       socket.connect()
     } else {
