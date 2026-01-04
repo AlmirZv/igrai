@@ -22,14 +22,17 @@
     "start": "Начало",
     "end": "Конец",
     "reward": "Награда",
+    "yourReward": "Ваша награда",
     "inventoryItem": "Предмет",
     "points": "Очки",
+    "points2": "очков",
     "gender": "Пол",
     "genderType": {
       "any": "Любой",
       "male": "Мужчины",
       "female": "Женщины"
     },
+    "age": "Возраст",
     "ageStart": "Возраст от",
     "ageEnd": "Возраст до",
     "difficulty": "Сложность",
@@ -38,14 +41,15 @@
       "medium": "Средняя",
       "hard": "Сложная"
     },
-    "quantitty": "Количество",
+    "quantity": "Количество",
+    "neededParticipants": "Нужно участников",
     "step": "Шаг",
     "title": "Название",
     "type": "Тип",
     "stepType": {
       "riddle": "Загадка",
       "qr": "Найти QR-код",
-      "photo": "Сделайть похожее фото"
+      "photo": "Сделать похожее фото"
     },
     "riddle": "Загадка",
     "answer": "Ответ",
@@ -54,12 +58,27 @@
     "generatingQRCode": "Генерация QR-кода",
     "uploadPhoto": "Загрузить фото",
     "locationChoosed": "Локация выбрана",
-    "location": "Локация"
+    "location": "Локация",
+    "requirements": {
+      "youCreatedTask": "Вы создали задачу",
+      "ageMoreThan": "Требуется возраст > ",
+      "required": "Требуются",
+      "pMountReached": "Количество участников набрано",
+      "distanceToQuest": "Чтобы участвовать вам надо быть в пределах квеста"
+    },
+    "participants": "Участники",
+    "completed": "Завершен"
   },
   "buttons": {
     "createTask": "Создать задачу",
     "download": "Скачать",
     "chooseOnMap": "Выбрать на карте",
-    "addStep": "Добавить шаг"
+    "addStep": "Добавить шаг",
+    "appUnderCons": "Заявка на рассмотрении",
+    "alreadyMember": "Вы уже участник!",
+    "participateInTask": "Участвовать в задании",
+    "startQuest": "Начать квест",
+    "registerForEvent": "Записаться на событие",
+    "participate": "Участвовать"
   }
 }

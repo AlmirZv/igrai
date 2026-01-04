@@ -1,0 +1,84 @@
+{
+  "popup": {
+    "creatingTask": "タスクを作成中",
+    "taskType": "タスクの種類",
+    "types": {
+      "public": "公開",
+      "quest": "クエスト",
+      "event": "イベント",
+      "user": "個人"
+    },
+    "headline": "タイトル",
+    "description": "説明",
+    "placeholders": {
+      "title": "タイトル",
+      "describeTask": "タスクの説明を入力",
+      "describeStep": "ステップを説明",
+      "enterRiddle": "なぞなぞを入力",
+      "answer": "答え",
+      "enterClue": "ヒントを入力",
+      "wordsOfGratitude": "感謝のメッセージ"
+    },
+    "start": "開始",
+    "end": "終了",
+    "reward": "報酬",
+    "yourReward": "あなたの報酬",
+    "inventoryItem": "アイテム",
+    "points": "ポイント",
+    "points2": "ポイント",
+    "gender": "性別",
+    "genderType": {
+      "any": "指定なし",
+      "male": "男性",
+      "female": "女性"
+    },
+    "age": "年齢",
+    "ageStart": "年齢（以上）",
+    "ageEnd": "年齢（以下）",
+    "difficulty": "難易度",
+    "difficultyType": {
+      "easy": "簡単",
+      "medium": "普通",
+      "hard": "難しい"
+    },
+    "quantity": "数量",
+    "neededParticipants": "必要な参加者数",
+    "step": "ステップ",
+    "title": "タイトル",
+    "type": "タイプ",
+    "stepType": {
+      "riddle": "なぞなぞ",
+      "qr": "QRコードを探す",
+      "photo": "同じ写真を撮る"
+    },
+    "riddle": "なぞなぞ",
+    "answer": "答え",
+    "clue": "ヒント",
+    "qrcode": "QRコード",
+    "generatingQRCode": "QRコード生成中",
+    "uploadPhoto": "写真をアップロード",
+    "locationChoosed": "場所が選択されました",
+    "location": "場所",
+    "requirements": {
+      "youCreatedTask": "タスクを作成しました",
+      "ageMoreThan": "必要年齢：",
+      "required": "必要条件",
+      "pMountReached": "参加人数が上限に達しました",
+      "distanceToQuest": "クエスト範囲内にいる必要があります"
+    },
+    "participants": "参加者",
+    "completed": "完了"
+  },
+  "buttons": {
+    "createTask": "タスクを作成",
+    "download": "ダウンロード",
+    "chooseOnMap": "地図で選択",
+    "addStep": "ステップを追加",
+    "appUnderCons": "申請を確認中",
+    "alreadyMember": "すでに参加しています",
+    "participateInTask": "タスクに参加",
+    "startQuest": "クエスト開始",
+    "registerForEvent": "イベントに参加",
+    "participate": "参加する"
+  }
+}

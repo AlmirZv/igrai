@@ -4,6 +4,9 @@ import type { Task, TaskParticipant, TaskRequirements } from '@/types/task'
 import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
 import { Button } from '@/designSystem/components'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 type PopupType = 'user' | 'quest' | 'public' | 'event'
 
@@ -53,13 +56,13 @@ function doAction() {
 const actionLabel = computed(() => {
   switch (props.type) {
     case 'user':
-      return 'Участвовать в задании'
+      return t('map.buttons.participateInTask')
     case 'quest':
-      return 'Начать квест'
+      return t('map.buttons.startQuest')
     case 'public':
-      return 'Записаться на событие'
+      return t('map.buttons.registerForEvent')
     default:
-      return 'Участвовать'
+      return t('map.buttons.participate')
   }
 })
 
@@ -77,11 +80,11 @@ const actionDone = computed(() => {
   }
 
   if (userAge < requiredAge) {
-    return `Требуется возраст > ${requiredAge}`
+    return `${t('map.popup.requirements.ageMoreThan')} ${requiredAge}`
   }
 
   if (requiredGender != 'any' && userGender != requiredGender) {
-    return `Требуются  ${requiredGender == 'female' ? 'Девушки' : 'Парни'}`
+    return `${t('map.popup.requirements.required')} ${requiredGender == 'female' ? t('map.popup.genderType.female') : t('map.popup.genderType.male')}`
   }
 
   if (hasParticipants(props.data.participants)) {
@@ -97,16 +100,16 @@ const actionDone = computed(() => {
     const acceptedMemberCount = participants.filter((p) => p.status === 'accepted').length
 
     if (props.type == 'user' && acceptedMemberCount == props.data.requirements.membersCount) {
-      return 'Количество участников набрано'
+      return t('map.popup.requirements.pMountReached')
     }
     if (isParticipant) {
       const isParticipantAccepted = participants?.some(
         (p) => p.id === userId && p.status == 'accepted',
       )
       if (isParticipantAccepted) {
-        return 'Вы уже участник!'
+        return t('map.buttons.alreadyMember')
       } else {
-        return 'Заявка на рассмотрении'
+        return t('map.buttons.appUnderCons')
       }
     } else {
       console.log('Пользователь ещё не в списке')
@@ -139,17 +142,17 @@ function hasParticipants(participants: TaskParticipant | TaskParticipant[] | und
         ⏰ {{ (data as Task).requirements.startTime }} {{ (data as Task).requirements.startDate }} |
         {{ (data as Task).requirements.endTime }} {{ (data as Task).requirements.endDate }}
         <br />
-        👥 Нужно участников: {{ (data as Task).requirements.membersCount }} <br />
-        🎂 Возраст: {{ (data as Task).requirements.age }}+ <br />
-        ⚧ Пол: {{ (data as Task).requirements.gender }} <br />
+        👥 {{ $t('map.popup.neededMountP') }}: {{ (data as Task).requirements.membersCount }} <br />
+        🎂 {{ $t('map.popup.age') }}: {{ (data as Task).requirements.age }}+ <br />
+        ⚧ {{ $t('map.popup.gender') }}: {{ (data as Task).requirements.gender }} <br />
       </div>
       <div class="reward">
-        🎁 <b>Награда:</b> {{ (data as Task).reward.xp }} XP,
-        {{ (data as Task).reward.points }} очков,
+        🎁 <b>{{ $t('map.popup.reward') }}:</b> {{ (data as Task).reward.xp }} XP,
+        {{ (data as Task).reward.points }} {{ $t('map.popup.points') }},
         {{ (data as Task).reward.inventoryItem }}
       </div>
       <div class="participants">
-        <b>Участники:</b>
+        <b>{{ $t('map.popup.participants') }}:</b>
         <div class="list">
           <div
             v-for="p in (data as Task).participants"
@@ -169,7 +172,11 @@ function hasParticipants(participants: TaskParticipant | TaskParticipant[] | und
     <!-- Кнопка действия -->
     <Button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
       {{
-        isLoading ? (type == 'user' ? 'Заявка на рассмотрении' : 'Вы уже участник!') : actionLabel
+        isLoading
+          ? type == 'user'
+            ? t('map.buttons.appUnderCons')
+            : t('map.buttons.alreadyMember')
+          : actionLabel
       }}
     </Button>
     <Button v-if="actionDone && actionDone != true" class="action-done-btn" :disabled="true">

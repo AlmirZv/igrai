@@ -10,6 +10,10 @@ import questFinish from './questFinish.vue'
 import { Input, Button } from '@/designSystem/components'
 
 const { getLocation } = useGeolocation()
+
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 type PopupType = 'quest'
 
 const props = defineProps<{
@@ -109,11 +113,11 @@ const actionDone = computed(() => {
   }
 
   if (userAge < requiredAge) {
-    return `Требуется возраст > ${requiredAge}`
+    return `${t('map.popup.requirements.ageMoreThan')} ${requiredAge}`
   }
 
   if (requiredGender != 'any' && userGender != requiredGender) {
-    return `Требуются  ${requiredGender == 'female' ? 'Девушки' : 'Парни'}`
+    return `${t('map.popup.requirements.required')} ${requiredGender == 'female' ? t('map.popup.genderType.female') : t('map.popup.genderType.male')}`
   }
 
   if (hasParticipants(props.data.participants)) {
@@ -130,7 +134,7 @@ const actionDone = computed(() => {
         (p) => p.id === userId && p.status == 'accepted',
       )
       if (isParticipantAccepted) {
-        return 'Вы уже участник!'
+        return t('map.buttons.alreadyMember')
       }
     } else {
       console.log('Пользователь ещё не в списке')
@@ -190,10 +194,12 @@ async function checkDistance() {
 
       <!-- Автор -->
       <p v-if="data.author" class="author">👤 {{ data.author }}</p>
-      <p class="author">🎯 Сложность: {{ (data as QuestTask).requirements.difficulty }}</p>
+      <p class="author">
+        🎯 {{ $t('map.popup.difficulty') }}: {{ (data as QuestTask).requirements.difficulty }}
+      </p>
       <div class="author">
-        <div>Награда:</div>
-        XP: {{ (data as QuestTask).reward.xp }}, Монет:
+        <div>{{ $t('map.popup.reward') }}:</div>
+        XP: {{ (data as QuestTask).reward.xp }}, {{ $t('map.popup.points') }}:
         {{ (data as QuestTask).reward.points }}
         {{ (data as QuestTask).reward.inventoryItem ? ',' : '' }}
         {{ (data as QuestTask).reward.inventoryItem }}
@@ -211,17 +217,17 @@ async function checkDistance() {
 
         <div v-if="auth.currentUser?.uid != data.authorId">
           <div class="field" v-if="currentStep?.type === 'riddle'">
-            Ответ: <Input type="text" v-model="riddleAnswer" />
-            <Button v-if="!solved" @click="checkRiddleAnswer">Ответ</Button>
+            {{ $t('map.popup.answer') }}: <Input type="text" v-model="riddleAnswer" />
+            <Button v-if="!solved" @click="checkRiddleAnswer">{{ $t('map.popup.answer') }}</Button>
           </div>
 
           <div class="field" v-if="currentStep?.type === 'qr'">
             <Button v-if="!solved" @click="scanQRCode">Scan</Button>
           </div>
         </div>
-        <div v-else>You are creator</div>
+        <div v-else>{{ $t('map.popup.requirements.youCreatedTask') }}</div>
       </div>
-      <div v-else class="step">Чтобы учавствовать вам надо быть в пределах квеста</div>
+      <div v-else class="step">{{ $t('map.popup.requirements.distanceToQuest') }}</div>
 
       <!-- Кнопка действия -->
       <!-- <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
@@ -231,16 +237,21 @@ async function checkDistance() {
     </div>
     <div v-else class="quest-complete">
       <div class="header">
-        <span class="badge">Quest "{{ data.title }}" Completed</span>
+        <span class="badge"
+          >{{ $t('map.popup.types.quest') }} "{{ data.title }}"
+          {{ $t('map.popup.completed') }}</span
+        >
       </div>
 
       <div class="meta">
-        <p v-if="data.author" class="author">👤 Автор: {{ data.author }}</p>
-        <p class="difficulty">🎯 Сложность: {{ (data as QuestTask).requirements.difficulty }}</p>
+        <p v-if="data.author" class="author">👤 {{ $t('map.popup.author') }}: {{ data.author }}</p>
+        <p class="difficulty">
+          🎯 {{ $t('map.popup.difficulty') }}: {{ (data as QuestTask).requirements.difficulty }}
+        </p>
       </div>
 
       <div class="reward-block">
-        <div class="reward-title">🏆 Ваша награда</div>
+        <div class="reward-title">🏆 {{ $t('map.popup.yourReward') }}</div>
         <ul class="reward-list">
           <li>
             XP: <strong>{{ (data as QuestTask).reward.xp }}</strong>

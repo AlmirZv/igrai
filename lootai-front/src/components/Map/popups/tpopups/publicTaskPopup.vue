@@ -4,6 +4,9 @@ import type { PublicTask, TaskParticipant, TaskRequirements } from '@/types/publ
 import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
 import { Button } from '@/designSystem/components'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 type PopupType = 'public'
 
@@ -37,15 +40,15 @@ const actionDone = computed(() => {
   const userId = auth.currentUser?.uid
 
   if (props.data.authorId == userId) {
-    return 'Вы создали задачу'
+    return t('map.popup.requirements.youCreatedTask')
   }
 
   if (userAge < requiredAge) {
-    return `Требуется возраст > ${requiredAge}`
+    return `${t('map.popup.requirements.ageMoreThan')} ${requiredAge}`
   }
 
   if (requiredGender != 'any' && userGender != requiredGender) {
-    return `Требуются  ${requiredGender == 'female' ? 'Девушки' : 'Парни'}`
+    return `${t('map.popup.requirements.required')} ${requiredGender == 'female' ? t('map.popup.genderType.female') : t('map.popup.genderType.male')}`
   }
 
   console.log(props.data.participants)
@@ -66,9 +69,9 @@ const actionDone = computed(() => {
       console.log(isParticipantAccepted)
 
       if (isParticipantAccepted) {
-        return 'Вы уже участник!'
+        return t('map.buttons.alreadyMember')
       } else {
-        return 'Заявка на рассмотрении'
+        return t('map.buttons.appUnderCons')
       }
     } else {
       console.log('Пользователь ещё не в списке')
@@ -98,13 +101,13 @@ function hasParticipants(participants: TaskParticipant | TaskParticipant[] | und
     <!-- Task -->
     <div class="task">
       <div class="reward">
-        🎁 <b>Награда:</b> XP: {{ (data as PublicTask).reward.xp }}
+        🎁 <b>{{ $t('map.popup.reward') }}:</b> XP: {{ (data as PublicTask).reward.xp }}
         {{ (data as PublicTask).reward.inventoryItem ? ',' : '' }}
         {{ (data as PublicTask).reward.inventoryItem }}
       </div>
 
       <div class="participants">
-        <b>Участники:</b>
+        <b>{{ $t('map.popup.participants') }}:</b>
         <div class="list">
           <div
             v-for="p in (data as PublicTask).participants"
@@ -123,9 +126,9 @@ function hasParticipants(participants: TaskParticipant | TaskParticipant[] | und
       {{
         isLoading
           ? isLoading
-            ? 'Заявка на рассмотрении'
-            : 'Вы уже участник!'
-          : 'Записаться на событие'
+            ? t('map.buttons.appUnderCons')
+            : t('map.buttons.alreadyMember')
+          : t('map.buttons.registerForEvent')
       }}
     </button>
     <Button v-if="actionDone && actionDone != true" class="action-done-btn" :disabled="true">

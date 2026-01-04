@@ -1,1 +1,84 @@
-{}
+{
+  "popup": {
+    "creatingTask": "Creating task",
+    "taskType": "Task type",
+    "types": {
+      "public": "Public",
+      "quest": "Quest",
+      "event": "Event",
+      "user": "Personal"
+    },
+    "headline": "Headline",
+    "description": "Description",
+    "placeholders": {
+      "title": "Title",
+      "describeTask": "Describe the task",
+      "describeStep": "Describe the step",
+      "enterRiddle": "Enter a riddle",
+      "answer": "Answer",
+      "enterClue": "Enter a clue",
+      "wordsOfGratitude": "Words of gratitude for the user"
+    },
+    "start": "Start",
+    "end": "End",
+    "reward": "Reward",
+    "yourReward": "Your reward",
+    "inventoryItem": "Item",
+    "points": "Points",
+    "points2": "points",
+    "gender": "Gender",
+    "genderType": {
+      "any": "Any",
+      "male": "Men",
+      "female": "Women"
+    },
+    "age": "Age",
+    "ageStart": "Age from",
+    "ageEnd": "Age to",
+    "difficulty": "Difficulty",
+    "difficultyType": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "quantity": "Quantity",
+    "neededParticipants": "Participants needed",
+    "step": "Step",
+    "title": "Title",
+    "type": "Type",
+    "stepType": {
+      "riddle": "Riddle",
+      "qr": "Find a QR code",
+      "photo": "Take a similar photo"
+    },
+    "riddle": "Riddle",
+    "answer": "Answer",
+    "clue": "Clue",
+    "qrcode": "QR code",
+    "generatingQRCode": "Generating QR code",
+    "uploadPhoto": "Upload photo",
+    "locationChoosed": "Location selected",
+    "location": "Location",
+    "requirements": {
+      "youCreatedTask": "You created the task",
+      "ageMoreThan": "Required age > ",
+      "required": "Required",
+      "pMountReached": "Participant limit reached",
+      "distanceToQuest": "You must be within the quest area to participate"
+    },
+    "participants": "Participants",
+    "completed": "Completed"
+  },
+  "buttons": {
+    "createTask": "Create task",
+    "download": "Download",
+    "chooseOnMap": "Choose on map",
+    "addStep": "Add step",
+    "appUnderCons": "Application under review",
+    "alreadyMember": "You are already a participant!",
+    "participateInTask": "Participate in task",
+    "startQuest": "Start quest",
+    "registerForEvent": "Register for event",
+    "participate": "Participate"
+  }
+}
