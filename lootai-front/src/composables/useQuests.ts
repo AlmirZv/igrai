@@ -93,7 +93,7 @@ export async function loadUserQuests(uid: string): Promise<QuestTask[]> {
 
 // загрузка задач созданных пользователем
 export async function loadAuthorQuests(uid: string): Promise<QuestTask[]> {
-  const questsRef = collection(db, 'tasks')
+  const questsRef = collection(db, 'quests')
   const userQuestsQuery = query(questsRef, where('authorId', '==', uid))
 
   const snapshot = await getDocs(userQuestsQuery)
@@ -218,4 +218,20 @@ export async function updateQuestStep(taskId: string, step: QuestStep) {
       participants: participants,
     })
   }
+}
+
+// обновление данных квеста
+export async function updateQuestTask(taskId: string, payload: Partial<QuestTask>) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'quests', taskId)
+  await updateDoc(taskRef, { ...payload, updatedAt: Timestamp.now() })
+}
+
+// завершение квеста
+export async function completeQuestTask(taskId: string) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'quests', taskId)
+  await updateDoc(taskRef, { status: 'completed', updatedAt: Timestamp.now() })
 }

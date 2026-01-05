@@ -225,3 +225,17 @@ export async function completeTask(taskId: string) {
     console.log(error)
   }
 }
+
+// обновление задачи созданной пользователем
+export async function updateUserTask(taskId: string, payload: Partial<Task>) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'tasks', taskId)
+
+  const normalizedPayload = {
+    ...payload,
+    updatedAt: Timestamp.now(),
+  }
+
+  await updateDoc(taskRef, normalizedPayload)
+}

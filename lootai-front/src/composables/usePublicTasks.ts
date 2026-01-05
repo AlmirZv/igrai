@@ -123,3 +123,19 @@ export async function applyForQuest(taskId: string) {
   })
   console.log(`Заявка подана: ${newParticipant}`)
 }
+
+// обновление публичной задачи
+export async function updatePublicTask(taskId: string, payload: Partial<PublicTask>) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'publicTasks', taskId)
+  await updateDoc(taskRef, { ...payload, updatedAt: Timestamp.now() })
+}
+
+// завершение публичной задачи
+export async function completePublicTask(taskId: string) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'publicTasks', taskId)
+  await updateDoc(taskRef, { status: 'completed', updatedAt: Timestamp.now() })
+}

@@ -123,3 +123,19 @@ export async function applyForQuest(taskId: string) {
   })
   console.log(`Заявка подана: ${newParticipant}`)
 }
+
+// обновление события
+export async function updateEventTask(taskId: string, payload: Partial<EventTask>) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'eventTasks', taskId)
+  await updateDoc(taskRef, { ...payload, updatedAt: Timestamp.now() })
+}
+
+// завершение события
+export async function completeEventTask(taskId: string) {
+  if (!auth.currentUser) throw new Error('Необходимо войти в систему')
+
+  const taskRef = doc(db, 'eventTasks', taskId)
+  await updateDoc(taskRef, { status: 'completed', updatedAt: Timestamp.now() })
+}
