@@ -67,7 +67,8 @@
       "distanceToQuest": "Чтобы участвовать вам надо быть в пределах квеста"
     },
     "participants": "Участники",
-    "completed": "Завершен"
+    "completed": "Завершен",
+    "author": "Автор"
   },
   "buttons": {
     "createTask": "Создать задачу",

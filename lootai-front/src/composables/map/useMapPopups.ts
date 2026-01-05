@@ -56,8 +56,11 @@ export function useMapPopups(mapRef: { value?: L.Map }) {
 
     popupContainer.value = document.createElement('div')
     popupApp.value = createApp(component, props)
-    popupApp.value?.use(i18n)
-    popupApp.value?.mount(popupContainer.value)
+    // Подключаем i18n ДО монтирования (критично для legacy: false)
+    if (popupApp.value) {
+      popupApp.value.use(i18n)
+      popupApp.value.mount(popupContainer.value)
+    }
 
     popupInstance.value = L.popup(options?.popupOptions ?? {})
       .setLatLng([lat, lng])

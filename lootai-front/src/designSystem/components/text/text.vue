@@ -53,6 +53,17 @@ const tag = props.as || tagMap[props.variant] || 'p'
 <style lang="css">
 .text {
   margin: 0;
+  max-width: 100%;
+  min-width: 0;
+
+  /* allow long strings (e.g. URLs) to wrap on small screens */
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  display: block;
 }
 
 /* variants */

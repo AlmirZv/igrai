@@ -12,10 +12,11 @@
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   width: 100%;
-  /* max-height: calc(100vh - var(--space-xl) * 2); */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  min-width: max-content;
+  /* allow cards (e.g. modals) to shrink on small screens */
+  min-width: 0;
 }
 .card--elevated {
   box-shadow: var(--shadow-lg);

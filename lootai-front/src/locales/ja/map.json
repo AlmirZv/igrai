@@ -67,7 +67,8 @@
       "distanceToQuest": "クエスト範囲内にいる必要があります"
     },
     "participants": "参加者",
-    "completed": "完了"
+    "completed": "完了",
+    "author": "作者"
   },
   "buttons": {
     "createTask": "タスクを作成",

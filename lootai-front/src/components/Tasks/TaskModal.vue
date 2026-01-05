@@ -6,68 +6,69 @@
         <Button variant="secondary" @click="$emit('close')">x</Button>
       </div>
 
-      <div class="modal-section">
-        <Text variant="p"
-          ><strong>{{ $t(`tasks.modal.author`) }}:</strong> {{ task.author }}</Text
-        >
-        <Text variant="p"
-          ><strong>{{ $t(`tasks.modal.description`) }}:</strong> {{ task.description }}</Text
-        >
-        <Text variant="p">
-          <strong>{{ $t(`tasks.modal.time`) }}:</strong> {{ task.requirements.startTime }}
-          {{ task.requirements.startDate }}
-          {{ $t(`tasks.modal.to`) }}
-          {{ task.requirements.endTime }} {{ task.requirements.endDate }}
-        </Text>
-      </div>
-
-      <div class="modal-section requirements">
-        <Text variant="h4" color="muted">⚙️ {{ $t(`tasks.modal.requirements.title`) }}</Text>
-        <ul>
-          <li>
-            <strong>{{ $t(`tasks.modal.requirements.age`) }}:</strong> {{ task.requirements.age }}
-          </li>
-          <li>
-            <strong>{{ $t(`tasks.modal.requirements.gender`) }}:</strong>
-            {{ gender[task.requirements.gender] }}
-          </li>
-        </ul>
-      </div>
-
-      <div class="modal-section reward">
-        <Text variant="h4" color="muted">💎 {{ $t(`tasks.modal.reward.title`) }}</Text>
-        <ul>
-          <li>
-            <strong>{{ $t(`tasks.modal.reward.experience`) }}:</strong> {{ task.reward.xp }}
-          </li>
-          <li>
-            <strong>{{ $t(`tasks.modal.reward.points`) }}:</strong> {{ task.reward.points }}
-          </li>
-          <li>
-            <strong>{{ $t(`tasks.modal.reward.inventory`) }}:</strong>
-            {{ task.reward.inventoryItem }}
-          </li>
-        </ul>
-      </div>
-
-      <div v-if="aTab === 'created'" class="modal-section participants">
-        <h4>👥 {{ $t(`tasks.modal.participants`) }}</h4>
-        <ul>
-          <li
-            v-for="(p, i) in task.participants"
-            :key="i"
-            class="participant-item"
-            @click="showParticipantInfo(p)"
+      <div class="modal-content">
+        <div class="modal-section">
+          <Text variant="p"
+            ><strong>{{ $t(`tasks.modal.author`) }}:</strong> {{ task.author }}</Text
           >
-            <span>{{ p.name }}({{ p.gender ? p.gender : '' }}, {{ p.age ? p.age : '' }})</span>
-            <div class="participant-actions">
-              <Button @click="$emit('accept', p)">✔</Button>
-              <Button @click="$emit('decline', p)">✖</Button>
-            </div>
-          </li>
-        </ul>
-      </div>
+          <Text variant="p"
+            ><strong>{{ $t(`tasks.modal.description`) }}:</strong> {{ task.description }}</Text
+          >
+          <Text variant="p">
+            <strong>{{ $t(`tasks.modal.time`) }}:</strong> {{ task.requirements.startTime }}
+            {{ task.requirements.startDate }}
+            {{ $t(`tasks.modal.to`) }}
+            {{ task.requirements.endTime }} {{ task.requirements.endDate }}
+          </Text>
+        </div>
 
+        <div class="modal-section requirements">
+          <Text variant="h4" color="muted">⚙️ {{ $t(`tasks.modal.requirements.title`) }}</Text>
+          <ul>
+            <li>
+              <strong>{{ $t(`tasks.modal.requirements.age`) }}:</strong> {{ task.requirements.age }}
+            </li>
+            <li>
+              <strong>{{ $t(`tasks.modal.requirements.gender`) }}:</strong>
+              {{ gender[task.requirements.gender] }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-section reward">
+          <Text variant="h4" color="muted">💎 {{ $t(`tasks.modal.reward.title`) }}</Text>
+          <ul>
+            <li>
+              <strong>{{ $t(`tasks.modal.reward.experience`) }}:</strong> {{ task.reward.xp }}
+            </li>
+            <li>
+              <strong>{{ $t(`tasks.modal.reward.points`) }}:</strong> {{ task.reward.points }}
+            </li>
+            <li>
+              <strong>{{ $t(`tasks.modal.reward.inventory`) }}:</strong>
+              {{ task.reward.inventoryItem }}
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="aTab === 'created'" class="modal-section participants">
+          <h4>👥 {{ $t(`tasks.modal.participants`) }}</h4>
+          <ul>
+            <li
+              v-for="(p, i) in task.participants"
+              :key="i"
+              class="participant-item"
+              @click="showParticipantInfo(p)"
+            >
+              <span>{{ p.name }}({{ p.gender ? p.gender : '' }}, {{ p.age ? p.age : '' }})</span>
+              <div class="participant-actions">
+                <Button @click="$emit('accept', p)">✔</Button>
+                <Button @click="$emit('decline', p)">✖</Button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
       <div v-if="aTab === 'created'" class="modal-actions">
         <Button variant="primary" v-if="task.status != 'completed'" @click="$emit('complete')">
           {{ $t(`tasks.buttons.completeTask`) }}
@@ -129,19 +130,49 @@ async function showParticipantInfo(participant) {
 
 .modal {
   width: 90%;
+  max-width: 100%;
+  box-sizing: border-box;
   transform: translateY(10px);
   animation: slideUp var(--motion-duration-normal) var(--motion-easing-standart) forwards;
   overflow: auto;
+}
+
+.modal-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding-right: 4px; /* чтобы скролл не наезжал */
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-width: 0; /* позволяет flex-элементам сжиматься */
+}
+
+.modal-header :deep(.text) {
+  min-width: 0; /* позволяет тексту сжиматься */
+  flex: 1;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .modal-section {
   margin-bottom: var(--space-lg);
+  max-width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+}
+
+.modal-section :deep(.text) {
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
 }
 .modal-section:last-child {
   border: none;

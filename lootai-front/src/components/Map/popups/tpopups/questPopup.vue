@@ -11,9 +11,10 @@ import { Input, Button } from '@/designSystem/components'
 
 const { getLocation } = useGeolocation()
 
-import { useI18n } from 'vue-i18n'
+import { i18n } from '@/locales/i18n'
 
-const { t } = useI18n()
+const t = i18n.global.t
+
 type PopupType = 'quest'
 
 const props = defineProps<{
@@ -195,11 +196,11 @@ async function checkDistance() {
       <!-- Автор -->
       <p v-if="data.author" class="author">👤 {{ data.author }}</p>
       <p class="author">
-        🎯 {{ $t('map.popup.difficulty') }}: {{ (data as QuestTask).requirements.difficulty }}
+        🎯 {{ t('map.popup.difficulty') }}: {{ (data as QuestTask).requirements.difficulty }}
       </p>
       <div class="author">
-        <div>{{ $t('map.popup.reward') }}:</div>
-        XP: {{ (data as QuestTask).reward.xp }}, {{ $t('map.popup.points') }}:
+        <div>{{ t('map.popup.reward') }}:</div>
+        XP: {{ (data as QuestTask).reward.xp }}, {{ t('map.popup.points') }}:
         {{ (data as QuestTask).reward.points }}
         {{ (data as QuestTask).reward.inventoryItem ? ',' : '' }}
         {{ (data as QuestTask).reward.inventoryItem }}
@@ -217,17 +218,17 @@ async function checkDistance() {
 
         <div v-if="auth.currentUser?.uid != data.authorId">
           <div class="field" v-if="currentStep?.type === 'riddle'">
-            {{ $t('map.popup.answer') }}: <Input type="text" v-model="riddleAnswer" />
-            <Button v-if="!solved" @click="checkRiddleAnswer">{{ $t('map.popup.answer') }}</Button>
+            {{ t('map.popup.answer') }}: <Input type="text" v-model="riddleAnswer" />
+            <Button v-if="!solved" @click="checkRiddleAnswer">{{ t('map.popup.answer') }}</Button>
           </div>
 
           <div class="field" v-if="currentStep?.type === 'qr'">
             <Button v-if="!solved" @click="scanQRCode">Scan</Button>
           </div>
         </div>
-        <div v-else>{{ $t('map.popup.requirements.youCreatedTask') }}</div>
+        <div v-else>{{ t('map.popup.requirements.youCreatedTask') }}</div>
       </div>
-      <div v-else class="step">{{ $t('map.popup.requirements.distanceToQuest') }}</div>
+      <div v-else class="step">{{ t('map.popup.requirements.distanceToQuest') }}</div>
 
       <!-- Кнопка действия -->
       <!-- <button v-if="!actionDone" class="action-btn" @click="doAction" :disabled="isLoading">
@@ -238,20 +239,19 @@ async function checkDistance() {
     <div v-else class="quest-complete">
       <div class="header">
         <span class="badge"
-          >{{ $t('map.popup.types.quest') }} "{{ data.title }}"
-          {{ $t('map.popup.completed') }}</span
+          >{{ t('map.popup.types.quest') }} "{{ data.title }}" {{ t('map.popup.completed') }}</span
         >
       </div>
 
       <div class="meta">
-        <p v-if="data.author" class="author">👤 {{ $t('map.popup.author') }}: {{ data.author }}</p>
+        <p v-if="data.author" class="author">👤 {{ t('map.popup.author') }}: {{ data.author }}</p>
         <p class="difficulty">
-          🎯 {{ $t('map.popup.difficulty') }}: {{ (data as QuestTask).requirements.difficulty }}
+          🎯 {{ t('map.popup.difficulty') }}: {{ (data as QuestTask).requirements.difficulty }}
         </p>
       </div>
 
       <div class="reward-block">
-        <div class="reward-title">🏆 {{ $t('map.popup.yourReward') }}</div>
+        <div class="reward-title">🏆 {{ t('map.popup.yourReward') }}</div>
         <ul class="reward-list">
           <li>
             XP: <strong>{{ (data as QuestTask).reward.xp }}</strong>

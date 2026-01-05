@@ -67,7 +67,8 @@
       "distanceToQuest": "You must be within the quest area to participate"
     },
     "participants": "Participants",
-    "completed": "Completed"
+    "completed": "Completed",
+    "author": "Author"
   },
   "buttons": {
     "createTask": "Create task",

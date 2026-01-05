@@ -4,9 +4,9 @@ import type { Task, TaskParticipant, TaskRequirements } from '@/types/task'
 import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
 import { Button } from '@/designSystem/components'
-import { useI18n } from 'vue-i18n'
+import { i18n } from '@/locales/i18n'
 
-const { t } = useI18n()
+const t = i18n.global.t
 
 type PopupType = 'user' | 'quest' | 'public' | 'event'
 
@@ -142,17 +142,17 @@ function hasParticipants(participants: TaskParticipant | TaskParticipant[] | und
         ⏰ {{ (data as Task).requirements.startTime }} {{ (data as Task).requirements.startDate }} |
         {{ (data as Task).requirements.endTime }} {{ (data as Task).requirements.endDate }}
         <br />
-        👥 {{ $t('map.popup.neededMountP') }}: {{ (data as Task).requirements.membersCount }} <br />
-        🎂 {{ $t('map.popup.age') }}: {{ (data as Task).requirements.age }}+ <br />
-        ⚧ {{ $t('map.popup.gender') }}: {{ (data as Task).requirements.gender }} <br />
+        👥 {{ t('map.popup.neededMountP') }}: {{ (data as Task).requirements.membersCount }} <br />
+        🎂 {{ t('map.popup.age') }}: {{ (data as Task).requirements.age }}+ <br />
+        ⚧ {{ t('map.popup.gender') }}: {{ (data as Task).requirements.gender }} <br />
       </div>
       <div class="reward">
-        🎁 <b>{{ $t('map.popup.reward') }}:</b> {{ (data as Task).reward.xp }} XP,
-        {{ (data as Task).reward.points }} {{ $t('map.popup.points') }},
+        🎁 <b>{{ t('map.popup.reward') }}:</b> {{ (data as Task).reward.xp }} XP,
+        {{ (data as Task).reward.points }} {{ t('map.popup.points') }},
         {{ (data as Task).reward.inventoryItem }}
       </div>
       <div class="participants">
-        <b>{{ $t('map.popup.participants') }}:</b>
+        <b>{{ t('map.popup.participants') }}:</b>
         <div class="list">
           <div
             v-for="p in (data as Task).participants"
