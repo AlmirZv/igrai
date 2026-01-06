@@ -31,7 +31,7 @@
             </li>
             <li>
               <strong>{{ $t(`tasks.modal.requirements.gender`) }}:</strong>
-              {{ gender[task.requirements.gender] }}
+              {{ $t(`tasks.edit.genderType.${task.requirements.gender}`) }}
             </li>
             <li>
               <strong>{{ $t(`tasks.modal.requirements.members`) }}:</strong>
@@ -61,9 +61,9 @@
         <Button variant="secondary" @click="$emit('edit')">{{
           $t(`tasks.buttons.editTask`)
         }}</Button>
-        <Button variant="secondary" @click="$emit('close')">{{
+        <!-- <Button variant="secondary" @click="$emit('close')">{{
           $t(`tasks.buttons.closeTask`)
-        }}</Button>
+        }}</Button> -->
       </div>
       <div v-else class="modal-actions">
         <Button variant="primary" v-if="task.status !== 'completed'" @click="$emit('cancel')">
@@ -92,12 +92,6 @@ defineEmits<{
   (e: 'complete'): void
   (e: 'edit'): void
 }>()
-
-const gender: Record<string, string> = {
-  male: 'мужчина',
-  female: 'женщина',
-  any: 'любой',
-}
 </script>
 
 <style scoped>

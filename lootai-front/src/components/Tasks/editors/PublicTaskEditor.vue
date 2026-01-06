@@ -9,60 +9,60 @@
       <form class="form" @submit.prevent="submit">
         <label>
           {{ $t(`tasks.modal.title`) }}
-          <input v-model="form.title" type="text" required />
+          <Input v-model="form.title" type="text" required />
         </label>
 
         <label>
           {{ $t(`tasks.modal.description`) }}
-          <textarea v-model="form.description" rows="3" required />
+          <Textarea v-model="form.description" rows="3" required />
         </label>
 
         <div class="grid">
           <label>
             XP
-            <input v-model.number="form.reward.xp" type="number" min="0" />
+            <Input v-model.number="form.reward.xp" type="number" min="0" />
           </label>
           <label>
             {{ $t(`tasks.modal.reward.inventory`) }}
-            <input v-model="form.reward.inventoryItem" type="text" />
+            <Input v-model="form.reward.inventoryItem" type="text" />
           </label>
         </div>
 
         <div class="grid">
           <label>
             {{ $t(`tasks.modal.requirements.startDate`) }}
-            <input v-model="form.requirements.startDate" type="date" />
+            <Input v-model="form.requirements.startDate" type="date" />
           </label>
           <label>
             {{ $t(`tasks.modal.requirements.startTime`) }}
-            <input v-model="form.requirements.startTime" type="time" />
+            <Input v-model="form.requirements.startTime" type="time" />
           </label>
           <label>
             {{ $t(`tasks.modal.requirements.endDate`) }}
-            <input v-model="form.requirements.endDate" type="date" />
+            <Input v-model="form.requirements.endDate" type="date" />
           </label>
           <label>
             {{ $t(`tasks.modal.requirements.endTime`) }}
-            <input v-model="form.requirements.endTime" type="time" />
+            <Input v-model="form.requirements.endTime" type="time" />
           </label>
         </div>
 
         <div class="grid">
           <label>
             {{ $t(`tasks.modal.requirements.members`) }}
-            <input v-model.number="form.requirements.membersCount" type="number" min="1" />
+            <Input v-model.number="form.requirements.membersCount" type="number" min="1" />
           </label>
           <label>
             {{ $t(`tasks.modal.requirements.age`) }}
-            <input v-model.number="form.requirements.age" type="number" min="0" />
+            <Input v-model.number="form.requirements.age" type="number" min="0" />
           </label>
           <label>
             {{ $t(`tasks.modal.requirements.gender`) }}
-            <select v-model="form.requirements.gender">
-              <option value="any">Любой</option>
-              <option value="male">Мужчина</option>
-              <option value="female">Женщина</option>
-            </select>
+            <Select v-model="form.requirements.gender">
+              <option value="any">{{ $t(`tasks.edit.genderType.any`) }}</option>
+              <option value="male">{{ $t(`tasks.edit.genderType.male`) }}</option>
+              <option value="female">{{ $t(`tasks.edit.genderType.female`) }}</option>
+            </Select>
           </label>
         </div>
 
@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { Card, Text, Button } from '@/designSystem/components'
+import { Card, Text, Button, Select, Input, Textarea } from '@/designSystem/components'
 import type { PublicTask } from '@/types/publicTask'
 
 const props = defineProps<{
@@ -117,6 +117,12 @@ const submit = () => {
   overflow: auto;
 }
 
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -128,15 +134,6 @@ label {
   flex-direction: column;
   gap: var(--space-xxs);
   font-weight: 600;
-}
-
-input,
-textarea,
-select {
-  width: 100%;
-  padding: var(--space-sm);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-subtle);
 }
 
 .grid {

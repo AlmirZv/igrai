@@ -6,7 +6,10 @@
     "completeTask": "Завершить задачу",
     "closeTask": "Закрыть",
     "cancelTask": "Отменить выполнение",
-    "message": "Сообщение"
+    "message": "Сообщение",
+    "editTask": "Редактировать",
+    "save": "Сохранить",
+    "cancel": "Отменить"
   },
   "titles": {
     "tasks": "Задачи",
@@ -20,6 +23,7 @@
     "created": "Создатель"
   },
   "modal": {
+    "title": "Задача",
     "author": "Автор",
     "description": "Описание",
     "time": "Время",
@@ -27,7 +31,13 @@
     "requirements": {
       "title": "Требования",
       "age": "Возраст",
-      "gender": "Пол"
+      "gender": "Пол",
+      "members": "Участников",
+      "difficulty": "Сложность",
+      "startDate": "Дата начала",
+      "endDate": "Дата окончания",
+      "startTime": "Время начала",
+      "endTime": "Время окончания"
     },
     "reward": {
       "title": "Награда",
@@ -35,7 +45,25 @@
       "points": "Вознаграждение",
       "inventory": "Инвентарь"
     },
-    "participants": "Участники"
+    "participants": "Участники",
+    "steps": "Шаги"
+  },
+  "edit": {
+    "title": "Редактировать задачу",
+    "questTitle": "Редактировать квест",
+    "eventTitle": "Редактировать событие",
+    "publicTitle": "Редактировать общественное задание",
+    "userTitle": "Редактировать личное задание",
+    "genderType": {
+      "any": "Любой",
+      "male": "Мужчина",
+      "female": "Женщина"
+    },
+    "difficultyType": {
+      "easy": "Легко",
+      "medium": "Средне",
+      "hard": "Сложно"
+    }
   },
   "loading": "Загрузка",
   "tasksEmpty": "Нет задач",

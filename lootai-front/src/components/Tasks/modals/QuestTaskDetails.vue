@@ -14,9 +14,9 @@
           <Text variant="p">
             <strong>{{ $t(`tasks.modal.description`) }}:</strong> {{ task.description }}
           </Text>
-          <Text variant="p">
+          <!-- <Text variant="p">
             <strong>{{ $t(`tasks.modal.finishWords`) }}:</strong> {{ task.finishWords }}
-          </Text>
+          </Text> -->
         </div>
 
         <div class="modal-section requirements">
@@ -28,15 +28,15 @@
             </li>
             <li>
               <strong>{{ $t(`tasks.modal.requirements.gender`) }}:</strong>
-              {{ gender[task.requirements.gender] }}
+              {{ $t(`tasks.edit.genderType.${task.requirements.gender}`) }}
             </li>
             <li>
-              <strong>{{ $t(`tasks.modal.requirements.date`) }}:</strong>
+              <strong>{{ $t(`tasks.modal.time`) }}:</strong>
               {{ task.requirements.startDate }} - {{ task.requirements.endDate }}
             </li>
             <li>
               <strong>{{ $t(`tasks.modal.requirements.difficulty`) }}:</strong>
-              {{ difficulty[task.requirements.difficulty] }}
+              {{ $t(`tasks.edit.difficultyType.${task.requirements.difficulty}`) }}
             </li>
           </ul>
         </div>
@@ -59,21 +59,51 @@
 
         <div class="modal-section steps">
           <Text variant="h4" color="muted">🧭 {{ $t(`tasks.modal.steps`) }}</Text>
-          <ul>
-            <li v-for="step in task.steps" :key="step.id">
-              <strong>{{ step.title }}</strong> — {{ step.description }}
-            </li>
-          </ul>
+
+          <div v-if="aTab === 'created'">
+            <div v-for="step in task.steps">
+              <div>{{ step.description }}</div>
+              <div class="step">
+                <b>{{ step.title }}</b>
+                <div v-if="step.type == 'riddle'">{{ step.riddle }}</div>
+                <div v-else-if="step.type == 'qr'">{{ step.qrCode }}</div>
+                <div v-else-if="step.type == 'photo'">{{ step.photoExampleUrl || '' }}</div>
+                <div v-else></div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else>
+            <div>{{ currentStep?.description }}</div>
+            <div v-if="distance2quest < 10000" class="step">
+              <b>{{ currentStep?.title }}</b>
+              <div>{{ stepContent }}</div>
+            </div>
+            <div v-else class="step">{{ $t('map.popup.requirements.distanceToQuest') }}</div>
+
+            <div>
+              <div class="field" v-if="currentStep?.type === 'riddle'">
+                {{ $t('map.popup.answer') }}: <Input type="text" v-model="riddleAnswer" />
+                <Button v-if="!solved" @click="checkRiddleAnswer">{{
+                  $t('map.popup.answer')
+                }}</Button>
+              </div>
+
+              <div class="field" v-if="currentStep?.type === 'qr'">
+                <Button v-if="!solved" @click="scanQRCode">Scan</Button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div v-if="aTab === 'created'" class="modal-section participants">
+        <!-- <div v-if="aTab === 'created'" class="modal-section participants">
           <h4>👥 {{ $t(`tasks.modal.participants`) }}</h4>
           <ul>
             <li v-for="(p, i) in task.participants" :key="i" class="participant-item">
               <span>{{ p.name }} ({{ p.gender || '' }}, {{ p.age || '' }})</span>
             </li>
           </ul>
-        </div>
+        </div> -->
       </div>
 
       <div v-if="aTab === 'created'" class="modal-actions">
@@ -82,9 +112,6 @@
         </Button>
         <Button variant="secondary" @click="$emit('edit')">{{
           $t(`tasks.buttons.editTask`)
-        }}</Button>
-        <Button variant="secondary" @click="$emit('close')">{{
-          $t(`tasks.buttons.closeTask`)
         }}</Button>
       </div>
       <div v-else class="modal-actions">
@@ -97,10 +124,17 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { auth } from '@/config/firebase'
 import { Card, Text, Button } from '@/designSystem/components'
 import type { QuestTask } from '@/types/quest'
+import { calculateDistance } from '@/utils/geolocation'
+import { useGeolocation } from '@/composables/useGeolocation'
+import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 
-defineProps<{
+const { getLocation } = useGeolocation()
+
+const props = defineProps<{
   task: QuestTask
   aTab: 'taken' | 'created'
 }>()
@@ -111,16 +145,78 @@ defineEmits<{
   (e: 'edit'): void
 }>()
 
-const gender: Record<string, string> = {
-  male: 'мужчина',
-  female: 'женщина',
-  any: 'любой',
+const solved = ref(false)
+const riddleAnswer = ref('')
+
+const currentStep = computed(() => {
+  console.log(props.task)
+  const step = props.task.steps.find(
+    (step) =>
+      step.id ==
+      props.task.participants.find((participant) => participant.id == auth.currentUser?.uid)
+        ?.progress.currentStepId,
+  )
+  if (step) return step
+  else return props.task.steps[0]
+})
+
+const stepContent = computed(() => {
+  const step = currentStep.value
+  console.log(step)
+  if (!step) return ''
+
+  switch (step.type) {
+    case 'riddle':
+      return step.riddle
+    case 'qr':
+      return step.qrCode
+    case 'photo':
+      return step.photoExampleUrl || ''
+    default:
+      return ''
+  }
+})
+
+onMounted(async () => {
+  console.log(currentStep.value)
+  distance2quest.value = await checkDistance()
+})
+
+const distance2quest = ref(100)
+async function checkDistance() {
+  // userposition
+  const { lat, lng } = await getLocation()
+  // step position
+  const stepPosition = currentStep.value.location
+  const distance = Math.ceil(calculateDistance(stepPosition.lat, stepPosition.lng, lat, lng) * 1000)
+  console.log(distance)
+  return distance
 }
 
-const difficulty: Record<string, string> = {
-  easy: 'легко',
-  medium: 'средне',
-  hard: 'сложно',
+function checkRiddleAnswer() {
+  // console.log(riddleAnswer.value)
+  if (currentStep.value.type == 'riddle' && riddleAnswer.value == currentStep.value.answer) {
+    // emit('updateStep', { id: props.data.id, step: currentStep.value })
+    solved.value = true
+  } else {
+    console.log('Неправильный ответ')
+  }
+}
+
+async function scanQRCode() {
+  await BarcodeScanner.checkPermission({ force: true })
+
+  document.body.classList.add('scanner-active')
+  await BarcodeScanner.startScan()
+
+  const result = await BarcodeScanner.startScan()
+
+  if (result.content == currentStep.value.id) {
+    // emit('updateStep', { id: props.data.id, step: currentStep.value })
+    solved.value = true
+  }
+
+  document.body.classList.remove('scanner-active')
 }
 </script>
 
@@ -185,6 +281,20 @@ const difficulty: Record<string, string> = {
   justify-content: flex-end;
   gap: var(--space-sm);
   margin-top: var(--space-lg);
+}
+
+/* Шаги */
+.step {
+  margin-top: var(--space-md);
+  background: var(--bg-surface);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-height: 40vh;
+  overflow: auto;
+  font-size: var(--font-size-sm);
 }
 
 @keyframes fadeIn {
