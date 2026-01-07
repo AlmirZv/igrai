@@ -295,6 +295,7 @@ async function scanQRCode() {
   max-height: 40vh;
   overflow: auto;
   font-size: var(--font-size-sm);
+  border: 1px solid var(--border-subtle);
 }
 
 @keyframes fadeIn {
