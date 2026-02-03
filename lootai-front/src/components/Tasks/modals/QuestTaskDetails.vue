@@ -130,7 +130,7 @@ import { Card, Text, Button } from '@/designSystem/components'
 import type { QuestTask } from '@/types/quest'
 import { calculateDistance } from '@/utils/geolocation'
 import { useGeolocation } from '@/composables/useGeolocation'
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning'
 
 const { getLocation } = useGeolocation()
 

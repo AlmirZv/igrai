@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue'
 import type { QuestTask, QuestParticipant, QuestRequirements } from '@/types/quest'
 import { auth } from '@/config/firebase'
 import uInfoComposable from '@/composables/userInfo'
 import { calculateDistance } from '@/utils/geolocation'
 import { useGeolocation } from '@/composables/useGeolocation'
-import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning'
 import questFinish from './questFinish.vue'
 import { Input, Button } from '@/designSystem/components'
+// @ts-ignore - three.js types are included in the package
+import * as THREE from 'three'
+import { createArEngine } from '@/ar/anchors/AnchorFactory'
+import { createCube } from '@/ar/assets/createCube'
+import { loadGLB } from '@/ar/assets/ModelLoader'
 
 const { getLocation } = useGeolocation()
 
@@ -24,6 +29,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'action', payload: { type: PopupType; id: string }): void
+  (e: 'updateStep', payload: { id: string; step: any }): void
 }>()
 
 const isLoading = ref(false)
@@ -35,6 +41,10 @@ const uicomposable = uInfoComposable()
 const solved = ref(false)
 const finished = ref(false)
 const riddleAnswer = ref('')
+const arAnswer = ref('')
+const arViewerOpen = ref(false)
+const arContainer = ref<HTMLElement | null>(null)
+let arEngine: any = null
 
 const currentStep = computed(() => {
   console.log(props.data)
@@ -60,6 +70,8 @@ const stepContent = computed(() => {
       return step.qrCode
     case 'photo':
       return step.photoExampleUrl || ''
+    case 'ar':
+      return t('map.popup.ar.description') || 'Используйте AR камеру, чтобы найти подсказку'
     default:
       return ''
   }
@@ -98,6 +110,101 @@ async function scanQRCode() {
   }
 
   document.body.classList.remove('scanner-active')
+}
+
+async function openArViewer() {
+  const step = currentStep.value
+  if (!step || step.type !== 'ar') return
+
+  // Пока у нас нет реального .mind файла, не пытаемся запускать MindAR,
+  // иначе она падает с ошибкой декодера ("Extra byte(s) found at buffer").
+  if (!step.imageTargetFile || !step.imageTargetFile.toLowerCase().endsWith('.mind')) {
+    alert(
+      t('map.popup.ar.targetNotReady') ||
+        'AR-якорь ещё не готов. Нужен .mind файл, который надо сгенерировать на сервере.'
+    )
+    return
+  }
+
+  arViewerOpen.value = true
+  await nextTick()
+
+  if (!arContainer.value) {
+    console.error('AR container or image target not available')
+    return
+  }
+
+  try {
+    // Создаем AR engine
+    arEngine = createArEngine(
+      'image',
+      arContainer.value,
+      step.imageTargetFile
+    )
+
+    // Загружаем модель
+    let model: THREE.Object3D
+    if (step.modelType === 'cube') {
+      model = createCube()
+    } else if (step.modelUrl) {
+      model = await loadGLB(step.modelUrl)
+    } else {
+      model = createCube() // fallback
+    }
+
+    // Применяем transform если есть
+    if (step.transform) {
+      model.position.set(
+        step.transform.position.x,
+        step.transform.position.y,
+        step.transform.position.z
+      )
+      model.rotation.set(
+        step.transform.rotation.x,
+        step.transform.rotation.y,
+        step.transform.rotation.z
+      )
+      model.scale.set(
+        step.transform.scale.x,
+        step.transform.scale.y,
+        step.transform.scale.z
+      )
+    }
+
+    arEngine.addModel(model)
+
+    arEngine.onAnchorFound(() => {
+      console.log('AR anchor found!')
+    })
+
+    arEngine.onAnchorLost(() => {
+      console.log('AR anchor lost')
+    })
+
+    await arEngine.start()
+  } catch (error) {
+    console.error('Error starting AR viewer:', error)
+  }
+}
+
+function closeArViewer() {
+  if (arEngine) {
+    arEngine.stop()
+    arEngine = null
+  }
+  arViewerOpen.value = false
+}
+
+function checkArAnswer() {
+  isLoading.value = true
+  const step = currentStep.value
+  if (step && step.type === 'ar' && arAnswer.value === step.answer) {
+    emit('updateStep', { id: props.data.id, step: step })
+    solved.value = true
+  } else {
+    console.log('Неправильный ответ')
+  }
+  isLoading.value = false
 }
 
 const actionDone = computed(() => {
@@ -168,6 +275,13 @@ onMounted(async () => {
   distance2quest.value = await checkDistance()
 })
 
+onUnmounted(() => {
+  if (arEngine) {
+    arEngine.stop()
+    arEngine = null
+  }
+})
+
 watch(() => props.data, checkHeight, { deep: true })
 
 const distance2quest = ref(100)
@@ -224,6 +338,22 @@ async function checkDistance() {
 
           <div class="field" v-if="currentStep?.type === 'qr'">
             <Button v-if="!solved" @click="scanQRCode">Scan</Button>
+          </div>
+
+          <div class="field" v-if="currentStep?.type === 'ar'">
+            <Button v-if="!solved && !arViewerOpen" @click="openArViewer">
+              {{ t('map.buttons.enableCamera') || 'Включить камеру' }}
+            </Button>
+            <div v-if="arViewerOpen" class="ar-viewer-container">
+              <div class="ar-viewport" ref="arContainer"></div>
+              <Button @click="closeArViewer" class="ar-close-btn">
+                {{ t('map.buttons.closeCamera') || 'Закрыть камеру' }}
+              </Button>
+            </div>
+            <div v-if="!arViewerOpen" class="field">
+              {{ t('map.popup.answer') }}: <Input type="text" v-model="arAnswer" />
+              <Button v-if="!solved" @click="checkArAnswer">{{ t('map.popup.answer') }}</Button>
+            </div>
           </div>
         </div>
         <div v-else>{{ t('map.popup.requirements.youCreatedTask') }}</div>
@@ -370,5 +500,29 @@ async function checkDistance() {
   font-size: var(--font-size-sm);
   opacity: 0.9;
   line-height: var(--font-lineHeight-normal);
+}
+
+/* AR Viewer */
+.ar-viewer-container {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+
+.ar-viewport {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.ar-close-btn {
+  position: absolute;
+  bottom: var(--space-md);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
 }
 </style>

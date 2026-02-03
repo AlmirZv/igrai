@@ -50,7 +50,7 @@ export interface BaseStep {
   id: string
   order: number
   title: string
-  type: 'riddle' | 'qr' | 'photo'
+  type: 'riddle' | 'qr' | 'photo' | 'ar'
   icon: string
   location: {
     lat: number
@@ -82,8 +82,23 @@ export interface PhotoStep extends BaseStep {
   photoExampleUrl?: string // пример нужного фото
 }
 
+// Шаг с AR
+export interface ARStep extends BaseStep {
+  type: 'ar'
+  imageTargetUrls: string[] // загруженные изображения для якоря
+  imageTargetFile?: string // сгенерированный .mind файл
+  modelUrl?: string // URL 3D модели (если загружена)
+  modelType?: 'cube' | 'custom' // тип модели
+  transform?: {
+    position: { x: number; y: number; z: number }
+    rotation: { x: number; y: number; z: number }
+    scale: { x: number; y: number; z: number }
+  }
+  answer: string // правильный ответ после просмотра AR модели
+}
+
 // Объединяющий тип
-export type QuestStep = RiddleStep | QRStep | PhotoStep
+export type QuestStep = RiddleStep | QRStep | PhotoStep | ARStep
 
 export interface stepProgress {
   currentStepId: string

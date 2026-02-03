@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+// @ts-ignore - no types installed for qrcode
 import QRCode from 'qrcode'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { Input, Textarea, Select, Text, Button } from '@/designSystem/components'
+import ArEditor from './ArEditor.vue'
 
 const emit = defineEmits<{
   (e: 'select-step-location', stepId: any): void
@@ -129,6 +131,106 @@ const saveQrToPhone = async (code: string) => {
 
   return fileName
 }
+
+// AR Editor state
+const arEditorOpen = ref(false)
+const editingStepId = ref<string | null>(null)
+const arEditorRef = ref<InstanceType<typeof ArEditor> | null>(null)
+
+// AR image upload
+const handleArImageUpload = (stepId: string, event: Event) => {
+  const step = model.value.steps.find((s: any) => s.id === stepId)
+  if (!step) return
+
+  const input = event.target as HTMLInputElement
+  if (!input.files || input.files.length === 0) return
+
+  const files = Array.from(input.files)
+  
+  // Инициализируем AR поля если их нет
+  if (!step.imageTargetUrls) {
+    step.imageTargetUrls = []
+    step.modelType = 'cube'
+    step.transform = {
+      position: { x: 0, y: 0, z: 0.3 },
+      rotation: { x: 0, y: 0, z: 0 },
+      scale: { x: 1, y: 1, z: 1 }
+    }
+  }
+
+  // Конвертируем файлы в data URLs (временно, потом нужно будет загружать на сервер)
+  files.forEach((file) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string
+      if (dataUrl && !step.imageTargetUrls.includes(dataUrl)) {
+        step.imageTargetUrls.push(dataUrl)
+      }
+    }
+    reader.readAsDataURL(file)
+  })
+
+  // Временный вариант: используем один статический image target для всех AR-шагов.
+  // Файл лежит в public/targets/raccoon.mind и корректно понимается MindAR.
+  // Позже здесь нужно будет подставлять реальный .mind, сгенерированный из загруженных картинок.
+  step.imageTargetFile = '/targets/raccoon.mind'
+}
+
+function openArEditor(stepId: string) {
+  const step = model.value.steps.find((s: any) => s.id === stepId)
+  if (!step || !step.imageTargetFile) {
+    alert('Пожалуйста, сначала загрузите изображения для якоря')
+    return
+  }
+  
+  editingStepId.value = stepId
+  arEditorOpen.value = true
+
+  // IMPORTANT: open camera from user gesture (this click), otherwise mobile browsers may block it.
+  arEditorRef.value?.openFromGesture({
+    imageTargetUrl: step.imageTargetFile,
+    initialTransform: step.transform,
+  })
+}
+
+function closeArEditor() {
+  arEditorOpen.value = false
+  editingStepId.value = null
+  arEditorRef.value?.close()
+}
+
+function saveArTransform(transform: {
+  position: { x: number; y: number; z: number }
+  rotation: { x: number; y: number; z: number }
+  scale: { x: number; y: number; z: number }
+}) {
+  if (!editingStepId.value) return
+  
+  const step = model.value.steps.find((s: any) => s.id === editingStepId.value)
+  if (step) {
+    step.transform = transform
+  }
+}
+
+// Watch for step type changes to initialize AR fields
+watch(
+  () => model.value.steps,
+  (steps) => {
+    steps.forEach((step: any) => {
+      if (step.type === 'ar' && !step.imageTargetUrls) {
+        step.imageTargetUrls = []
+        step.modelType = 'cube'
+        step.transform = {
+          position: { x: 0, y: 0, z: 0.3 },
+          rotation: { x: 0, y: 0, z: 0 },
+          scale: { x: 1, y: 1, z: 1 }
+        }
+        step.answer = ''
+      }
+    })
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <template>
@@ -203,6 +305,7 @@ const saveQrToPhone = async (code: string) => {
           <option value="riddle">{{ $t(`map.popup.stepType.riddle`) }}</option>
           <option value="qr">{{ $t(`map.popup.stepType.qr`) }}</option>
           <option value="photo" disabled>{{ $t(`map.popup.stepType.photo`) }}</option>
+          <option value="ar">{{ $t(`map.popup.stepType.ar`) || 'AR' }}</option>
         </Select>
       </div>
 
@@ -247,6 +350,46 @@ const saveQrToPhone = async (code: string) => {
         <label>{{ $t(`map.popup.uploadPhoto`) }}:</label>
         <Input type="file" />
       </div>
+
+      <!-- AR Step Fields -->
+      <div v-if="step.type == 'ar'" class="field">
+        <label>{{ $t(`map.popup.ar.uploadImages`) || 'Загрузить изображения (якорь)' }}:</label>
+        <Input 
+          type="file" 
+          accept="image/*" 
+          multiple 
+          @change="handleArImageUpload(step.id, $event)"
+        />
+        <div v-if="step.imageTargetUrls && step.imageTargetUrls.length > 0" class="ar-images-preview">
+          <div v-for="(url, idx) in step.imageTargetUrls" :key="idx" class="ar-image-item">
+            <img :src="url" alt="Anchor image" />
+          </div>
+        </div>
+      </div>
+
+      <div v-if="step.type == 'ar'" class="field">
+        <label>{{ $t(`map.popup.ar.modelType`) || 'Тип модели' }}:</label>
+        <Select v-model="step.modelType">
+          <option value="cube">{{ $t(`map.popup.ar.modelType.cube`) || 'Куб' }}</option>
+          <option value="custom" disabled>{{ $t(`map.popup.ar.modelType.custom`) || 'Загрузить модель' }}</option>
+        </Select>
+      </div>
+
+      <div v-if="step.type == 'ar' && step.imageTargetFile" class="field">
+        <label>{{ $t(`map.popup.ar.editor`) || 'AR Редактор' }}:</label>
+        <Button class="create-btn small" type="button" @click="openArEditor(step.id)">
+          {{ $t(`map.buttons.openArEditor`) || 'Открыть AR редактор' }}
+        </Button>
+        <span v-if="step.transform" class="ar-transform-status">
+          {{ $t(`map.popup.ar.transformSaved`) || 'Transform сохранен' }}
+        </span>
+      </div>
+
+      <div v-if="step.type == 'ar'" class="field">
+        <label>{{ $t(`map.popup.answer`) }}:</label>
+        <Input v-model="step.answer" :placeholder="$t(`map.popup.placeholders.answer`) || 'Ответ после просмотра AR модели'" />
+      </div>
+
       <div class="field">
         <label>{{ $t(`map.popup.locationChoosed`) }}:</label>
         <Input type="checkbox" :checked="!!step.location.lat" disabled />
@@ -289,6 +432,13 @@ const saveQrToPhone = async (code: string) => {
         :placeholder="$t(`map.popup.placeholders.wordsOfGratitude`)"
       />
     </div>
+
+    <!-- AR Editor Modal -->
+    <ArEditor
+      ref="arEditorRef"
+      @close="closeArEditor"
+      @save="saveArTransform"
+    />
   </div>
 </template>
 
@@ -355,5 +505,32 @@ const saveQrToPhone = async (code: string) => {
 .create-btn.small {
   width: auto;
   padding: var(--space-xs) var(--space-sm);
+}
+
+.ar-images-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.ar-image-item {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.ar-image-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ar-transform-status {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-left: var(--space-xs);
 }
 </style>
