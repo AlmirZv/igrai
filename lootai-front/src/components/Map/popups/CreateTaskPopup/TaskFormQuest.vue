@@ -137,8 +137,39 @@ const arEditorOpen = ref(false)
 const editingStepId = ref<string | null>(null)
 const arEditorRef = ref<InstanceType<typeof ArEditor> | null>(null)
 
+// Временный URL бэкенда для генерации .mind (можно вынести в env)
+const AR_TARGET_API = import.meta.env.VITE_BACKEND_URL
+  ? `${import.meta.env.VITE_BACKEND_URL}/ar/targets`
+  : 'http://localhost:8000/ar/targets'
+
+async function generateMindTargetForStep(step: any) {
+  try {
+    // Отправляем base64-изображения якоря на бэкенд
+    const res = await fetch(AR_TARGET_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        images: step.imageTargetUrls,
+      }),
+    })
+
+    if (!res.ok) {
+      console.error('Failed to generate .mind file', await res.text())
+      return
+    }
+
+    const data = await res.json()
+    // Ожидаем, что бэкенд вернёт что-то типа { mindUrl: '/targets/xxx.mind' }
+    if (data?.mindUrl) {
+      step.imageTargetFile = data.mindUrl
+    }
+  } catch (e) {
+    console.error('Error calling AR target API', e)
+  }
+}
+
 // AR image upload
-const handleArImageUpload = (stepId: string, event: Event) => {
+const handleArImageUpload = async (stepId: string, event: Event) => {
   const step = model.value.steps.find((s: any) => s.id === stepId)
   if (!step) return
 
@@ -170,10 +201,8 @@ const handleArImageUpload = (stepId: string, event: Event) => {
     reader.readAsDataURL(file)
   })
 
-  // Временный вариант: используем один статический image target для всех AR-шагов.
-  // Файл лежит в public/targets/raccoon.mind и корректно понимается MindAR.
-  // Позже здесь нужно будет подставлять реальный .mind, сгенерированный из загруженных картинок.
-  step.imageTargetFile = '/targets/raccoon.mind'
+  // После загрузки картинок — генерируем .mind на бэкенде
+  await generateMindTargetForStep(step)
 }
 
 function openArEditor(stepId: string) {
