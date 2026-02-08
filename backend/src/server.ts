@@ -16,7 +16,7 @@ socketServer.on("connection", socketConnectionHandler(socketServer));
 
 export async function startServer() {
   return new Promise((resolve) => {
-    server.listen(State.PORT, () => {
+    server.listen(State.PORT, "0.0.0.0", () => {
       console.log('[server]: started on port ' + State.PORT)
       resolve(null)
     });

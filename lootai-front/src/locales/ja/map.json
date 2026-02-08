@@ -14,6 +14,7 @@
       "title": "タイトル",
       "describeTask": "タスクの説明を入力",
       "describeStep": "ステップを説明",
+      "describeRiddle": "なぞなぞを説明",
       "enterRiddle": "なぞなぞを入力",
       "answer": "答え",
       "enterClue": "ヒントを入力",
@@ -49,12 +50,14 @@
     "stepType": {
       "riddle": "なぞなぞ",
       "qr": "QRコードを探す",
-      "photo": "同じ写真を撮る"
+      "photo": "同じ写真を撮る",
+      "ar": "AR"
     },
     "riddle": "なぞなぞ",
     "answer": "答え",
     "clue": "ヒント",
     "qrcode": "QRコード",
+    "enterClue": "ヒントを入力",
     "generatingQRCode": "QRコード生成中",
     "uploadPhoto": "写真をアップロード",
     "locationChoosed": "場所が選択されました",
@@ -68,7 +71,37 @@
     },
     "participants": "参加者",
     "completed": "完了",
-    "author": "作者"
+    "author": "作者",
+    "ar": {
+      "targetSource": "アンカーソース",
+      "compileFromImages": "画像からコンパイル",
+      "uploadMindFile": "準備済み .mind ファイルをアップロード",
+      "mindUploaded": "ファイルをアップロードしました",
+      "uploadImages": "画像をアップロード (アンカー)",
+      "compilingMind": ".mind ファイルのコンパイル中...",
+      "modelTypes": {
+        "cube": "立方体",
+        "custom": "3Dモデルをアップロード"
+      },
+      "editor": "ARエディタ",
+      "transformSaved": "変換を保存"
+    },
+    "arEditor": {
+      "rotateLeft": "左に回転",
+      "rotateRight": "右に回転",
+      "rotateXUp": "傾き ↑",
+      "rotateXDown": "傾き ↓",
+      "rotateZLeft": "ロール ⟲",
+      "rotateZRight": "ロール ⟳",
+      "scale": "スケール",
+      "reset": "リセット",
+      "save": "保存",
+      "closer": "近づく",
+      "farther": "遠ざかる",
+      "controls": "モデルの位置をアンカーに合わせて調整",
+      "noTargetYet": "Image targetがまだ生成されていません (.mind)。現在: カメラ + モデル（アンカー追跡なし）。",
+      "title": "ARエディタ"
+    }
   },
   "buttons": {
     "createTask": "タスクを作成",
@@ -80,6 +113,10 @@
     "participateInTask": "タスクに参加",
     "startQuest": "クエスト開始",
     "registerForEvent": "イベントに参加",
-    "participate": "参加する"
+    "participate": "参加する",
+    "openArEditor": "ARエディタを開く",
+    "closeArEditor": "ARエディタを閉じる",
+    "saveArTransform": "AR変換を保存",
+    "resetArTransform": "AR変換をリセット"
   }
 }

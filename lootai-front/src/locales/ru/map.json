@@ -14,6 +14,7 @@
       "title": "Название",
       "describeTask": "Опишите задачу",
       "describeStep": "Опишите шаг",
+      "describeRiddle": "Опишите загадку",
       "enterRiddle": "Введите загадку",
       "answer": "Ответ",
       "enterClue": "Подсказка",
@@ -49,12 +50,14 @@
     "stepType": {
       "riddle": "Загадка",
       "qr": "Найти QR-код",
-      "photo": "Сделать похожее фото"
+      "photo": "Сделать похожее фото",
+      "ar": "AR"
     },
     "riddle": "Загадка",
     "answer": "Ответ",
     "clue": "Подсказка",
     "qrcode": "QR-код",
+    "enterClue": "Введите подсказку",
     "generatingQRCode": "Генерация QR-кода",
     "uploadPhoto": "Загрузить фото",
     "locationChoosed": "Локация выбрана",
@@ -68,7 +71,38 @@
     },
     "participants": "Участники",
     "completed": "Завершен",
-    "author": "Автор"
+    "author": "Автор",
+    "ar": {
+      "targetSource": "Источник якоря",
+      "compileFromImages": "Скомпилировать из изображений",
+      "uploadMindFile": "Загрузить готовый .mind файл",
+      "mindUploaded": "Файл загружен",
+      "uploadImages": "Загрузить изображения (якорь)",
+      "compilingMind": "Компиляция .mind файла...",
+      "modelType": "Тип модели",
+      "modelTypes": {
+        "cube": "Куб",
+        "custom": "Загрузить 3D модель"
+      },
+      "editor": "AR Редактор",
+      "transformSaved": "Transform сохранен"
+    },
+    "arEditor": {
+      "rotateLeft": "Повернуть ⟲",
+      "rotateRight": "Повернуть ⟳",
+      "rotateXUp": "Наклон ↑",
+      "rotateXDown": "Наклон ↓",
+      "rotateZLeft": "Крен ⟲",
+      "rotateZRight": "Крен ⟳",
+      "scale": "Масштаб",
+      "reset": "Сбросить",
+      "save": "Сохранить",
+      "closer": "Ближе",
+      "farther": "Дальше",
+      "controls": "Настройте положение модели относительно якоря",
+      "noTargetYet": "Image target ещё не сгенерирован (.mind). Сейчас: камера + модель без трекинга якоря.",
+      "title": "AR Редактор"
+    }
   },
   "buttons": {
     "createTask": "Создать задачу",
@@ -80,6 +114,10 @@
     "participateInTask": "Участвовать в задании",
     "startQuest": "Начать квест",
     "registerForEvent": "Записаться на событие",
-    "participate": "Участвовать"
+    "participate": "Участвовать",
+    "openArEditor": "Открыть AR редактор",
+    "closeArEditor": "Закрыть AR редактор",
+    "saveArTransform": "Сохранить AR трансформацию",
+    "resetArTransform": "Сбросить AR трансформацию"
   }
 }

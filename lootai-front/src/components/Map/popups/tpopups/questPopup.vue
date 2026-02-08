@@ -12,7 +12,9 @@ import { Input, Button } from '@/designSystem/components'
 import * as THREE from 'three'
 import { createArEngine } from '@/ar/anchors/AnchorFactory'
 import { createCube } from '@/ar/assets/createCube'
+import { loadArModelWithAnimations } from '@/ar/assets/arModels'
 import { loadGLB } from '@/ar/assets/ModelLoader'
+import { mindarApi } from '@/api/mindar.api'
 
 const { getLocation } = useGeolocation()
 
@@ -97,19 +99,22 @@ function checkRiddleAnswer() {
 }
 
 async function scanQRCode() {
-  await BarcodeScanner.checkPermission({ force: true })
-
-  document.body.classList.add('scanner-active')
-  await BarcodeScanner.startScan()
-
-  const result = await BarcodeScanner.startScan()
-
-  if (result.content == currentStep.value.id) {
-    emit('updateStep', { id: props.data.id, step: currentStep.value })
-    solved.value = true
+  const { camera } = await BarcodeScanner.checkPermissions()
+  if (camera !== 'granted') {
+    await BarcodeScanner.requestPermissions()
   }
 
-  document.body.classList.remove('scanner-active')
+  document.body.classList.add('scanner-active')
+  try {
+    const { barcodes } = await BarcodeScanner.scan({ formats: ['QR_CODE'] })
+    const content = barcodes?.[0]?.displayValue ?? barcodes?.[0]?.rawValue
+    if (content === currentStep.value?.id) {
+      emit('updateStep', { id: props.data.id, step: currentStep.value })
+      solved.value = true
+    }
+  } finally {
+    document.body.classList.remove('scanner-active')
+  }
 }
 
 async function openArViewer() {
@@ -135,43 +140,47 @@ async function openArViewer() {
   }
 
   try {
-    // Создаем AR engine
-    arEngine = createArEngine(
-      'image',
-      arContainer.value,
-      step.imageTargetFile
-    )
+    // Полный URL на бэкенд — иначе MindAR запрашивает с origin фронта
+    const mindUrl = mindarApi.resolveMindUrl(step.imageTargetFile)
+    const targetCount = step.imageTargetUrls?.length || 1
+    arEngine = await createArEngine('image', arContainer.value, mindUrl, { targetCount })
 
-    // Загружаем модель
+    // Загружаем модель (с анимациями для животных)
     let model: THREE.Object3D
     if (step.modelType === 'cube') {
       model = createCube()
+    } else if (step.modelType && String(step.modelType) !== 'cube') {
+      const result = await loadArModelWithAnimations(step.modelType)
+      model = result.model
+      if (result.mixer) arEngine.addAnimationMixer(result.mixer)
     } else if (step.modelUrl) {
       model = await loadGLB(step.modelUrl)
     } else {
       model = createCube() // fallback
     }
 
-    // Применяем transform если есть
-    if (step.transform) {
-      model.position.set(
-        step.transform.position.x,
-        step.transform.position.y,
-        step.transform.position.z
-      )
-      model.rotation.set(
-        step.transform.rotation.x,
-        step.transform.rotation.y,
-        step.transform.rotation.z
-      )
-      model.scale.set(
-        step.transform.scale.x,
-        step.transform.scale.y,
-        step.transform.scale.z
-      )
-    }
-
     arEngine.addModel(model)
+
+    // Применяем transform через engine (для сглаженного позиционирования)
+    if (step.transform) {
+      arEngine.setTransform({
+        position: new THREE.Vector3(
+          step.transform.position.x,
+          step.transform.position.y,
+          step.transform.position.z
+        ),
+        rotation: new THREE.Euler(
+          step.transform.rotation.x,
+          step.transform.rotation.y,
+          step.transform.rotation.z
+        ),
+        scale: new THREE.Vector3(
+          step.transform.scale.x,
+          step.transform.scale.y,
+          step.transform.scale.z
+        ),
+      })
+    }
 
     arEngine.onAnchorFound(() => {
       console.log('AR anchor found!')

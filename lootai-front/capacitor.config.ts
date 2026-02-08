@@ -7,6 +7,9 @@ const config: CapacitorConfig = {
   server: {
     androidScheme: 'https',
   },
+  android: {
+    allowMixedContent: true, // разрешить HTTP запросы к бэку (https://localhost → http://192.168.x.x)
+  },
   plugins: {
     FirebaseApp: {
       android: {

@@ -204,19 +204,22 @@ function checkRiddleAnswer() {
 }
 
 async function scanQRCode() {
-  await BarcodeScanner.checkPermission({ force: true })
-
-  document.body.classList.add('scanner-active')
-  await BarcodeScanner.startScan()
-
-  const result = await BarcodeScanner.startScan()
-
-  if (result.content == currentStep.value.id) {
-    // emit('updateStep', { id: props.data.id, step: currentStep.value })
-    solved.value = true
+  const { camera } = await BarcodeScanner.checkPermissions()
+  if (camera !== 'granted') {
+    await BarcodeScanner.requestPermissions()
   }
 
-  document.body.classList.remove('scanner-active')
+  document.body.classList.add('scanner-active')
+  try {
+    const { barcodes } = await BarcodeScanner.scan({ formats: ['QR_CODE'] })
+    const content = barcodes?.[0]?.displayValue ?? barcodes?.[0]?.rawValue
+    if (content === currentStep.value?.id) {
+      // emit('updateStep', { id: props.data.id, step: currentStep.value })
+      solved.value = true
+    }
+  } finally {
+    document.body.classList.remove('scanner-active')
+  }
 }
 </script>
 

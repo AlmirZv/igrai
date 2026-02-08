@@ -14,6 +14,7 @@
       "title": "Title",
       "describeTask": "Describe the task",
       "describeStep": "Describe the step",
+      "describeRiddle": "Describe the riddle",
       "enterRiddle": "Enter a riddle",
       "answer": "Answer",
       "enterClue": "Enter a clue",
@@ -49,12 +50,14 @@
     "stepType": {
       "riddle": "Riddle",
       "qr": "Find a QR code",
-      "photo": "Take a similar photo"
+      "photo": "Take a similar photo",
+      "ar": "AR"
     },
     "riddle": "Riddle",
     "answer": "Answer",
     "clue": "Clue",
     "qrcode": "QR code",
+    "enterClue": "Enter a clue",
     "generatingQRCode": "Generating QR code",
     "uploadPhoto": "Upload photo",
     "locationChoosed": "Location selected",
@@ -68,7 +71,37 @@
     },
     "participants": "Participants",
     "completed": "Completed",
-    "author": "Author"
+    "author": "Author",
+    "ar": {
+      "targetSource": "Anchor source",
+      "compileFromImages": "Compile from images",
+      "uploadMindFile": "Upload ready .mind file",
+      "mindUploaded": "File uploaded",
+      "uploadImages": "Upload images (anchor)",
+      "compilingMind": "Compiling .mind file...",
+      "modelTypes": {
+        "cube": "Cube",
+        "custom": "Upload 3D model"
+      },
+      "editor": "AR Editor",
+      "transformSaved": "Transform saved"
+    },
+    "arEditor": {
+      "rotateLeft": "Rotate ⟲",
+      "rotateRight": "Rotate ⟳",
+      "rotateXUp": "Tilt ↑",
+      "rotateXDown": "Tilt ↓",
+      "rotateZLeft": "Roll ⟲",
+      "rotateZRight": "Roll ⟳",
+      "scale": "Scale",
+      "reset": "Reset",
+      "save": "Save",
+      "closer": "Closer",
+      "farther": "Farther",
+      "controls": "Adjust the position of the model relative to the anchor",
+      "noTargetYet": "Image target not yet generated (.mind). Currently: camera + model without anchor tracking.",
+      "title": "AR Editor"
+    }
   },
   "buttons": {
     "createTask": "Create task",
@@ -80,6 +113,10 @@
     "participateInTask": "Participate in task",
     "startQuest": "Start quest",
     "registerForEvent": "Register for event",
-    "participate": "Participate"
+    "participate": "Participate",
+    "openArEditor": "Open AR editor",
+    "closeArEditor": "Close AR editor",
+    "saveArTransform": "Save AR transform",
+    "resetArTransform": "Reset AR transform"
   }
 }

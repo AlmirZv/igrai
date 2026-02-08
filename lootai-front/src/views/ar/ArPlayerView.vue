@@ -22,7 +22,7 @@
   async function start() {
     if (!root.value) return
   
-    engine = createArEngine(
+    engine = await createArEngine(
       "image",
       root.value,
       "/targets/store.mind"

@@ -5,11 +5,10 @@ export const state = reactive({
   connected: false,
 })
 
-// "undefined" means the URL will be computed from the `window.location` object
+// Capacitor: VITE_WS_URL. Dev: localhost. Production web: undefined (same origin)
 const URL =
-  import.meta.env.NODE_ENV === 'production'
-    ? undefined
-    : import.meta.env.VITE_WS_URL || 'http://localhost:3000'
+  import.meta.env.VITE_WS_URL ||
+  (import.meta.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3000')
 
 console.log('🔧 Initializing socket with URL:', URL)
 

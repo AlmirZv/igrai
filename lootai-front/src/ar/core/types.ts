@@ -11,6 +11,8 @@ export interface ArEngine {
 
   addModel(model: THREE.Object3D): void
 
+  addAnimationMixer?(mixer: THREE.AnimationMixer): void
+
   setTransform(t: {
     position: THREE.Vector3
     rotation: THREE.Euler

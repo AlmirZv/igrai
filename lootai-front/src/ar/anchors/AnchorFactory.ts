@@ -1,13 +1,14 @@
 import type { ArEngine } from "../core/types"
-import { MindImageEngine } from "../engines/MindImageEngine"
 
-export function createArEngine(
+export async function createArEngine(
   type: "image",
   container: HTMLElement,
-  targetSrc: string
-): ArEngine {
+  targetSrc: string,
+  options?: { targetCount?: number }
+): Promise<ArEngine> {
   if (type === "image") {
-    return new MindImageEngine(container, targetSrc)
+    const { MindImageEngine } = await import("../engines/MindImageEngine")
+    return new MindImageEngine(container, targetSrc, options?.targetCount ?? 1)
   }
 
   throw new Error("Unsupported AR engine")

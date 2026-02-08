@@ -6,6 +6,7 @@ import AuthView from './views/AuthView.vue'
 import MainMapView from './views/MainView.vue'
 import { getUserInfo } from '@/composables/userInfo'
 import userComposable from '@/composables/userInfo'
+import { requestNativePermissions } from '@/composables/useNativePermissions'
 
 import useSettings from '@/composables/useSettings'
 const { getUserSettings } = useSettings()
@@ -17,6 +18,9 @@ const user = ref(auth.currentUser)
 socket.off()
 
 onMounted(async () => {
+  // Capacitor: запрос разрешений геолокации и камеры при старте
+  requestNativePermissions()
+
   // Listen for auth state changes
   onAuthStateChanged(auth, async (currentUser) => {
     user.value = currentUser

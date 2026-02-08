@@ -3,8 +3,10 @@ import { ref, computed, watch } from 'vue'
 // @ts-ignore - no types installed for qrcode
 import QRCode from 'qrcode'
 import { Filesystem, Directory } from '@capacitor/filesystem'
-import { Input, Textarea, Select, Text, Button } from '@/designSystem/components'
+import { Input, Textarea, Select, Text, Button, LoadingSpinner } from '@/designSystem/components'
 import ArEditor from './ArEditor.vue'
+import { useMindar } from '@/composables/useMindar'
+import { mindarApi } from '@/api/mindar.api'
 
 const emit = defineEmits<{
   (e: 'select-step-location', stepId: any): void
@@ -137,35 +139,118 @@ const arEditorOpen = ref(false)
 const editingStepId = ref<string | null>(null)
 const arEditorRef = ref<InstanceType<typeof ArEditor> | null>(null)
 
-// Временный URL бэкенда для генерации .mind (можно вынести в env)
-const AR_TARGET_API = import.meta.env.VITE_BACKEND_URL
-  ? `${import.meta.env.VITE_BACKEND_URL}/ar/targets`
-  : 'http://localhost:8000/ar/targets'
+// Используем композабл для работы с MindAR API
+const { uploadTargets, loading: mindarLoading, error: mindarError } = useMindar()
+const compilingStepId = ref<string | null>(null)
 
 async function generateMindTargetForStep(step: any) {
-  try {
-    // Отправляем base64-изображения якоря на бэкенд
-    const res = await fetch(AR_TARGET_API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        images: step.imageTargetUrls,
-      }),
-    })
-
-    if (!res.ok) {
-      console.error('Failed to generate .mind file', await res.text())
-      return
-    }
-
-    const data = await res.json()
-    // Ожидаем, что бэкенд вернёт что-то типа { mindUrl: '/targets/xxx.mind' }
-    if (data?.mindUrl) {
-      step.imageTargetFile = data.mindUrl
-    }
-  } catch (e) {
-    console.error('Error calling AR target API', e)
+  if (!step.imageTargetUrls || step.imageTargetUrls.length === 0) {
+    console.warn('No images to upload')
+    return
   }
+
+  try {
+    // Конвертируем dataURL обратно в File объекты для отправки
+    const files: File[] = []
+
+    for (const dataUrl of step.imageTargetUrls) {
+      const response = await fetch(dataUrl)
+      const blob = await response.blob()
+      const file = new File([blob], `image-${Date.now()}-${Math.random()}.jpg`, {
+        type: blob.type || 'image/jpeg',
+      })
+      files.push(file)
+    }
+
+    console.log(`Uploading ${files.length} image(s) to backend...`)
+    compilingStepId.value = step.id
+
+    try {
+      // Отправляем файлы на бэкенд через axios
+      const result = await uploadTargets(files)
+
+      if (result?.mindId) {
+        // Полный URL на бэкенд — иначе MindAR запрашивает с origin фронта и получает 404
+        step.imageTargetFile = mindarApi.getMindFileUrl(result.mindId)
+        console.log('✅ Mind file generated:', step.imageTargetFile)
+      } else if (result?.mindUrl) {
+        step.imageTargetFile = result.mindUrl
+        console.log('✅ Mind file generated:', result.mindUrl)
+      } else {
+        console.warn('⚠️ Unexpected response from backend:', result)
+      }
+    } finally {
+      compilingStepId.value = null
+    }
+  } catch (e: any) {
+    compilingStepId.value = null
+    const status = e.response?.status
+    const data = e.response?.data
+    const msg = e.message || ''
+    console.error('❌ Error generating .mind file:', e)
+    console.error('   Response status:', status, 'data:', data)
+
+    const isTimeout = e.code === 'ECONNABORTED' || msg.includes('timeout')
+    const isNetwork =
+      e.code === 'ERR_NETWORK' ||
+      msg.includes('Network Error') ||
+      msg.includes('CONNECTION_REFUSED') ||
+      msg.includes('Failed to fetch')
+
+    if (isTimeout) {
+      alert(
+        'Компиляция заняла слишком много времени. Сервер, возможно, ещё обрабатывает запрос. Попробуйте подождать или загрузить меньше изображений.',
+      )
+    } else if (isNetwork) {
+      console.error('🔴 Backend server is not running or not accessible!')
+      const apiOrigin = import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, '') || 'localhost:3000'
+      alert(
+        `Ошибка подключения к серверу. Убедитесь, что бэкенд запущен на ${apiOrigin} и телефон в той же Wi‑Fi сети.`,
+      )
+    } else {
+      const errText = mindarError.value || data?.error || msg || 'Неизвестная ошибка'
+      const debug = status ? ` (HTTP ${status})` : ''
+      alert(`Ошибка генерации .mind файла: ${errText}${debug}`)
+    }
+  }
+}
+
+// Режим источника .mind: compile = компиляция из изображений, upload = загрузка готового файла
+const AR_MIND_SOURCE = { compile: 'compile', upload: 'upload' } as const
+
+// AR: загрузка готового .mind файла
+const handleArMindFileUpload = async (stepId: string, event: Event) => {
+  const step = model.value.steps.find((s: any) => s.id === stepId)
+  if (!step) return
+
+  const input = event.target as HTMLInputElement
+  if (!input.files || input.files.length === 0) return
+
+  const file = input.files[0]
+  if (!file.name.toLowerCase().endsWith('.mind')) {
+    alert('Выберите файл .mind')
+    return
+  }
+
+  if (!step.transform) {
+    step.transform = {
+      position: { x: 0, y: 0, z: 0.3 },
+      rotation: { x: 0, y: 0, z: 0 },
+      scale: { x: 0.3, y: 0.3, z: 0.3 },
+    }
+  }
+  step.modelType = step.modelType || 'cube'
+
+  try {
+    const res = await mindarApi.uploadMindFile(file)
+    step.imageTargetFile = mindarApi.getMindFileUrl(res.data.mindId)
+    step.imageTargetUrls = [] // готовый .mind без превью изображений
+    console.log('✅ .mind file uploaded:', step.imageTargetFile)
+  } catch (e: any) {
+    console.error('Upload .mind failed:', e)
+    alert(e.response?.data?.error || e.message || 'Ошибка загрузки .mind файла')
+  }
+  input.value = ''
 }
 
 // AR image upload
@@ -177,7 +262,7 @@ const handleArImageUpload = async (stepId: string, event: Event) => {
   if (!input.files || input.files.length === 0) return
 
   const files = Array.from(input.files)
-  
+
   // Инициализируем AR поля если их нет
   if (!step.imageTargetUrls) {
     step.imageTargetUrls = []
@@ -185,21 +270,27 @@ const handleArImageUpload = async (stepId: string, event: Event) => {
     step.transform = {
       position: { x: 0, y: 0, z: 0.3 },
       rotation: { x: 0, y: 0, z: 0 },
-      scale: { x: 1, y: 1, z: 1 }
+      scale: { x: 0.3, y: 0.3, z: 0.3 },
     }
   }
 
-  // Конвертируем файлы в data URLs (временно, потом нужно будет загружать на сервер)
-  files.forEach((file) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string
-      if (dataUrl && !step.imageTargetUrls.includes(dataUrl)) {
-        step.imageTargetUrls.push(dataUrl)
+  // Конвертируем файлы в data URLs для превью
+  const dataUrlPromises = files.map((file) => {
+    return new Promise<string>((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string
+        if (dataUrl && !step.imageTargetUrls.includes(dataUrl)) {
+          step.imageTargetUrls.push(dataUrl)
+        }
+        resolve(dataUrl)
       }
-    }
-    reader.readAsDataURL(file)
+      reader.readAsDataURL(file)
+    })
   })
+
+  // Ждём загрузки всех файлов
+  await Promise.all(dataUrlPromises)
 
   // После загрузки картинок — генерируем .mind на бэкенде
   await generateMindTargetForStep(step)
@@ -208,10 +299,10 @@ const handleArImageUpload = async (stepId: string, event: Event) => {
 function openArEditor(stepId: string) {
   const step = model.value.steps.find((s: any) => s.id === stepId)
   if (!step || !step.imageTargetFile) {
-    alert('Пожалуйста, сначала загрузите изображения для якоря')
+    alert('Пожалуйста, сначала загрузите изображения или готовый .mind файл')
     return
   }
-  
+
   editingStepId.value = stepId
   arEditorOpen.value = true
 
@@ -219,13 +310,16 @@ function openArEditor(stepId: string) {
   arEditorRef.value?.openFromGesture({
     imageTargetUrl: step.imageTargetFile,
     initialTransform: step.transform,
+    modelType: step.modelType || 'cube',
+    targetCount: step.imageTargetUrls?.length || 1,
   })
 }
 
 function closeArEditor() {
   arEditorOpen.value = false
   editingStepId.value = null
-  arEditorRef.value?.close()
+  // Не вызываем arEditorRef.value?.close() — close() уже выполнен в ArEditor и эмитит @close.
+  // Повторный вызов close() приводил к бесконечной рекурсии и "Maximum call stack size exceeded".
 }
 
 function saveArTransform(transform: {
@@ -234,31 +328,33 @@ function saveArTransform(transform: {
   scale: { x: number; y: number; z: number }
 }) {
   if (!editingStepId.value) return
-  
+
   const step = model.value.steps.find((s: any) => s.id === editingStepId.value)
   if (step) {
     step.transform = transform
   }
 }
 
-// Watch for step type changes to initialize AR fields
+// Watch for step type changes to initialize AR fields (только при первом создании — не перезаписывать)
 watch(
   () => model.value.steps,
   (steps) => {
     steps.forEach((step: any) => {
-      if (step.type === 'ar' && !step.imageTargetUrls) {
-        step.imageTargetUrls = []
-        step.modelType = 'cube'
-        step.transform = {
-          position: { x: 0, y: 0, z: 0.3 },
-          rotation: { x: 0, y: 0, z: 0 },
-          scale: { x: 1, y: 1, z: 1 }
+      if (step.type === 'ar') {
+        if (!step.mindSource) step.mindSource = 'compile'
+        if (!step.imageTargetUrls && step.mindSource === 'compile') step.imageTargetUrls = []
+        if (!step.transform) {
+          step.transform = {
+            position: { x: 0, y: 0, z: 0.3 },
+            rotation: { x: 0, y: 0, z: 0 },
+            scale: { x: 0.3, y: 0.3, z: 0.3 },
+          }
         }
-        step.answer = ''
+        if (step.answer === undefined) step.answer = ''
       }
     })
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true },
 )
 </script>
 
@@ -382,14 +478,45 @@ watch(
 
       <!-- AR Step Fields -->
       <div v-if="step.type == 'ar'" class="field">
+        <label>{{ $t(`map.popup.ar.targetSource`) || 'Источник якоря' }}:</label>
+        <Select v-model="step.mindSource">
+          <option :value="AR_MIND_SOURCE.compile">
+            {{ $t(`map.popup.ar.compileFromImages`) || 'Скомпилировать из изображений' }}
+          </option>
+          <option :value="AR_MIND_SOURCE.upload">
+            {{ $t(`map.popup.ar.uploadMindFile`) || 'Загрузить готовый .mind файл' }}
+          </option>
+        </Select>
+      </div>
+
+      <div v-if="step.type == 'ar' && step.mindSource === 'upload'" class="field">
+        <label>{{ $t(`map.popup.ar.uploadMindFile`) || 'Загрузить готовый .mind файл' }}:</label>
+        <Input
+          type="file"
+          accept=".mind"
+          @change="handleArMindFileUpload(step.id, $event)"
+        />
+        <span v-if="step.imageTargetFile" class="ar-mind-uploaded">
+          ✅ {{ $t(`map.popup.ar.mindUploaded`) || 'Файл загружен' }}
+        </span>
+      </div>
+
+      <div v-if="step.type == 'ar' && step.mindSource === 'compile'" class="field">
         <label>{{ $t(`map.popup.ar.uploadImages`) || 'Загрузить изображения (якорь)' }}:</label>
-        <Input 
-          type="file" 
-          accept="image/*" 
-          multiple 
+        <Input
+          type="file"
+          accept="image/*"
+          multiple
+          :disabled="compilingStepId === step.id"
           @change="handleArImageUpload(step.id, $event)"
         />
-        <div v-if="step.imageTargetUrls && step.imageTargetUrls.length > 0" class="ar-images-preview">
+        <LoadingSpinner v-if="compilingStepId === step.id" class="ar-compiling-loading">
+          {{ $t(`map.popup.ar.compilingMind`) || 'Компиляция .mind файла...' }}
+        </LoadingSpinner>
+        <div
+          v-if="step.imageTargetUrls && step.imageTargetUrls.length > 0"
+          class="ar-images-preview"
+        >
           <div v-for="(url, idx) in step.imageTargetUrls" :key="idx" class="ar-image-item">
             <img :src="url" alt="Anchor image" />
           </div>
@@ -399,8 +526,19 @@ watch(
       <div v-if="step.type == 'ar'" class="field">
         <label>{{ $t(`map.popup.ar.modelType`) || 'Тип модели' }}:</label>
         <Select v-model="step.modelType">
-          <option value="cube">{{ $t(`map.popup.ar.modelType.cube`) || 'Куб' }}</option>
-          <option value="custom" disabled>{{ $t(`map.popup.ar.modelType.custom`) || 'Загрузить модель' }}</option>
+          <option value="cube">{{ $t(`map.popup.ar.modelTypes.cube`) || 'Куб' }}</option>
+          <option value="alpaca">Alpaca</option>
+          <option value="bull">Bull</option>
+          <option value="cow">Cow</option>
+          <option value="deer">Deer</option>
+          <option value="donkey">Donkey</option>
+          <option value="fox">Fox</option>
+          <option value="horse">Horse</option>
+          <option value="husky">Husky</option>
+          <option value="shiba-inu">Shiba Inu</option>
+          <option value="stag">Stag</option>
+          <option value="white-horse">White Horse</option>
+          <option value="wolf">Wolf</option>
         </Select>
       </div>
 
@@ -416,7 +554,10 @@ watch(
 
       <div v-if="step.type == 'ar'" class="field">
         <label>{{ $t(`map.popup.answer`) }}:</label>
-        <Input v-model="step.answer" :placeholder="$t(`map.popup.placeholders.answer`) || 'Ответ после просмотра AR модели'" />
+        <Input
+          v-model="step.answer"
+          :placeholder="$t(`map.popup.placeholders.answer`) || 'Ответ после просмотра AR модели'"
+        />
       </div>
 
       <div class="field">
@@ -463,11 +604,7 @@ watch(
     </div>
 
     <!-- AR Editor Modal -->
-    <ArEditor
-      ref="arEditorRef"
-      @close="closeArEditor"
-      @save="saveArTransform"
-    />
+    <ArEditor ref="arEditorRef" @close="closeArEditor" @save="saveArTransform" />
   </div>
 </template>
 
@@ -536,6 +673,11 @@ watch(
   padding: var(--space-xs) var(--space-sm);
 }
 
+.ar-mind-uploaded {
+  margin-left: 8px;
+  color: var(--color-success, #22c55e);
+}
+
 .ar-images-preview {
   display: flex;
   flex-wrap: wrap;
@@ -561,5 +703,9 @@ watch(
   font-size: var(--font-size-xs);
   color: var(--text-muted);
   margin-left: var(--space-xs);
+}
+
+.ar-compiling-loading {
+  margin-top: var(--space-sm);
 }
 </style>

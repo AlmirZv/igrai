@@ -1,15 +1,11 @@
 {
   "files": [],
-  "lib": ["ES2022", "DOM"],
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"]
+  },
   "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.vitest.json" }
   ]
 }

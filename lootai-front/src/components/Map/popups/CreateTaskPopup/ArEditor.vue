@@ -2,71 +2,90 @@
   <Teleport to="body">
     <div class="ar-editor-overlay" v-if="isOpen">
       <div class="ar-editor-container">
-      <div class="ar-editor-header">
-        <h3>{{ $t('map.popup.arEditor.title') || 'AR Editor' }}</h3>
-        <Button variant="secondary" @click="close">
-          {{ $t('map.buttons.close') || 'Close' }}
-        </Button>
-      </div>
-
-      <div class="ar-editor-content">
-        <div class="ar-viewport" ref="arContainer"></div>
-        
-        <div class="ar-warning" v-if="mode === 'fallback'">
-          {{ $t('map.popup.arEditor.noTargetYet') || 'Image target ещё не сгенерирован (.mind). Сейчас: камера + модель без трекинга якоря.' }}
+        <div class="ar-editor-header">
+          <h3>{{ $t('map.popup.arEditor.title') || 'AR Editor' }}</h3>
+          <Button variant="secondary" @click="close">
+            {{ $t('map.buttons.closeArEditor') || 'Close' }}
+          </Button>
         </div>
 
-        <div class="ar-controls-panel">
-          <div class="ar-controls-row ar-controls-row--label">
-            {{ $t('map.popup.arEditor.controls') || 'Настройте положение модели относительно якоря' }}
+        <div class="ar-editor-content">
+          <div class="ar-viewport" ref="arContainer"></div>
+
+          <div class="ar-warning" v-if="mode === 'fallback'">
+            {{
+              $t('map.popup.arEditor.noTargetYet') ||
+              'Image target ещё не сгенерирован (.mind). Сейчас: камера + модель без трекинга якоря.'
+            }}
           </div>
 
-          <div class="ar-controls-row">
-            <Button class="ar-control-button" @click="moveUp">↑</Button>
-          </div>
+          <div class="ar-controls-panel">
+            <div class="ar-controls-row ar-controls-row--label">
+              {{
+                $t('map.popup.arEditor.controls') || 'Настройте положение модели относительно якоря'
+              }}
+            </div>
 
-          <div class="ar-controls-row">
-            <Button class="ar-control-button" @click="moveLeft">←</Button>
-            <Button class="ar-control-button" @click="moveDown">↓</Button>
-            <Button class="ar-control-button" @click="moveRight">→</Button>
-          </div>
+            <div class="ar-controls-row">
+              <Button class="ar-control-button" @click="moveUp">↑</Button>
+            </div>
 
-          <div class="ar-controls-row">
-            <Button class="ar-control-button" @click="moveCloser">
-              {{ $t('map.popup.arEditor.closer') || 'Ближе' }}
-            </Button>
-            <Button class="ar-control-button" @click="moveFarther">
-              {{ $t('map.popup.arEditor.farther') || 'Дальше' }}
-            </Button>
-          </div>
+            <div class="ar-controls-row">
+              <Button class="ar-control-button" @click="moveLeft">←</Button>
+              <Button class="ar-control-button" @click="moveDown">↓</Button>
+              <Button class="ar-control-button" @click="moveRight">→</Button>
+            </div>
 
-          <div class="ar-controls-row">
-            <Button class="ar-control-button" @click="rotateLeft">
-              {{ $t('map.popup.arEditor.rotateLeft') || 'Повернуть ⟲' }}
-            </Button>
-            <Button class="ar-control-button" @click="rotateRight">
-              {{ $t('map.popup.arEditor.rotateRight') || 'Повернуть ⟳' }}
-            </Button>
-          </div>
+            <div class="ar-controls-row">
+              <Button class="ar-control-button" @click="moveCloser">
+                {{ $t('map.popup.arEditor.closer') || 'Ближе' }}
+              </Button>
+              <Button class="ar-control-button" @click="moveFarther">
+                {{ $t('map.popup.arEditor.farther') || 'Дальше' }}
+              </Button>
+            </div>
 
-          <div class="ar-controls-row">
-            <Button class="ar-control-button" @click="scaleDown">-</Button>
-            <span class="ar-scale-label">
-              {{ $t('map.popup.arEditor.scale') || 'Масштаб' }}
-            </span>
-            <Button class="ar-control-button" @click="scaleUp">+</Button>
-          </div>
+            <div class="ar-controls-row">
+              <Button class="ar-control-button" @click="rotateLeft">
+                {{ $t('map.popup.arEditor.rotateLeft') || 'Повернуть ⟲' }}
+              </Button>
+              <Button class="ar-control-button" @click="rotateRight">
+                {{ $t('map.popup.arEditor.rotateRight') || 'Повернуть ⟳' }}
+              </Button>
+            </div>
+            <div class="ar-controls-row">
+              <Button class="ar-control-button" @click="rotateXUp" :title="$t('map.popup.arEditor.rotateXUp')">
+                {{ $t('map.popup.arEditor.rotateXUp') || 'X ↑' }}
+              </Button>
+              <Button class="ar-control-button" @click="rotateXDown" :title="$t('map.popup.arEditor.rotateXDown')">
+                {{ $t('map.popup.arEditor.rotateXDown') || 'X ↓' }}
+              </Button>
+              <Button class="ar-control-button" @click="rotateZLeft" :title="$t('map.popup.arEditor.rotateZLeft')">
+                {{ $t('map.popup.arEditor.rotateZLeft') || 'Z ⟲' }}
+              </Button>
+              <Button class="ar-control-button" @click="rotateZRight" :title="$t('map.popup.arEditor.rotateZRight')">
+                {{ $t('map.popup.arEditor.rotateZRight') || 'Z ⟳' }}
+              </Button>
+            </div>
 
-          <div class="ar-controls-row ar-controls-row--actions">
-            <Button class="ar-control-button secondary" @click="resetTransform">
-              {{ $t('map.buttons.reset') || 'Сбросить' }}
-            </Button>
-            <Button class="ar-control-button primary" @click="saveTransform">
-              {{ $t('map.buttons.save') || 'Сохранить' }}
-            </Button>
+            <div class="ar-controls-row">
+              <Button class="ar-control-button" @click="scaleDown">-</Button>
+              <span class="ar-scale-label">
+                {{ $t('map.popup.arEditor.scale') || 'Масштаб' }}
+              </span>
+              <Button class="ar-control-button" @click="scaleUp">+</Button>
+            </div>
+
+            <div class="ar-controls-row ar-controls-row--actions">
+              <Button class="ar-control-button secondary" @click="resetTransform">
+                {{ $t('map.buttons.resetArTransform') || 'Сбросить' }}
+              </Button>
+              <Button class="ar-control-button primary" @click="saveTransform">
+                {{ $t('map.buttons.saveArTransform') || 'Сохранить' }}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   </Teleport>
@@ -77,16 +96,20 @@ import { ref, onUnmounted, nextTick } from 'vue'
 // @ts-ignore - three.js types are included in the package
 import * as THREE from 'three'
 import { createArEngine } from '@/ar/anchors/AnchorFactory'
-import { createCube } from '@/ar/assets/createCube'
+import { loadArModelWithAnimations } from '@/ar/assets/arModels'
+import { mindarApi } from '@/api/mindar.api'
 import { Input, Button } from '@/designSystem/components'
 
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'save', transform: {
-    position: { x: number; y: number; z: number }
-    rotation: { x: number; y: number; z: number }
-    scale: { x: number; y: number; z: number }
-  }): void
+  (
+    e: 'save',
+    transform: {
+      position: { x: number; y: number; z: number }
+      rotation: { x: number; y: number; z: number }
+      scale: { x: number; y: number; z: number }
+    },
+  ): void
 }>()
 
 type Mode = 'mindar' | 'fallback'
@@ -104,27 +127,39 @@ let fallbackRenderer: THREE.WebGLRenderer | null = null
 let fallbackScene: THREE.Scene | null = null
 let fallbackCamera: THREE.PerspectiveCamera | null = null
 let fallbackModel: THREE.Object3D | null = null
+let fallbackMixer: THREE.AnimationMixer | null = null
+let fallbackClock: THREE.Clock | null = null
 let fallbackLoopHandle: number | null = null
 
+// Масштаб 0.3 — модель видна; 0.05 был слишком маленьким
+const DEFAULT_SCALE = 0.3
 const transform = ref({
   position: { x: 0, y: 0, z: 0.3 },
   rotation: { x: 0, y: 0, z: 0 },
-  scale: { x: 1, y: 1, z: 1 }
+  scale: { x: DEFAULT_SCALE, y: DEFAULT_SCALE, z: DEFAULT_SCALE },
 })
 
-const MOVE_STEP = 0.05
-const DEPTH_STEP = 0.05
-const ROTATE_STEP = 0.2
-const SCALE_STEP = 0.1
+const MOVE_STEP = 0.02
+const DEPTH_STEP = 0.02
+const ROTATE_STEP = 0.15
+const SCALE_STEP = 0.05
 
 function isMindFile(url: string) {
-  return url.toLowerCase().includes('.mind')
+  if (!url || !url.trim()) return false
+  const u = url.toLowerCase()
+  // /api/mindar/file/ID или полный URL — это наш .mind endpoint
+  return u.includes('.mind') || u.includes('mindar/file')
 }
 
-async function startMindAr(targetUrl: string, initial?: typeof transform.value) {
+async function startMindAr(
+  targetUrl: string,
+  initial?: typeof transform.value,
+  modelType?: string,
+  targetCount = 1
+) {
   // Wait for DOM to be ready
   await nextTick()
-  
+
   if (!arContainer.value) {
     console.error('AR container not available')
     return
@@ -132,35 +167,42 @@ async function startMindAr(targetUrl: string, initial?: typeof transform.value) 
 
   try {
     mode.value = 'mindar'
-    console.log('Starting MindAR with target:', targetUrl)
-    
+    console.log('Starting MindAR with target:', targetUrl, 'model:', modelType || 'cube', 'targets:', targetCount)
+
     // Clear container first
     arContainer.value.innerHTML = ''
-    
-    // Создаем AR engine
-    engine = createArEngine(
-      'image',
-      arContainer.value,
-      targetUrl
-    )
 
-    // Создаем простой куб (временно)
-    const cube = createCube()
-    engine.addModel(cube)
+    // Создаем AR engine (targetCount = сколько изображений в .mind)
+    engine = await createArEngine('image', arContainer.value, targetUrl, { targetCount })
+
+    // Загружаем модель (куб или животное) с анимациями
+    const { model, mixer } = await loadArModelWithAnimations(modelType || 'cube')
+    engine.addModel(model)
+    if (mixer) engine.addAnimationMixer(mixer)
 
     // Применяем начальный transform (если есть)
-    if (initial) transform.value = { ...initial }
+    if (initial) {
+      transform.value = {
+        position: { ...initial.position },
+        rotation: { ...initial.rotation },
+        scale: { ...initial.scale },
+      }
+      // Старые данные могли иметь scale 1 — нормализуем для AR
+      if (transform.value.scale.x >= 0.9 && transform.value.scale.x <= 1.1) {
+        transform.value.scale = { x: DEFAULT_SCALE, y: DEFAULT_SCALE, z: DEFAULT_SCALE }
+      }
+    }
     updateTransform()
-    
+
     // Запускаем AR
     console.log('Starting AR engine...')
     await engine.start()
     console.log('AR engine started successfully')
-    
+
     engine.onAnchorFound(() => {
       console.log('Anchor found in editor')
     })
-    
+
     engine.onAnchorLost(() => {
       console.log('Anchor lost in editor')
     })
@@ -168,14 +210,17 @@ async function startMindAr(targetUrl: string, initial?: typeof transform.value) 
     console.error('Error starting AR editor:', error)
     // Fallback to camera mode if MindAR fails
     console.log('Falling back to camera mode')
-    await startFallbackCamera(initial)
+    await startFallbackCamera(initial, modelType)
   }
 }
 
-async function startFallbackCamera(initial?: typeof transform.value) {
+async function startFallbackCamera(
+  initial?: typeof transform.value,
+  modelType?: string
+) {
   // Wait for DOM to be ready
   await nextTick()
-  
+
   if (!arContainer.value) {
     console.error('AR container not available')
     return
@@ -183,7 +228,7 @@ async function startFallbackCamera(initial?: typeof transform.value) {
 
   mode.value = 'fallback'
   console.log('Starting fallback camera mode')
-  
+
   if (initial) transform.value = { ...initial }
 
   // Clear container
@@ -206,15 +251,15 @@ async function startFallbackCamera(initial?: typeof transform.value) {
 
     console.log('Requesting camera access...')
     fallbackStream = await navigator.mediaDevices.getUserMedia({
-      video: { 
+      video: {
         facingMode: { ideal: 'environment' },
         width: { ideal: 1920 },
-        height: { ideal: 1080 }
+        height: { ideal: 1080 },
       },
       audio: false,
     })
     console.log('Camera access granted')
-    
+
     fallbackVideo.srcObject = fallbackStream
     await fallbackVideo.play()
     console.log('Video playing')
@@ -246,12 +291,18 @@ async function startFallbackCamera(initial?: typeof transform.value) {
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1)
   fallbackScene.add(light)
 
-  fallbackModel = createCube()
+  const { model, mixer } = await loadArModelWithAnimations(modelType || 'cube')
+  fallbackModel = model
+  fallbackMixer = mixer
+  fallbackClock = new THREE.Clock()
   fallbackScene.add(fallbackModel)
   applyTransformToFallbackModel()
 
   const loop = () => {
     if (!fallbackRenderer || !fallbackScene || !fallbackCamera) return
+    if (fallbackMixer && fallbackClock) {
+      fallbackMixer.update(fallbackClock.getDelta())
+    }
     fallbackRenderer.render(fallbackScene, fallbackCamera)
     fallbackLoopHandle = requestAnimationFrame(loop)
   }
@@ -263,6 +314,14 @@ function stopAll() {
     engine.stop()
     engine = null
   }
+
+  // Очищаем контейнер — MindAR оставляет video/canvas
+  if (arContainer.value) {
+    arContainer.value.innerHTML = ''
+  }
+
+  // MindAR добавляет .mindar-ui-* (scanning, loading) в document.body — удаляем их
+  document.querySelectorAll('.mindar-ui-overlay, .mindar-ui-scanning').forEach((el) => el.remove())
 
   if (fallbackLoopHandle != null) {
     cancelAnimationFrame(fallbackLoopHandle)
@@ -290,29 +349,31 @@ function stopAll() {
   fallbackScene = null
   fallbackCamera = null
   fallbackModel = null
+  fallbackMixer = null
+  fallbackClock = null
 }
 
 function updateTransform() {
   if (!engine) return
-  
+
   const t = {
     position: new THREE.Vector3(
       transform.value.position.x,
       transform.value.position.y,
-      transform.value.position.z
+      transform.value.position.z,
     ),
     rotation: new THREE.Euler(
       transform.value.rotation.x,
       transform.value.rotation.y,
-      transform.value.rotation.z
+      transform.value.rotation.z,
     ),
     scale: new THREE.Vector3(
       transform.value.scale.x,
       transform.value.scale.y,
-      transform.value.scale.z
-    )
+      transform.value.scale.z,
+    ),
   }
-  
+
   engine.setTransform(t)
 }
 
@@ -363,18 +424,34 @@ function moveFarther() {
   move(0, 0, DEPTH_STEP)
 }
 
-function rotateY(delta: number) {
-  transform.value.rotation.y += delta
+function rotate(axis: 'x' | 'y' | 'z', delta: number) {
+  transform.value.rotation[axis] += delta
   updateTransform()
   applyTransformToFallbackModel()
 }
 
 function rotateLeft() {
-  rotateY(-ROTATE_STEP)
+  rotate('y', -ROTATE_STEP)
 }
 
 function rotateRight() {
-  rotateY(ROTATE_STEP)
+  rotate('y', ROTATE_STEP)
+}
+
+function rotateXUp() {
+  rotate('x', ROTATE_STEP)
+}
+
+function rotateXDown() {
+  rotate('x', -ROTATE_STEP)
+}
+
+function rotateZLeft() {
+  rotate('z', -ROTATE_STEP)
+}
+
+function rotateZRight() {
+  rotate('z', ROTATE_STEP)
 }
 
 function scaleUniform(delta: number) {
@@ -398,7 +475,7 @@ function resetTransform() {
   transform.value = {
     position: { x: 0, y: 0, z: 0.3 },
     rotation: { x: 0, y: 0, z: 0 },
-    scale: { x: 1, y: 1, z: 1 }
+    scale: { x: DEFAULT_SCALE, y: DEFAULT_SCALE, z: DEFAULT_SCALE },
   }
   updateTransform()
   applyTransformToFallbackModel()
@@ -421,20 +498,26 @@ function close() {
 async function openFromGesture(params: {
   imageTargetUrl?: string
   initialTransform?: typeof transform.value
+  modelType?: string
+  targetCount?: number
 }) {
   stopAll()
   isOpen.value = true
 
   const targetUrl = params.imageTargetUrl
   const initial = params.initialTransform
+  const modelType = params.modelType || 'cube'
+  const targetCount = params.targetCount ?? 1
 
   // If we don't have a generated .mind yet, use fallback camera so user can still set transform.
   if (!targetUrl || !isMindFile(targetUrl)) {
-    await startFallbackCamera(initial)
+    await startFallbackCamera(initial, modelType)
     return
   }
 
-  await startMindAr(targetUrl, initial)
+  // Полный URL на бэкенд — иначе MindAR запрашивает с origin фронта и получает 404
+  const resolvedUrl = mindarApi.resolveMindUrl(targetUrl)
+  await startMindAr(resolvedUrl, initial, modelType, targetCount)
 }
 
 defineExpose({ openFromGesture, close })

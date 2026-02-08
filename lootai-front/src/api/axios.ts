@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_BASE_URL } from "@/config/api";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
-  timeout: 15000,
+  baseURL: API_BASE_URL || "/api", // Capacitor: VITE_API_URL; dev: proxy /api
+  timeout: 180000, // 3 мин — загрузка файлов и генерация .mind
 });
 
 /**
